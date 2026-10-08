@@ -1,0 +1,61 @@
+{
+  "$schema": "./config.schema.json",
+  "server": {
+    "port": 8080
+  },
+  "recipes": {
+    "file": "recipes.json"
+  },
+  "hardware": {
+    "heating": {
+      "pin": 23,
+      "activeLow": true,
+      "mode": "dutycycle",
+      "minPhaseMilliseconds": 500
+    },
+    "pump": {
+      "pin": 22,
+      "activeLow": true
+    },
+    "buzzer": {
+      "pin": 10,
+      "activeLow": false
+    },
+    "sensor": {
+      "sensorId": "auto",
+      "devicesPath": "/sys/bus/w1/devices",
+      "pollPauseMilliseconds": 100,
+      "staleAfterSeconds": 5,
+      "startupWaitMilliseconds": 2000
+    }
+  },
+  "control": {
+    "hysteresisUpperOffset": 0.0,
+    "hysteresisLowerOffset": -0.1,
+    "nearTargetBand": 3.0,
+    "nearTargetPower": 0.5
+  },
+  "engine": {
+    "tickMilliseconds": 500
+  },
+  "ui": {
+    "requestReminderIntervalSeconds": 10
+  },
+  "broadcast": {
+    "hardwareStatusMilliseconds": 500,
+    "processStateMilliseconds": 500,
+    "recipesMilliseconds": 500,
+    "chartMilliseconds": 1000
+  },
+  "chart": {
+    "maxPoints": 200
+  },
+  "simulation": {
+    "timeScale": 1,
+    "startTemperature": 20.0,
+    "ambientTemperature": 20.0,
+    "heatingRatePerSecond": 0.085,
+    "coolingRatePerSecond": 0.005,
+    "maxTemperature": 100.0
+  }
+}

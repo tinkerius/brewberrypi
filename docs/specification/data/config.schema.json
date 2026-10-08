@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brewberrypi.local/schemas/config.schema.json",
+  "title": "BrewberryPi configuration",
+  "description": "All keys optional; defaults = legacy behaviour (see config.example.json and specs 05, 06, 08, 10).",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "server": {
+      "type": "object",
+      "properties": { "port": { "type": "integer", "minimum": 1, "maximum": 65535, "default": 8080 } },
+      "additionalProperties": false
+    },
+    "recipes": {
+      "type": "object",
+      "properties": { "file": { "type": "string", "default": "recipes.json" } },
+      "additionalProperties": false
+    },
+    "hardware": {
+      "type": "object",
+      "properties": {
+        "heating": {
+          "type": "object",
+          "properties": {
+            "pin": { "$ref": "#/$defs/bcmPin", "default": 23 },
+            "activeLow": { "type": "boolean", "default": true },
+            "mode": { "enum": ["dutycycle", "onoff"], "default": "dutycycle" },
+            "minPhaseMilliseconds": { "type": "integer", "minimum": 100, "default": 500 }
+          },
+          "additionalProperties": false
+        },
+        "pump": {
+          "type": "object",
+          "properties": {
+            "pin": { "$ref": "#/$defs/bcmPin", "default": 22 },
+            "activeLow": { "type": "boolean", "default": true }
+          },
+          "additionalProperties": false
+        },
+        "buzzer": {
+          "type": "object",
+          "properties": {
+            "pin": { "$ref": "#/$defs/bcmPin", "default": 10 },
+            "activeLow": { "type": "boolean", "default": false }
+          },
+          "additionalProperties": false
+        },
+        "sensor": {
+          "type": "object",
+          "properties": {
+            "sensorId": { "type": "string", "pattern": "^(auto|28-[0-9a-fA-F]{12})$", "default": "auto" },
+            "devicesPath": { "type": "string", "default": "/sys/bus/w1/devices" },
+            "pollPauseMilliseconds": { "type": "integer", "minimum": 0, "default": 100 },
+            "staleAfterSeconds": { "type": "number", "exclusiveMinimum": 0, "default": 5 },
+            "startupWaitMilliseconds": { "type": "integer", "minimum": 0, "default": 2000 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "control": {
+      "type": "object",
+      "properties": {
+        "hysteresisUpperOffset": { "type": "number", "default": 0.0 },
+        "hysteresisLowerOffset": { "type": "number", "maximum": 0, "default": -0.1 },
+        "nearTargetBand": { "type": "number", "minimum": 0, "default": 3.0 },
+        "nearTargetPower": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "default": 0.5 }
+      },
+      "additionalProperties": false
+    },
+    "engine": {
+      "type": "object",
+      "properties": { "tickMilliseconds": { "type": "integer", "minimum": 50, "default": 500 } },
+      "additionalProperties": false
+    },
+    "ui": {
+      "type": "object",
+      "properties": { "requestReminderIntervalSeconds": { "type": "number", "exclusiveMinimum": 0, "default": 10 } },
+      "additionalProperties": false
+    },
+    "broadcast": {
+      "type": "object",
+      "properties": {
+        "hardwareStatusMilliseconds": { "type": "integer", "minimum": 100, "default": 500 },
+        "processStateMilliseconds": { "type": "integer", "minimum": 100, "default": 500 },
+        "recipesMilliseconds": { "type": "integer", "minimum": 100, "default": 500 },
+        "chartMilliseconds": { "type": "integer", "minimum": 100, "default": 1000 }
+      },
+      "additionalProperties": false
+    },
+    "chart": {
+      "type": "object",
+      "properties": { "maxPoints": { "type": "integer", "minimum": 2, "default": 200 } },
+      "additionalProperties": false
+    },
+    "simulation": {
+      "type": "object",
+      "properties": {
+        "timeScale": { "type": "number", "minimum": 1, "default": 1 },
+        "startTemperature": { "type": "number", "default": 20.0 },
+        "ambientTemperature": { "type": "number", "default": 20.0 },
+        "heatingRatePerSecond": { "type": "number", "minimum": 0, "default": 0.085 },
+        "coolingRatePerSecond": { "type": "number", "minimum": 0, "default": 0.005 },
+        "maxTemperature": { "type": "number", "default": 100.0 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "bcmPin": { "type": "integer", "minimum": 0, "maximum": 27, "description": "BCM GPIO number" }
+  }
+}

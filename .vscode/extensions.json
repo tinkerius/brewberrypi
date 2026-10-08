@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "anthropic.claude-code",
+    "bierner.markdown-mermaid",
+    "davidanson.vscode-markdownlint",
+    "redhat.vscode-yaml",
+    "editorconfig.editorconfig"
+  ]
+}

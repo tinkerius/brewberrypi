@@ -1,0 +1,20 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+
+# Claude Code — personal, not shared
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Secrets
+.env
+.env.*
+
+# Runtime output
+*.log
+temperatureLog.csv
+/config.json
+
+# Build output — extend in milestone M0 for the chosen stack
