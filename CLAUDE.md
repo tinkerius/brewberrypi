@@ -8,8 +8,8 @@ behaviour is fully specified in `docs/specification/`.
 ## Project status
 
 - Phase 1 (done): technology-neutral functional specification.
-- Phase 2 (current): choose the technology stack (`docs/adr/0001-technology-stack.md`, status *Proposed*), then implement milestone by milestone (`docs/implementation-plan.md`).
-- No application code exists yet. Do not write any before ADR-0001 is *Accepted* — start with `/choose-stack`.
+- Phase 2 (current): technology stack decided (`docs/adr/0001-technology-stack.md`, *Accepted* 2026-10-09). Implement milestone by milestone (`docs/implementation-plan.md`), starting with `/implement-milestone M0`.
+- This repository is the **application** only. The application ships as a container image. The operating-system image, Podman/Quadlet unit, update service and safe mode live in the separate repository `tinkerius/brewberrypi-os`. The interface between the two is `docs/deployment/runtime-contract.md`.
 
 ## Layout
 
@@ -18,15 +18,18 @@ behaviour is fully specified in `docs/specification/`.
 - `docs/recovery/bug-and-deviation-log.md` — `[FIX-nn]` entries: legacy defects the spec deliberately fixes.
 - `docs/adr/` — architecture decision records (copy `0000-template.md`).
 - `docs/implementation-plan.md` — milestones M0–M12 and their acceptance criteria.
-- Source and test folders: created in milestone M0 following the conventions of the chosen stack.
+- `docs/deployment/runtime-contract.md` — what the container image guarantees to and expects from BrewberryPi OS.
+- Source and test folders: created in milestone M0 (Python package with `uv`, front end with Vite).
 
 ## Commands
 
-<!-- Fill in during milestone M0, after ADR-0001 is accepted. -->
-- Build: _tbd_
-- Test: _tbd_
-- Run in simulation: _tbd_ `--dummymode`
-- Run on the Raspberry Pi: _tbd_
+These are created in milestone M0.
+
+- Build: `make build` (front end + Python wheel); container image: `make image`
+- Test: `make test` (pytest + Vitest)
+- Lint: `make lint` (ruff, mypy, tsc)
+- Run in simulation: `uv run brewberrypi --dummymode` (or `make run`)
+- Run on the Raspberry Pi: install BrewberryPi OS (`tinkerius/brewberrypi-os`); the image runs as the Quadlet service `brewberrypi` (`sudo systemctl status brewberrypi`)
 
 ## Rules
 
@@ -35,5 +38,6 @@ behaviour is fully specified in `docs/specification/`.
 - Never re-introduce a defect listed in `docs/recovery/bug-and-deviation-log.md`.
 - User-visible texts (goal names, descriptions, request and reply messages) must match the specification verbatim, including legacy spellings, until question `Q-07` is decided.
 - Every acceptance criterion gets an automated test named after its ID (e.g. `AC-033 start twice is rejected`). Unit tests use the mock HAL and a controllable clock — no real sleeps.
-- GPIO pin numbers are BCM numbers.
+- GPIO pin numbers are BCM numbers. GPIO access goes through the own libgpiod v2 HAL (chip found by label); do not use gpiozero or lgpio (ADR-0001).
 - Commit messages reference the requirement or AC IDs they implement.
+- Keep the GitHub Project board [BrewberryPi](https://github.com/users/tinkerius/projects/2) in sync with the work. There is one issue per milestone; set it to *In Progress* when work starts and *Done* + closed when all its criteria pass (`.claude/skills/implement-milestone/board.py`). Pull requests reference the milestone issue (`Refs #n` / `Closes #n`).
