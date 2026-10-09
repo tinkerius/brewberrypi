@@ -1,0 +1,25 @@
+{
+  // Run and Debug (F5). Uses the interpreter from .venv (python.defaultInterpreterPath).
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Back end (simulation)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "brewberrypi",
+      "args": ["--dummymode"],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": true
+    },
+    {
+      "name": "Back end (simulation) + Vite dev server",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "brewberrypi",
+      "args": ["--dummymode"],
+      "cwd": "${workspaceFolder}",
+      "justMyCode": true,
+      "preLaunchTask": "Run: front end (Vite dev server)"
+    }
+  ]
+}

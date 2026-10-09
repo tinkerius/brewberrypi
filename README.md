@@ -68,7 +68,12 @@ make and Docker (or Podman: `make image CONTAINER=podman`).
 | `make build` | Build the front end into the package and the Python wheel (`dist/`) |
 | `make image` | Build the container image `ghcr.io/tinkerius/brewberrypi:<version>` for the local platform |
 | `make run` | Run in simulation: `uv run brewberrypi --dummymode` |
+| `make dev` | `make run` plus the Vite dev server with live reload on http://localhost:5173; Ctrl+C stops both |
 | `make format` | Auto-format and auto-fix lint findings |
+
+In VS Code the same commands are available as tasks (*Terminal → Run Task…*, `.vscode/tasks.json`), and
+*Run and Debug* (F5, `.vscode/launch.json`) starts the back end in simulation under the debugger, optionally
+together with the Vite dev server.
 
 CI (`.github/workflows/ci.yml`) runs lint, test and build on every push and pull request, and builds the image
 for `linux/arm64` and `linux/amd64`. A tag `v<version>` (matching `pyproject.toml`) also pushes the image to

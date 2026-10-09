@@ -7,7 +7,7 @@ IMAGE     ?= ghcr.io/tinkerius/brewberrypi
 VERSION   := $(shell python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
 PLATFORM  ?= linux/$(shell uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/')
 
-.PHONY: help setup frontend build image test lint format run clean
+.PHONY: help setup frontend build image test lint format run dev clean
 
 help:
 	@echo "make setup     install Python and front-end dependencies"
@@ -17,6 +17,7 @@ help:
 	@echo "make lint      ruff, mypy and the TypeScript type check"
 	@echo "make format    auto-format and auto-fix lint findings"
 	@echo "make run       run in simulation (--dummymode)"
+	@echo "make dev       run in simulation plus the Vite dev server (live reload, port 5173)"
 	@echo "make clean     remove build output and installed dependencies"
 
 setup: frontend/node_modules
@@ -52,6 +53,10 @@ format:
 
 run:
 	uv run brewberrypi --dummymode
+
+# Back end and Vite dev server side by side; Ctrl+C stops both (same process group).
+dev: frontend/node_modules
+	uv run brewberrypi --dummymode & cd frontend && npm run dev; wait
 
 clean:
 	rm -rf dist build .venv .pytest_cache .mypy_cache .ruff_cache \

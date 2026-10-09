@@ -7,6 +7,13 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [preact()],
   base: "./",
+  // Dev server (`npm run dev`, `make dev`): Node resolves "localhost" to ::1 only, but VS Code's port
+  // forwarding connects to 127.0.0.1. The fixed port matches forwardPorts in devcontainer.json.
+  server: {
+    host: "127.0.0.1",
+    port: 5173,
+    strictPort: true,
+  },
   build: {
     outDir: "../src/brewberrypi/web/static",
     emptyOutDir: true,

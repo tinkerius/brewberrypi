@@ -29,7 +29,7 @@ Development happens in the devcontainer (`.devcontainer/`: Debian Trixie, Python
 - Build: `make build` (front end + Python wheel); container image: `make image`
 - Test: `make test` (pytest + Vitest)
 - Lint: `make lint` (ruff, mypy, tsc)
-- Run in simulation: `uv run brewberrypi --dummymode` (or `make run`)
+- Run in simulation: `uv run brewberrypi --dummymode` (or `make run`); with the Vite dev server: `make dev`
 - Run on the Raspberry Pi: install BrewberryPi OS (`tinkerius/brewberrypi-os`); the image runs as the Quadlet service `brewberrypi` (`sudo systemctl status brewberrypi`)
 
 ## Rules

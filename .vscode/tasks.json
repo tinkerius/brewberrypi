@@ -1,0 +1,63 @@
+{
+  // Terminal → Run Task… (or Ctrl+Shift+P → "Tasks: Run Task"). The commands are the Makefile targets.
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run: back end (simulation)",
+      "detail": "make run — uv run brewberrypi --dummymode, port 8080",
+      "type": "shell",
+      "command": "make run",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated", "group": "dev" }
+    },
+    {
+      "label": "Run: front end (Vite dev server)",
+      "detail": "npm run dev — live reload, port 5173",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "isBackground": true,
+      // Marks the task as ready once Vite prints its URL, so launch.json can use it as preLaunchTask.
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": { "regexp": "^\\b$" },
+        "background": { "activeBegin": true, "beginsPattern": "VITE", "endsPattern": "Local:" }
+      },
+      "presentation": { "panel": "dedicated", "group": "dev" }
+    },
+    {
+      "label": "Run: back end + front end",
+      "detail": "both run tasks side by side",
+      "dependsOn": ["Run: back end (simulation)", "Run: front end (Vite dev server)"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    },
+    {
+      "label": "make lint",
+      "type": "shell",
+      "command": "make lint",
+      "problemMatcher": []
+    },
+    {
+      "label": "make test",
+      "type": "shell",
+      "command": "make test",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "make build",
+      "type": "shell",
+      "command": "make build",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "make image",
+      "type": "shell",
+      "command": "make image",
+      "problemMatcher": []
+    }
+  ]
+}
