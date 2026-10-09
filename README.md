@@ -40,4 +40,10 @@ Project skills (in `.claude/skills/`):
 
 ## Development
 
-Build, test and run instructions are added in milestone M0, after the technology decision.
+Technology stack: [ADR-0001](docs/adr/0001-technology-stack.md). In short: Python (Starlette + uvicorn,
+WebSocket) and a Vite/Preact front end, shipped as a signed container image. On the Raspberry Pi the image
+runs under Podman on BrewberryPi OS, which is developed in the separate repository `tinkerius/brewberrypi-os`.
+The interface between the two is the [runtime contract](docs/deployment/runtime-contract.md).
+
+Build, test and run commands (`make build`, `make test`, `uv run brewberrypi --dummymode`, …) are added in
+milestone M0.
