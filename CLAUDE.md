@@ -23,7 +23,7 @@ behaviour is fully specified in `docs/specification/`.
 
 ## Commands
 
-Development happens in the devcontainer (`.devcontainer/`: Debian Trixie, Python 3.13, uv, Node 22, make, gh, Claude Code, host Docker).
+Development happens in the devcontainer (`.devcontainer/`: Debian Trixie, Python 3.13, uv, Node 22, make, cosign v2, gh, Claude Code, host Docker).
 
 - Setup: `make setup` (`uv sync` + `npm ci`)
 - Build: `make build` (front end + Python wheel); container image: `make image`

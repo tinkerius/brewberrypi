@@ -18,9 +18,13 @@ secrets `COSIGN_PRIVATE_KEY` and `COSIGN_PASSWORD`, and in a password manager as
 
 ## Creating the key pair (once)
 
+Run these yourself in a terminal; the password must not pass through any tool or chat. The devcontainer
+includes cosign v2. Do not use the cosign Docker image with a `-v "$PWD:…"` mount there: the devcontainer
+uses the host's Docker, so the key would be written to a folder on the host instead of to this repository.
+
 ```bash
 cd deploy/signing
-docker run --rm -it -v "$PWD:/keys" -w /keys gcr.io/projectsigstore/cosign:v2.5.0 generate-key-pair
+cosign generate-key-pair                                    # choose a strong password, entered twice
 gh secret set COSIGN_PRIVATE_KEY -R tinkerius/brewberrypi < cosign.key
 gh secret set COSIGN_PASSWORD -R tinkerius/brewberrypi        # paste the password
 # store cosign.key and the password in your password manager, then:

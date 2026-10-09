@@ -49,7 +49,7 @@ The interface between the two is the [runtime contract](docs/deployment/runtime-
 
 **Recommended: the devcontainer.** Open the folder in VS Code and choose **Reopen in Container**. You need Docker and the
 Dev Containers extension. The container has the same OS and Python as the runtime image (Debian Trixie,
-Python 3.13, `python3-libgpiod`), plus uv, Node 22, make, the GitHub CLI, Claude Code (CLI and VS Code
+Python 3.13, `python3-libgpiod`), plus uv, Node 22, make, cosign v2, the GitHub CLI, Claude Code (CLI and VS Code
 extension) and access to the host's Docker (Docker's own `docker-ce-cli`, because Moby packages do not exist
 for Trixie). On first start it runs `make setup`. The devcontainer feature versions are pinned in
 `.devcontainer/devcontainer-lock.json`; to update them, run `devcontainer upgrade` (Dev Containers CLI) or
