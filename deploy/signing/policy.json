@@ -1,0 +1,14 @@
+{
+  "default": [{ "type": "reject" }],
+  "transports": {
+    "docker": {
+      "ghcr.io/tinkerius/brewberrypi": [
+        {
+          "type": "sigstoreSigned",
+          "keyPath": "/signing/cosign.pub",
+          "signedIdentity": { "type": "matchRepository" }
+        }
+      ]
+    }
+  }
+}
