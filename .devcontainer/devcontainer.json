@@ -2,8 +2,9 @@
   "name": "BrewberryPi",
   "build": { "dockerfile": "Dockerfile" },
   "features": {
-    // `make image` builds with the host's Docker engine.
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    // `make image` builds with the host's Docker engine. Moby packages do not exist for Debian
+    // Trixie, so the feature installs Docker's own docker-ce-cli instead.
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": { "moby": false },
     "ghcr.io/devcontainers/features/github-cli:1": {},
     // Claude Code CLI (the VS Code extension is listed below).
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
