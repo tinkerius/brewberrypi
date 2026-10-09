@@ -17,4 +17,23 @@ CLAUDE.local.md
 temperatureLog.csv
 /config.json
 
-# Build output — extend in milestone M0 for the chosen stack
+# Build output
+/dist/
+/build/
+*.egg-info/
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+/src/brewberrypi/web/static/
+/frontend/node_modules/
+/frontend/dist/
+/frontend/coverage/
+
+# Signing keys (only the public key cosign.pub is committed)
+cosign.key
+*.key

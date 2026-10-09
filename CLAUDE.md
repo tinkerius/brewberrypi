@@ -23,8 +23,9 @@ behaviour is fully specified in `docs/specification/`.
 
 ## Commands
 
-These are created in milestone M0.
+Development happens in the devcontainer (`.devcontainer/`: Debian Trixie, Python 3.13, uv, Node 22, make, gh, Claude Code, host Docker).
 
+- Setup: `make setup` (`uv sync` + `npm ci`)
 - Build: `make build` (front end + Python wheel); container image: `make image`
 - Test: `make test` (pytest + Vitest)
 - Lint: `make lint` (ruff, mypy, tsc)

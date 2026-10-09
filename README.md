@@ -45,5 +45,29 @@ WebSocket) and a Vite/Preact front end, shipped as a signed container image. On 
 runs under Podman on BrewberryPi OS, which is developed in the separate repository `tinkerius/brewberrypi-os`.
 The interface between the two is the [runtime contract](docs/deployment/runtime-contract.md).
 
-Build, test and run commands (`make build`, `make test`, `uv run brewberrypi --dummymode`, …) are added in
-milestone M0.
+### Development environment
+
+**Recommended: the devcontainer.** Open the folder in VS Code and choose **Reopen in Container**. You need Docker and the
+Dev Containers extension. The container has the same OS and Python as the runtime image (Debian Trixie,
+Python 3.13, `python3-libgpiod`), plus uv, Node 22, make, the GitHub CLI, Claude Code (CLI and VS Code
+extension) and access to the host's Docker. On first start it runs `make setup`.
+
+**Without the devcontainer** you need Python ≥ 3.11, [uv](https://docs.astral.sh/uv/), Node.js ≥ 22,
+make and Docker (or Podman: `make image CONTAINER=podman`).
+
+### Commands
+
+| Command | What it does |
+|---|---|
+| `make setup` | Install the Python (`uv sync`) and front-end (`npm ci`) dependencies from the lock files |
+| `make lint` | ruff (lint + format check), mypy (strict), TypeScript type check |
+| `make test` | pytest and Vitest |
+| `make build` | Build the front end into the package and the Python wheel (`dist/`) |
+| `make image` | Build the container image `ghcr.io/tinkerius/brewberrypi:<version>` for the local platform |
+| `make run` | Run in simulation: `uv run brewberrypi --dummymode` |
+| `make format` | Auto-format and auto-fix lint findings |
+
+CI (`.github/workflows/ci.yml`) runs lint, test and build on every push and pull request, and builds the image
+for `linux/arm64` and `linux/amd64`. A tag `v<version>` (matching `pyproject.toml`) also pushes the image to
+GHCR and signs it with cosign v2. It then verifies the image against the device's signature policy; see
+[deploy/signing/README.md](deploy/signing/README.md).

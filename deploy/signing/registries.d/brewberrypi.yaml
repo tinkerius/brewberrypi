@@ -1,0 +1,3 @@
+docker:
+  ghcr.io/tinkerius/brewberrypi:
+    use-sigstore-attachments: true

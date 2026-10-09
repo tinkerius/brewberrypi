@@ -4,6 +4,7 @@
     "bierner.markdown-mermaid",
     "davidanson.vscode-markdownlint",
     "redhat.vscode-yaml",
-    "editorconfig.editorconfig"
+    "editorconfig.editorconfig",
+    "ms-vscode-remote.remote-containers"
   ]
 }

@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ghcr.io/tinkerius/brewberrypi
+
+jobs:
+  check:
+    name: Lint, test, build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: make setup
+      - run: make lint
+      - run: make test
+      - run: make build
+
+  image:
+    name: Container image
+    needs: check
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    env:
+      RELEASE: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Release tag must match the project version
+        if: env.RELEASE == 'true'
+        run: |
+          version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          test "${GITHUB_REF_NAME#v}" = "$version" || { echo "tag $GITHUB_REF_NAME != version $version"; exit 1; }
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: env.RELEASE == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Always build linux/arm64 (device) + linux/amd64 (simulation) to validate the Containerfile.
+      # Release tags (v*) additionally push, sign and verify.
+      - name: Build (and push on release)
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Containerfile
+          platforms: linux/arm64,linux/amd64
+          build-args: VERSION=${{ env.VERSION || '0.0.0-ci' }}
+          tags: ${{ env.RELEASE == 'true' && format('{0}:{1}', env.IMAGE, env.VERSION) || format('{0}:ci', env.IMAGE) }}
+          push: ${{ env.RELEASE == 'true' }}
+
+      - name: Install cosign v2 (Podman 5.4 cannot read cosign v3 signatures)
+        if: env.RELEASE == 'true'
+        uses: sigstore/cosign-installer@v3
+        with:
+          cosign-release: v2.5.0
+
+      - name: Sign
+        if: env.RELEASE == 'true'
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          test -n "$COSIGN_PRIVATE_KEY" || { echo "COSIGN_PRIVATE_KEY secret missing: refusing to publish an unsigned release"; exit 1; }
+          cosign sign --yes --recursive --tlog-upload=false --key env://COSIGN_PRIVATE_KEY "$IMAGE@$DIGEST"
+
+      - name: Verify against the device policy
+        if: env.RELEASE == 'true'
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          docker run --rm -v "$PWD/deploy/signing:/signing:ro" quay.io/skopeo/stable:v1.18.0 \
+            --policy /signing/policy.json --registries.d /signing/registries.d \
+            copy --src-creds "${{ github.actor }}:$GHCR_TOKEN" \
+            "docker://$IMAGE@$DIGEST" dir:/tmp/verify
