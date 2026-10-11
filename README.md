@@ -97,3 +97,10 @@ The recipes come from `recipes.json` next to the configuration file (`recipes.fi
 recipes built into the application are used. An invalid recipe file stops the start with exit code 3 and names
 the recipe and goal. The format is [recipes.schema.json](docs/specification/data/recipes.schema.json); see
 [07-recipes.md](docs/specification/07-recipes.md).
+
+### Real-time interface
+
+The server serves the web UI and a WebSocket at `/ws` on one port (`server.port`, default 8080). Every message
+is one JSON object `{"topic": ..., "payload": ...}` with the topics and payloads of
+[08-client-server-interface.md](docs/specification/08-client-server-interface.md). Commands are sent on
+`/service/process/*`, and their reply comes back to the sender on `/process/reply`.

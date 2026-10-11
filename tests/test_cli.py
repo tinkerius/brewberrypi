@@ -1,16 +1,49 @@
-"""M1: startup steps 1 and 2 of NFR-021 with the exit codes of the runtime contract."""
+"""Startup (NFR-021) with the exit codes of the runtime contract."""
 
 import json
 from pathlib import Path
 
 import pytest
+from starlette.types import ASGIApp
 
-from brewberrypi.__main__ import EXIT_INVALID_CONFIG, EXIT_INVALID_RECIPES, EXIT_OK, main
+from brewberrypi.__main__ import (
+    EXIT_ERROR,
+    EXIT_HARDWARE,
+    EXIT_INVALID_CONFIG,
+    EXIT_INVALID_RECIPES,
+    EXIT_OK,
+    main,
+)
+from brewberrypi.__main__ import serve as real_serve
 
 
 @pytest.fixture(autouse=True)
 def empty_working_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
+
+
+@pytest.fixture(autouse=True)
+def served(monkeypatch: pytest.MonkeyPatch) -> list[int]:
+    """Records the port instead of running the web server."""
+    ports: list[int] = []
+
+    def serve(app: ASGIApp, port: int) -> int:
+        ports.append(port)
+        return EXIT_OK
+
+    monkeypatch.setattr("brewberrypi.__main__.serve", serve)
+    return ports
+
+
+def test_simulation_serves_the_app_on_the_configured_port(tmp_path: Path, served: list[int]) -> None:
+    (tmp_path / "config.json").write_text(json.dumps({"server": {"port": 9090}}))
+    assert main(["--dummymode"]) == EXIT_OK
+    assert served == [9090]
+
+
+def test_without_dummymode_hardware_initialisation_fails_until_M9(served: list[int]) -> None:
+    assert main([]) == EXIT_HARDWARE
+    assert served == []
 
 
 def test_starts_with_built_in_defaults_and_recipes(capsys: pytest.CaptureFixture[str]) -> None:
@@ -40,3 +73,18 @@ def test_AC_081_invalid_recipe_file_exits_with_code_3(
     output = capsys.readouterr().out
     assert "ERROR brewberrypi: invalid recipe file, refusing to start" in output
     assert "recipe 'R', goal 1 (index 0, Rest)" in output
+
+
+def test_a_server_that_cannot_start_exits_with_code_1(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Not uvicorn's 3, which the host would read as an invalid recipe file (runtime contract §2)."""
+    monkeypatch.setattr("brewberrypi.__main__.serve", real_serve)
+
+    class NeverStarts:
+        def __init__(self, config: object) -> None:
+            pass
+
+        def run(self) -> None:
+            raise SystemExit(3)  # what uvicorn does when the port is in use
+
+    monkeypatch.setattr("brewberrypi.__main__.uvicorn.Server", NeverStarts)
+    assert main(["--dummymode"]) == EXIT_ERROR

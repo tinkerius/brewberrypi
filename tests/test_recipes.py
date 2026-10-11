@@ -28,7 +28,7 @@ def test_AC_080_shipped_recipe_file_equals_the_spec_catalogue() -> None:
     assert [summary["id"] for summary in catalogue.summaries()] == LEGACY_ORDER
 
 
-@pytest.mark.parametrize("name", ["recipes.schema.json", "config.schema.json"])
+@pytest.mark.parametrize("name", ["recipes.schema.json", "config.schema.json", "messages.schema.json"])
 def test_shipped_schemas_equal_the_spec(name: str) -> None:
     assert (PACKAGE_DATA / name).read_bytes() == (SPEC_DATA / name).read_bytes()
 

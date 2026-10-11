@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brewberrypi.local/schemas/messages.schema.json",
+  "title": "BrewberryPi client/server message payloads",
+  "description": "Payload definitions for the topics in docs/specification/08-client-server-interface.md. Use '#/$defs/<Name>'.",
+  "$defs": {
+    "HardwareStatus": {
+      "description": "Topic /hardware/status (server -> all).",
+      "type": "object",
+      "required": ["temperature", "pumpstatus", "heatingstatus"],
+      "properties": {
+        "temperature": { "type": ["number", "null"], "description": "°C, 1 decimal; null = sensor INVALID" },
+        "pumpstatus": { "type": "boolean" },
+        "heatingstatus": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "GoalState": { "enum": ["Waiting", "Active", "Done"] },
+    "EngineState": { "enum": ["NoProcess", "Loaded", "Running", "Paused", "Stopped", "Finished"] },
+    "OperatorRequest": {
+      "type": "object",
+      "required": ["message", "options"],
+      "properties": {
+        "message": { "type": "string" },
+        "options": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      },
+      "additionalProperties": false
+    },
+    "Goal": {
+      "type": "object",
+      "required": ["name", "description", "status", "statuspercent", "statusmessage"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "$ref": "#/$defs/GoalState" },
+        "statuspercent": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "statusmessage": { "type": "string" },
+        "activeRequest": { "$ref": "#/$defs/OperatorRequest" }
+      },
+      "additionalProperties": false
+    },
+    "ProcessState": {
+      "description": "Topic /process/state (server -> all).",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["state"],
+          "properties": { "state": { "const": "NoProcess" } },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["processid", "processname", "state", "goals"],
+          "properties": {
+            "processid": { "type": "string" },
+            "processname": { "type": "string" },
+            "state": { "enum": ["Loaded", "Running", "Paused", "Stopped", "Finished"] },
+            "goals": { "type": "array", "items": { "$ref": "#/$defs/Goal" } }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "RecipeList": {
+      "description": "Topic /process/recipes (server -> all).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": { "id": { "type": "string" }, "name": { "type": "string" } },
+        "additionalProperties": false
+      }
+    },
+    "ChartData": {
+      "description": "Topic /process/chart (server -> all).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "values"],
+        "properties": {
+          "key": { "type": "string" },
+          "values": {
+            "type": "array",
+            "description": "At most chart.maxPoints entries (default 200).",
+            "items": {
+              "type": "object",
+              "required": ["x", "y"],
+              "properties": {
+                "x": { "type": "integer", "description": "epoch milliseconds" },
+                "y": { "type": "number", "description": "°C" }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "LoadCommand": {
+      "description": "Topic /service/process/load (client -> server).",
+      "type": "object",
+      "required": ["recipe"],
+      "properties": { "recipe": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "EmptyCommand": {
+      "description": "Topics /service/process/unload|start|pause|stop (client -> server).",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "RespondCommand": {
+      "description": "Topic /service/process/request (client -> server).",
+      "type": "object",
+      "required": ["response"],
+      "properties": { "response": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "CommandReply": {
+      "description": "Reply to the sender of any command.",
+      "type": "object",
+      "required": ["command", "success", "message"],
+      "properties": {
+        "command": { "enum": ["load", "unload", "start", "pause", "stop", "respond"] },
+        "success": { "type": "boolean" },
+        "message": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
