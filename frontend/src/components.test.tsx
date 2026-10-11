@@ -3,7 +3,7 @@ import { render } from "preact";
 import { act } from "preact/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { InformationModal, STOP_QUESTION, StopConfirmation } from "./dialogs";
-import { APP_TITLE, ConnectionIndicator, HardwareStatusPanel, ProcessPanel, type SendCommand } from "./panels";
+import { APP_TITLE, ConnectionIndicator, GOAL_STYLES, HardwareStatusPanel, ProcessPanel, type SendCommand } from "./panels";
 import type { ProcessState, Recipe } from "./types";
 
 let root: HTMLElement;
@@ -73,60 +73,65 @@ describe("page", () => {
 describe("Hardware Status panel", () => {
   it("UI-010 UI-011 shows the values and the engine state", () => {
     show(<HardwareStatusPanel hardware={{ temperature: 62.5, pumpstatus: true, heatingstatus: 0.5 }} state="Running" stale={false} />);
-    expect(root.textContent).toContain("Temperature:62.5°C");
-    expect(root.textContent).toContain("Pump:on");
-    expect(root.textContent).toContain("Heating:50%");
-    expect(root.textContent).toContain("Process:Running");
+    expect(root.textContent).toContain("Temperature62.5°C");
+    expect(root.textContent).toContain("Pumpon");
+    expect(root.textContent).toContain("Heating50%");
+    expect(root.textContent).toContain("ProcessRunning");
   });
 
   it("AC-005 shows Sensor error", () => {
     show(<HardwareStatusPanel hardware={{ temperature: null, pumpstatus: true, heatingstatus: 0 }} state="Running" stale={false} />);
-    expect(root.querySelector(".sensor-error")?.textContent).toBe("Sensor error");
+    expect(root.querySelector("[data-alert]")?.textContent).toBe("Sensor error");
   });
 
   it("UI-061 marks values as stale while disconnected", () => {
     show(<HardwareStatusPanel hardware={null} state={undefined} stale={true} />);
-    expect(root.querySelector(".panel")?.classList.contains("stale")).toBe(true);
-    expect(root.textContent).toContain("Temperature:--");
+    expect(root.querySelector("section")?.hasAttribute("data-stale")).toBe(true);
+    expect(root.textContent).toContain("Temperature--");
   });
 });
 
 describe("Brewing Process panel", () => {
   it("UI-030 shows the process name and one item per goal in order", () => {
     processPanel(RUNNING);
-    expect(root.querySelector(".process-name")?.textContent).toBe("Test Process");
-    expect([...root.querySelectorAll(".goal h3")].map((h) => h.textContent)).toEqual(["Heat Up", "Iodine Test", "Lautering"]);
-    expect([...root.querySelectorAll(".goal .badge")].map((b) => b.textContent)).toEqual(["Done", "Active", "Waiting"]);
+    expect(root.querySelector("[data-process-name]")?.textContent).toBe("Test Process");
+    expect([...root.querySelectorAll("li h3")].map((h) => h.textContent)).toEqual(["Heat Up", "Iodine Test", "Lautering"]);
+    expect([...root.querySelectorAll("[data-badge]")].map((b) => b.textContent)).toEqual(["Done", "Active", "Waiting"]);
   });
 
   it("AC-075 active goal has a progress bar with the status message; done goals are green", () => {
     processPanel(RUNNING);
-    const [done, active, waiting] = root.querySelectorAll<HTMLElement>(".goal");
-    expect(done.classList.contains("goal-done")).toBe(true);
-    expect(active.classList.contains("goal-active")).toBe(true);
-    expect(waiting.className).toBe("goal");
-    expect(root.querySelectorAll(".progress")).toHaveLength(1);
-    expect(active.querySelector<HTMLElement>(".progress-bar")?.style.width).toBe("40%");
-    expect(active.querySelector(".progress-label")?.textContent).toBe("00:36 left");
+    const [done, active, waiting] = root.querySelectorAll<HTMLElement>("li[data-status]");
+    expect(done.className).toContain(GOAL_STYLES.Done.item);
+    expect(done.className).toContain("green");
+    expect(active.className).toContain(GOAL_STYLES.Active.item);
+    expect(active.className).toContain("amber");
+    expect(waiting.className).toContain(GOAL_STYLES.Waiting.item);
+    const bars = root.querySelectorAll<HTMLElement>('[role="progressbar"]');
+    expect(bars).toHaveLength(1);
+    expect(active.contains(bars[0])).toBe(true);
+    expect(bars[0].querySelector<HTMLElement>("div")?.style.width).toBe("40%");
+    expect(bars[0].textContent).toBe("00:36 left");
+    expect(bars[0].getAttribute("aria-valuetext")).toBe("00:36 left");
   });
 
   it("AC-075 UI-032 request buttons send the exact option text", () => {
     const { send } = processPanel(RUNNING);
-    expect(root.querySelector(".request p")?.textContent).toBe("Iodine test successfull?");
+    expect(root.querySelector('[role="group"] p')?.textContent).toBe("Iodine test successfull?");
     act(() => button("No").click());
     expect(send).toHaveBeenCalledWith("respond", { response: "No" });
   });
 
   it("FIX-24 renders line breaks in descriptions", () => {
     processPanel(RUNNING);
-    const description = root.querySelectorAll(".goal .description")[1];
+    const description = root.querySelectorAll("[data-description]")[1];
     expect(description.querySelectorAll("br")).toHaveLength(1);
   });
 
   it("UI-030 shows nothing for no process", () => {
     processPanel({ state: "NoProcess" });
-    expect(root.querySelector(".process-name")).toBeNull();
-    expect(root.querySelectorAll(".goal")).toHaveLength(0);
+    expect(root.querySelector("[data-process-name]")).toBeNull();
+    expect(root.querySelectorAll("li")).toHaveLength(0);
   });
 
   it("UI-040 loads the selected recipe", () => {
@@ -177,12 +182,13 @@ describe("dialogs", () => {
   it("AC-076 shows the reply message in the Information modal; Confirm closes it", () => {
     const onConfirm = vi.fn();
     show(<InformationModal reply={{ command: "load", success: true, message: "Process Test Process (TEST) loaded." }} onConfirm={onConfirm} />);
-    expect(root.querySelector(".modal-title")?.textContent).toBe("Information");
-    expect(root.querySelector(".modal-body")?.textContent).toBe("Process Test Process (TEST) loaded.");
+    const dialog = root.querySelector('[role="dialog"]');
+    expect(dialog?.querySelector("#modal-title")?.textContent).toBe("Information");
+    expect(dialog?.textContent).toContain("Process Test Process (TEST) loaded.");
     act(() => button("Confirm").click());
     expect(onConfirm).toHaveBeenCalled();
     show(<InformationModal reply={undefined} onConfirm={onConfirm} />);
-    expect(root.querySelector(".modal")).toBeNull();
+    expect(root.querySelector('[role="dialog"]')).toBeNull();
   });
 
   it("UI-043 asks before stopping", () => {

@@ -1,16 +1,22 @@
 /** Modal dialogs: Information (UI-050) and the stop confirmation (UI-043). */
 
 import type { CommandReply } from "./types";
+import { BUTTON_STYLES } from "./ui";
 
 function Modal(props: { title: string; children: preact.ComponentChildren; buttons: preact.ComponentChildren }) {
   return (
-    <div class="modal-backdrop">
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <h2 id="modal-title" class="modal-title">
+    <div class="fixed inset-0 z-20 flex items-start justify-center bg-slate-900/50 p-4 pt-20 backdrop-blur-xs">
+      <div
+        class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl ring-1 ring-slate-900/5 dark:bg-slate-900 dark:ring-white/10"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+      >
+        <h2 id="modal-title" class="text-base font-semibold text-slate-900 dark:text-white">
           {props.title}
         </h2>
-        <div class="modal-body">{props.children}</div>
-        <div class="modal-footer">{props.buttons}</div>
+        <div class="mt-2 text-sm text-slate-600 dark:text-slate-300">{props.children}</div>
+        <div class="mt-6 flex justify-end gap-2">{props.buttons}</div>
       </div>
     </div>
   );
@@ -25,12 +31,12 @@ export function InformationModal(props: { reply: CommandReply | undefined; onCon
     <Modal
       title="Information"
       buttons={
-        <button type="button" class="btn btn-primary" onClick={props.onConfirm} autoFocus>
+        <button type="button" class={BUTTON_STYLES.primary} onClick={props.onConfirm} autoFocus>
           Confirm
         </button>
       }
     >
-      <p class={props.reply.success ? undefined : "reply-error"}>{props.reply.message}</p>
+      <p class={props.reply.success ? undefined : "font-medium text-red-600 dark:text-red-400"}>{props.reply.message}</p>
     </Modal>
   );
 }
@@ -47,10 +53,10 @@ export function StopConfirmation(props: { open: boolean; onCancel: () => void; o
       title="Stop Process"
       buttons={
         <>
-          <button type="button" class="btn" onClick={props.onCancel} autoFocus>
+          <button type="button" class={BUTTON_STYLES.secondary} onClick={props.onCancel} autoFocus>
             Cancel
           </button>
-          <button type="button" class="btn btn-danger" onClick={props.onStop}>
+          <button type="button" class={BUTTON_STYLES.dangerSolid} onClick={props.onStop}>
             Stop Process
           </button>
         </>
