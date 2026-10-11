@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brewberrypi.local/schemas/recipes.schema.json",
+  "title": "BrewberryPi recipe file",
+  "description": "Recipe catalogue. See docs/specification/07-recipes.md.",
+  "type": "object",
+  "required": ["recipes"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "recipes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/recipe" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "temperature": { "type": "number", "minimum": 0, "maximum": 110 },
+    "minutes": { "type": "integer", "minimum": 0 },
+    "text": { "type": "string", "minLength": 1 },
+    "recipe": {
+      "type": "object",
+      "required": ["id", "name", "goals"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
+        "name": { "$ref": "#/$defs/text" },
+        "goals": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/goal" } }
+      },
+      "additionalProperties": false
+    },
+    "goal": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "enum": ["PourInBrewingWater", "HeatUp", "MashIn", "Rest", "IodineTest", "Lautering", "HeatUpForHopsCooking", "CookWater"]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "enum": ["PourInBrewingWater", "MashIn", "Lautering", "HeatUpForHopsCooking"] } } },
+          "then": { "properties": { "type": true }, "additionalProperties": false }
+        },
+        {
+          "if": { "properties": { "type": { "const": "HeatUp" } } },
+          "then": {
+            "required": ["temperature"],
+            "properties": { "type": true, "temperature": { "$ref": "#/$defs/temperature" } },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "Rest" } } },
+          "then": {
+            "required": ["temperature", "minutes"],
+            "properties": {
+              "type": true,
+              "temperature": { "$ref": "#/$defs/temperature" },
+              "minutes": { "$ref": "#/$defs/minutes" },
+              "name": { "$ref": "#/$defs/text" },
+              "description": { "$ref": "#/$defs/text" }
+            },
+            "dependentRequired": { "name": ["description"], "description": ["name"] },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "IodineTest" } } },
+          "then": {
+            "required": ["temperature", "minutes"],
+            "properties": {
+              "type": true,
+              "temperature": { "$ref": "#/$defs/temperature" },
+              "minutes": { "$ref": "#/$defs/minutes" }
+            },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "CookWater" } } },
+          "then": {
+            "required": ["name", "description", "minutes"],
+            "properties": {
+              "type": true,
+              "name": { "$ref": "#/$defs/text" },
+              "description": { "$ref": "#/$defs/text" },
+              "minutes": { "$ref": "#/$defs/minutes" }
+            },
+            "additionalProperties": false
+          }
+        }
+      ]
+    }
+  }
+}

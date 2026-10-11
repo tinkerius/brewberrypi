@@ -1,5 +1,7 @@
 """M0 smoke tests: the package is installed and the command line starts."""
 
+from pathlib import Path
+
 import pytest
 
 from brewberrypi import __version__
@@ -17,5 +19,6 @@ def test_version_option_prints_the_version(capsys: pytest.CaptureFixture[str]) -
     assert __version__ in capsys.readouterr().out
 
 
-def test_dummymode_option_is_accepted() -> None:
+def test_dummymode_option_is_accepted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
     assert main(["--dummymode"]) == 0
