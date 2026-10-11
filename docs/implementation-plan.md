@@ -13,7 +13,7 @@ criteria green. Tick the boxes as milestones are completed.
 | M5 | **Engine lifecycle & execution loop** | 03 | AC-030..039 ✅; engine parts of AC-050..057 (command replies, short beep after a goal, `Finished`, reminders stop on stop/pause/unload) ✅ | ☑ |
 | M6 | **Simulation HAL** (physics, beeps, time scale) + `--dummymode` | HW-060..064 | AC-090 (accelerated) ✅; the chart itself in M7/M8 | ☑ |
 | M7 | **Real-time interface** (broadcasts, commands, replies, chart thinning) | 08 | AC-070..074 ✅; AC-005 `/hardware/status.temperature` is `null` ✅ | ☑ |
-| M8 | **Web UI** | 09 | AC-075..077, AC-005 UI shows `Sensor error`, manual UI check against 09 §9.1 | ☐ |
+| M8 | **Web UI** | 09 | AC-075..077 ✅ (automated), AC-005 UI shows `Sensor error` ✅, manual UI check against 09 §9.1 (open) | ☐ |
 | M9 | **Raspberry Pi HAL** (GPIO, duty cycle, DS18B20, buzzer, safety) | 06, CTL-040..046 | AC-010..012, AC-020..023, AC-083 on real hardware | ☐ |
 | M10 | **Startup/shutdown, logging, runtime contract (application side)** — startup order, signals, exit codes, `READY`/`WATCHDOG`/`STOPPING` notifications, `/healthz`. The service unit, pin reset and installation are delivered by `tinkerius/brewberrypi-os` | NFR-001..005, NFR-020..024, NFR-040, [runtime contract](deployment/runtime-contract.md) | Contract tests green; on BrewberryPi OS: crash-safe outputs verified (`kill -9` and hang while heating → relays off) | ☐ |
 | M11 | **Auxiliary tools** | 12 | TOOL-001..003 run on the Pi | ☐ |
