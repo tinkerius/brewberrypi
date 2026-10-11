@@ -30,9 +30,14 @@ Responsive (usable on phone, tablet and desktop). Language of UI texts: English
           (modal "Information" with [Confirm] for replies)
 ```
 
-Legacy look: Bootstrap 3 panels ("panel-primary") with blue headers, dark navbar
-titled **Brewberry Pi**. Page title: `Brewberry Pi`. A visual refresh is allowed
-as long as all elements and behaviours below are kept.
+Page title: `Brewberry Pi`, also shown as the page heading. A visual refresh is
+allowed as long as all elements and behaviours below are kept.
+
+Phase 2 uses such a refresh (product-owner decision 2026-10-11; styling technology in
+[ADR-0001, Amendments](../adr/0001-technology-stack.md#amendments)): a light/dark
+scheme following the operating system, cards instead of panels, and the status
+colours of `UI-031`. (Legacy look, for reference: Bootstrap 3 panels ("panel-primary")
+with blue headers and a dark navbar titled **Brewberry Pi**.)
 
 ## 9.2 Hardware Status panel
 
