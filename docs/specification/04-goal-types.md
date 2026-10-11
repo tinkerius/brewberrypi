@@ -70,7 +70,8 @@ The goal has two phases: **asking** (initial) and **additional rest**.
 
 Progress:
 - `statusPercent` = time progress while in *additional rest*, else `0`.
-- `statusMessage` = time message (`MM:SS left`) while in *additional rest*; in *asking* phase `"Waiting for answer"`. `[FIX-14]` (legacy: undefined/empty in the first asking phase, stale last timer text after an additional rest)
+- `statusMessage` = time message (`MM:SS left`) while in *additional rest*; in *asking* phase `"Waiting for answer"`.
+- These apply while the goal is `Active`; when `Waiting` or `Done` the default progress of `DOM-022` applies (`Q-23`). `[FIX-14]` (legacy: undefined/empty in the first asking phase, stale last timer text after an additional rest)
 
 ### `GOAL-006` Lautering
 Each tick:
