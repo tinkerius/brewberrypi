@@ -1,98 +1,124 @@
-/* Legacy look (09-user-interface.md §9.1): dark navbar, panels with blue headers. All local (UI-070). */
+/*
+ * Look of the Vite + Preact starter template (create-vite `template-preact-ts`): system font, light/dark
+ * colour scheme following the operating system, Vite violet accent, rounded buttons. All local (UI-070).
+ */
 
 :root {
-  --primary: #337ab7;
-  --primary-dark: #286090;
-  --success: #3c763d;
-  --success-bg: #dff0d8;
-  --warning: #8a6d3b;
-  --warning-bg: #fcf8e3;
-  --danger: #a94442;
-  --border: #ddd;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 15px;
-  color: #333;
-  background: #fff;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --accent: #646cff;
+  --accent-hover: #535bf2;
+  --surface: #2b2b2b;
+  --border: rgba(255, 255, 255, 0.12);
+  --muted: #888;
+  --button: #1a1a1a;
+  --done: rgba(34, 197, 94, 0.14);
+  --done-strong: #22c55e;
+  --active: rgba(234, 179, 8, 0.14);
+  --active-strong: #eab308;
+  --danger: #ef4444;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+    --accent-hover: #747bff;
+    --surface: #ffffff;
+    --border: rgba(0, 0, 0, 0.12);
+    --button: #f9f9f9;
+    --done-strong: #15803d;
+    --active-strong: #a16207;
+    --danger: #dc2626;
+  }
 }
 
 body {
   margin: 0;
+  min-width: 320px;
 }
 
-.navbar {
-  background: #222;
-  padding: 0.9rem 1rem;
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
-.brand {
-  color: #fff;
-  font-size: 1.3rem;
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  text-align: center;
+  margin: 0 0 2rem;
 }
 
+/* UI-060: non-blocking connection indicator. */
 .connection {
   position: sticky;
   top: 0;
   z-index: 5;
-  background: var(--warning-bg);
-  color: var(--warning);
-  border-bottom: 1px solid #faebcc;
-  padding: 0.5rem 1rem;
+  margin: 0 auto 1.5rem;
+  max-width: 28rem;
+  padding: 0.5em 1em;
+  border: 1px solid var(--active-strong);
+  border-radius: 8px;
+  background: var(--active);
+  color: var(--active-strong);
   text-align: center;
-}
-
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 1rem;
+  font-weight: 500;
 }
 
 .panel {
-  border: 1px solid var(--primary);
-  border-radius: 4px;
-  margin-bottom: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5em 2em;
+  margin-bottom: 1.5rem;
 }
 
 .panel-heading {
-  margin: 0;
-  padding: 0.6rem 1rem;
-  background: var(--primary);
-  color: #fff;
-  font-size: 1.05rem;
-  font-weight: normal;
-}
-
-.panel-body {
-  padding: 1rem;
+  margin: 0 0 1em;
+  font-size: 1.25em;
+  font-weight: 600;
 }
 
 /* UI-061: values are marked as stale while disconnected. */
-.panel.stale .panel-body {
-  opacity: 0.5;
+.panel.stale > :not(.panel-heading) {
+  opacity: 0.45;
 }
 
 .status {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 2rem;
+  gap: 0.5em 2.5em;
   margin: 0;
 }
 
 .status div {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.4em;
 }
 
 .status dt {
-  font-weight: bold;
+  color: var(--muted);
 }
 
 .status dd {
   margin: 0;
+  font-weight: 600;
 }
 
 .sensor-error {
   color: var(--danger);
-  font-weight: bold;
 }
 
 .chart {
@@ -101,80 +127,77 @@ body {
 }
 
 .process-name {
-  margin: 0 0 0.75rem;
+  margin: 0 0 1em;
+  font-size: 1.1em;
+  font-weight: 500;
 }
 
 .goals {
   list-style: none;
-  margin: 0 0 1rem;
+  margin: 0 0 1.5em;
   padding: 0;
+  display: grid;
+  gap: 0.5em;
 }
 
 .goal {
-  position: relative;
   border: 1px solid var(--border);
-  margin-bottom: -1px;
-  padding: 0.75rem 1rem;
-}
-
-.goal:first-child {
-  border-radius: 4px 4px 0 0;
-}
-
-.goal:last-child {
-  border-radius: 0 0 4px 4px;
-  margin-bottom: 0;
+  border-radius: 8px;
+  padding: 0.9em 1.2em;
 }
 
 .goal h3 {
-  margin: 0 0 0.3rem;
-  font-size: 1.05rem;
+  margin: 0 0 0.2em;
+  font-size: 1em;
+  font-weight: 600;
 }
 
 .goal .description {
   margin: 0;
+  color: var(--muted);
 }
 
 .goal-done {
-  background: var(--success-bg);
-  color: var(--success);
+  background: var(--done);
+  border-color: transparent;
 }
 
 .goal-active {
-  background: var(--warning-bg);
-  color: var(--warning);
-  border-left: 4px solid #f0ad4e;
+  background: var(--active);
+  border-color: var(--active-strong);
 }
 
 .badge {
   float: right;
-  border-radius: 10px;
-  background: #777;
-  color: #fff;
-  font-size: 0.8rem;
-  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.8em;
+  font-weight: 500;
+  padding: 0.1em 0.7em;
 }
 
 .goal-done .badge {
-  background: #5cb85c;
+  border-color: var(--done-strong);
+  color: var(--done-strong);
 }
 
 .goal-active .badge {
-  background: #f0ad4e;
+  border-color: var(--active-strong);
+  color: var(--active-strong);
 }
 
 .progress {
   position: relative;
-  height: 1.4rem;
-  margin-top: 0.6rem;
-  background: #f5f5f5;
-  border-radius: 4px;
+  height: 1.6em;
+  margin-top: 0.8em;
+  border-radius: 8px;
+  background: rgba(128, 128, 128, 0.2);
   overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
-  background: var(--primary);
+  background: var(--accent);
   transition: width 0.4s ease;
 }
 
@@ -182,70 +205,78 @@ body {
   position: absolute;
   inset: 0;
   text-align: center;
-  line-height: 1.4rem;
-  color: #333;
-  font-size: 0.85rem;
+  line-height: 1.6em;
+  font-size: 0.85em;
+  font-weight: 500;
 }
 
 .request {
-  margin-top: 0.75rem;
+  margin-top: 0.9em;
 }
 
 .request p {
-  margin: 0 0 0.4rem;
-  font-weight: bold;
+  margin: 0 0 0.5em;
+  font-weight: 600;
 }
 
 .request .btn {
-  margin-right: 0.5rem;
+  margin-right: 0.5em;
 }
 
 .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  gap: 0.6em;
+  margin-top: 0.6em;
 }
 
+/* Buttons and the recipe dropdown: the template's button. */
 .btn,
 select {
-  font: inherit;
-  padding: 0.45rem 0.9rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #fff;
-  color: #333;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: inherit;
+  background-color: var(--button);
   cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+.btn:hover:not(:disabled),
+select:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.btn:focus-visible,
+select:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
 }
 
 .btn:disabled,
 select:disabled {
-  opacity: 0.55;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .btn-primary {
-  background: var(--primary);
-  border-color: var(--primary-dark);
+  background-color: var(--accent);
   color: #fff;
 }
 
-.btn-success {
-  background: #5cb85c;
-  border-color: #4cae4c;
-  color: #fff;
-}
-
-.btn-warning {
-  background: #f0ad4e;
-  border-color: #eea236;
-  color: #fff;
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .btn-danger {
-  background: #d9534f;
-  border-color: #d43f3a;
-  color: #fff;
+  color: var(--danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+  border-color: var(--danger);
 }
 
 .modal-backdrop {
@@ -255,28 +286,24 @@ select:disabled {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 4rem 1rem 1rem;
-  background: rgba(0, 0, 0, 0.5);
+  padding: 5rem 1rem 1rem;
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .modal {
   width: 100%;
-  max-width: 480px;
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  max-width: 28rem;
+  padding: 1.5em 2em;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .modal-title {
-  margin: 0;
-  padding: 1rem;
-  border-bottom: 1px solid #e5e5e5;
-  font-size: 1.2rem;
-  font-weight: normal;
-}
-
-.modal-body {
-  padding: 1rem;
+  margin: 0 0 0.6em;
+  font-size: 1.25em;
+  font-weight: 600;
 }
 
 .modal-body p {
@@ -290,14 +317,26 @@ select:disabled {
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-top: 1px solid #e5e5e5;
+  gap: 0.6em;
+  margin-top: 1.5em;
+}
+
+/* uPlot's hover legend follows the page colours. */
+.u-legend {
+  color: inherit;
 }
 
 @media (max-width: 600px) {
-  .container {
-    padding: 0.5rem;
+  #app {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 2.4em;
+  }
+
+  .panel {
+    padding: 1.2em;
   }
 
   .controls .btn,

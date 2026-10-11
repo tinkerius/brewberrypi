@@ -36,11 +36,11 @@ export function App() {
 
   return (
     <>
-      <nav class="navbar">
-        <span class="brand">{APP_TITLE}</span>
-      </nav>
+      <header>
+        <h1>{APP_TITLE}</h1>
+      </header>
       <ConnectionIndicator connected={state.connected} everConnected={everConnected} />
-      <main class="container">
+      <main>
         <HardwareStatusPanel hardware={state.hardware} state={state.process?.state} stale={!state.connected} />
         <Panel title="Chart" stale={!state.connected}>
           <Chart series={state.chart} />
