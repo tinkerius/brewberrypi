@@ -103,3 +103,7 @@ these facts:
   - M10: implement the runtime contract on the app side.
   - Spec questions `Q-16`–`Q-20`.
   - `brewberrypi-os` ADR-0001 (OS image, partitions, overlay, update service).
+
+## Amendments
+
+- **2026-10-11 — Styling: Tailwind CSS v4.** The UI is styled with Tailwind CSS v4 through its official Vite plugin, with no UI component library. The CSS is generated at build time, so it adds no runtime dependency, and everything stays local (`UI-070`). React-based component libraries were rejected: shadcn/ui would need React instead of Preact, and MUI/Chakra would only run through `preact/compat` and add 100 KB or more. The look replaces the legacy Bootstrap 3 look, which `09-user-interface.md` §9.1 allows as a visual refresh.
