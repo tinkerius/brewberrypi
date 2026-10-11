@@ -39,7 +39,7 @@ open specification questions in [13-open-questions.md](../specification/13-open-
 
 | Item | Requirement |
 |---|---|
-| `/config` (read-only) | `config.json` and the recipe file. Relative paths in the configuration resolve against the configuration file's directory (*pending* `Q-19`). |
+| `/config` (read-only) | `config.json` and the recipe file. Relative paths in the configuration resolve against the configuration file's directory (`Q-19`). Without a recipe file the image uses its built-in legacy catalogue, unless `recipes.file` is set (`Q-22`). |
 | `/sys` | The container runtime's default read-only sysfs. The image reads `/sys/bus/w1/devices` (`HW-031`). |
 | GPIO devices | **All** `/dev/gpiochip*` nodes present on the host. The image finds the header chip by label, because chip numbers change between kernels. |
 | Network | Listens on `server.port` (default 8080) on all interfaces. The host uses host networking or publishes the port. |
