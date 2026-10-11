@@ -1,28 +1,69 @@
 """Command-line entry point (`brewberrypi`).
 
-Milestone M0 skeleton: the options of NFR-020 are accepted, but configuration loading (M1)
-and the startup sequence (M10) are not implemented yet.
+Implements startup steps 1 and 2 of NFR-021: read and validate the configuration and the recipe file, and
+refuse to start with the exit codes of the runtime contract. The remaining steps follow in M10.
 """
 
 import argparse
+import logging
 import sys
 from collections.abc import Sequence
+from pathlib import Path
 
 from brewberrypi import __version__
+from brewberrypi.config import ConfigError, load_config
+from brewberrypi.recipes import RecipeError, load_recipes
+
+log = logging.getLogger("brewberrypi")
+
+# Exit codes (docs/deployment/runtime-contract.md §2).
+EXIT_OK = 0
+EXIT_INVALID_CONFIG = 2
+EXIT_INVALID_RECIPES = 3
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="brewberrypi", description="BrewberryPi mash kettle controller")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("--dummymode", action="store_true", help="use the simulation HAL instead of GPIO")
-    parser.add_argument("--config", metavar="PATH", help="configuration file (JSON)")
+    parser.add_argument(
+        "--config",
+        metavar="PATH",
+        type=Path,
+        help="configuration file (JSON); default: ./config.json if it exists, else the built-in defaults",
+    )
     return parser
 
 
+def configure_logging() -> None:
+    """Standard output with timestamp, level and component (NFR-040)."""
+    logging.basicConfig(
+        stream=sys.stdout,
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+        force=True,
+    )
+
+
 def main(argv: Sequence[str] | None = None) -> int:
-    build_parser().parse_args(argv)
-    print(f"BrewberryPi {__version__}: not implemented yet (milestone M0 skeleton).", file=sys.stderr)
-    return 0
+    args = build_parser().parse_args(argv)
+    configure_logging()
+    log.info(
+        "BrewberryPi %s starting%s", __version__, " in simulation (--dummymode)" if args.dummymode else ""
+    )
+    try:
+        config = load_config(args.config)
+    except ConfigError as error:
+        log.error("invalid configuration, refusing to start: %s", error)
+        return EXIT_INVALID_CONFIG
+    try:
+        recipes = load_recipes(config.recipes)
+    except RecipeError as error:
+        log.error("invalid recipe file, refusing to start: %s", error)
+        return EXIT_INVALID_RECIPES
+    log.info("recipes: %s", ", ".join(recipe.id for recipe in recipes))
+    log.warning("hardware, engine and web server are not implemented yet (milestone M1); exiting")
+    return EXIT_OK
 
 
 if __name__ == "__main__":

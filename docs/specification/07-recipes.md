@@ -2,7 +2,7 @@
 
 ## 7.1 Recipe catalogue
 
-- `RCP-001` Recipes are loaded at startup from a **recipe file** (default `recipes.json`, path configurable `recipes.file`). Format: [data/recipes.schema.json](data/recipes.schema.json). `[NEW]` (legacy: recipes hard-coded in source code)
+- `RCP-001` Recipes are loaded at startup from a **recipe file** (default `recipes.json`, path configurable `recipes.file`, relative to the configuration file's directory, `Q-19`). If `recipes.file` is not set and the default file does not exist, the legacy catalogue shipped with the application is used; if `recipes.file` is set and the file does not exist, the application refuses to start (`Q-22`). Format: [data/recipes.schema.json](data/recipes.schema.json). `[NEW]` (legacy: recipes hard-coded in source code)
 - `RCP-002` The initial recipe file MUST contain exactly the 8 legacy recipes of [data/recipes.json](data/recipes.json), in this order.
 - `RCP-003` Invalid recipe file (syntax, schema, duplicate IDs, unknown goal type, missing parameter) → the application logs a precise error (file, recipe id, goal index) and **refuses to start**.
 - `RCP-004` The catalogue is read-only at runtime (no recipe editing in the UI; see `Q-09`).

@@ -10,7 +10,7 @@ browser in the local network.
 | Phase | Content | Status |
 |---|---|---|
 | 1 — Specification | Technology-neutral functional specification, recovered from the original 2014 Java implementation | ✅ done |
-| 2 — Implementation | Technology decision (ADR-0001), then implementation milestone by milestone | ⏳ next |
+| 2 — Implementation | Technology decision (ADR-0001), then implementation milestone by milestone ([plan](docs/implementation-plan.md)) | ⏳ in progress |
 
 ## Documentation
 
@@ -79,3 +79,16 @@ CI (`.github/workflows/ci.yml`) runs lint, test and build on every push and pull
 for `linux/arm64` and `linux/amd64`. A tag `v<version>` (matching `pyproject.toml`) also pushes the image to
 GHCR and signs it with cosign v2. It then verifies the image against the device's signature policy; see
 [deploy/signing/README.md](deploy/signing/README.md).
+
+### Configuration
+
+`brewberrypi --config <file>` reads a JSON configuration file. Without `--config` it reads `config.json` from
+the working directory, or uses the built-in defaults if there is none. Every key is optional. The format is
+[config.schema.json](docs/specification/data/config.schema.json), and
+[config.example.json](docs/specification/data/config.example.json) lists every key with its default (the legacy
+wiring). Unknown keys are ignored with a warning; invalid values stop the start with exit code 2.
+
+The recipes come from `recipes.json` next to the configuration file (`recipes.file`). Without one, the 8 legacy
+recipes built into the application are used. An invalid recipe file stops the start with exit code 3 and names
+the recipe and goal. The format is [recipes.schema.json](docs/specification/data/recipes.schema.json); see
+[07-recipes.md](docs/specification/07-recipes.md).

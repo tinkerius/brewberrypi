@@ -12,7 +12,7 @@
 
 - `NFR-020` Command line:
   - `--dummymode` → simulation HAL (legacy flag name, keep).
-  - `--config <path>` `[NEW]` → configuration file (default: `config.json` next to the application; if missing, built-in defaults = [data/config.example.json](data/config.example.json)).
+  - `--config <path>` `[NEW]` → configuration file (default: `config.json` in the working directory; if missing, built-in defaults = [data/config.example.json](data/config.example.json); `Q-21`). Relative paths in the configuration resolve against the configuration file's directory (`Q-19`).
 - `NFR-021` Startup order `[FIX-21]` (legacy started the web server before the engine and services existed):
   1. read & validate configuration → fail fast with clear message;
   2. read & validate recipe file (`RCP-003`);
