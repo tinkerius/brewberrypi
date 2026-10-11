@@ -1,0 +1,307 @@
+/* Legacy look (09-user-interface.md §9.1): dark navbar, panels with blue headers. All local (UI-070). */
+
+:root {
+  --primary: #337ab7;
+  --primary-dark: #286090;
+  --success: #3c763d;
+  --success-bg: #dff0d8;
+  --warning: #8a6d3b;
+  --warning-bg: #fcf8e3;
+  --danger: #a94442;
+  --border: #ddd;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  color: #333;
+  background: #fff;
+}
+
+body {
+  margin: 0;
+}
+
+.navbar {
+  background: #222;
+  padding: 0.9rem 1rem;
+}
+
+.brand {
+  color: #fff;
+  font-size: 1.3rem;
+}
+
+.connection {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-bottom: 1px solid #faebcc;
+  padding: 0.5rem 1rem;
+  text-align: center;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.panel {
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+}
+
+.panel-heading {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: normal;
+}
+
+.panel-body {
+  padding: 1rem;
+}
+
+/* UI-061: values are marked as stale while disconnected. */
+.panel.stale .panel-body {
+  opacity: 0.5;
+}
+
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  margin: 0;
+}
+
+.status div {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.status dt {
+  font-weight: bold;
+}
+
+.status dd {
+  margin: 0;
+}
+
+.sensor-error {
+  color: var(--danger);
+  font-weight: bold;
+}
+
+.chart {
+  width: 100%;
+  min-height: 300px;
+}
+
+.process-name {
+  margin: 0 0 0.75rem;
+}
+
+.goals {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.goal {
+  position: relative;
+  border: 1px solid var(--border);
+  margin-bottom: -1px;
+  padding: 0.75rem 1rem;
+}
+
+.goal:first-child {
+  border-radius: 4px 4px 0 0;
+}
+
+.goal:last-child {
+  border-radius: 0 0 4px 4px;
+  margin-bottom: 0;
+}
+
+.goal h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1.05rem;
+}
+
+.goal .description {
+  margin: 0;
+}
+
+.goal-done {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.goal-active {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-left: 4px solid #f0ad4e;
+}
+
+.badge {
+  float: right;
+  border-radius: 10px;
+  background: #777;
+  color: #fff;
+  font-size: 0.8rem;
+  padding: 0.15rem 0.6rem;
+}
+
+.goal-done .badge {
+  background: #5cb85c;
+}
+
+.goal-active .badge {
+  background: #f0ad4e;
+}
+
+.progress {
+  position: relative;
+  height: 1.4rem;
+  margin-top: 0.6rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.4s ease;
+}
+
+.progress-label {
+  position: absolute;
+  inset: 0;
+  text-align: center;
+  line-height: 1.4rem;
+  color: #333;
+  font-size: 0.85rem;
+}
+
+.request {
+  margin-top: 0.75rem;
+}
+
+.request p {
+  margin: 0 0 0.4rem;
+  font-weight: bold;
+}
+
+.request .btn {
+  margin-right: 0.5rem;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.btn,
+select {
+  font: inherit;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+}
+
+.btn:disabled,
+select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary-dark);
+  color: #fff;
+}
+
+.btn-success {
+  background: #5cb85c;
+  border-color: #4cae4c;
+  color: #fff;
+}
+
+.btn-warning {
+  background: #f0ad4e;
+  border-color: #eea236;
+  color: #fff;
+}
+
+.btn-danger {
+  background: #d9534f;
+  border-color: #d43f3a;
+  color: #fff;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4rem 1rem 1rem;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.modal-title {
+  margin: 0;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 1.2rem;
+  font-weight: normal;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.modal-body p {
+  margin: 0;
+}
+
+.reply-error {
+  color: var(--danger);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 0.5rem;
+  }
+
+  .controls .btn,
+  .controls select {
+    flex: 1 1 100%;
+  }
+}
