@@ -11,7 +11,10 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from brewberrypi import __version__
+from brewberrypi.clock import Clock, ScaledClock, SystemClock
 from brewberrypi.config import ConfigError, load_config
+from brewberrypi.hal.simulation import SimulationHal
+from brewberrypi.hal.sound import find_player
 from brewberrypi.recipes import RecipeError, load_recipes
 
 log = logging.getLogger("brewberrypi")
@@ -62,8 +65,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         log.error("invalid recipe file, refusing to start: %s", error)
         return EXIT_INVALID_RECIPES
     log.info("recipes: %s", ", ".join(recipe.id for recipe in recipes))
-    log.warning("hardware, engine and web server are not implemented yet (milestone M1); exiting")
+    if args.dummymode:
+        clock = create_clock(config.simulation.time_scale)
+        SimulationHal(clock, config.simulation, find_player())
+    else:
+        log.warning("the Raspberry Pi HAL is not implemented yet (milestone M9)")
+    log.warning("engine and web server are not started yet (milestones M7, M10); exiting")
     return EXIT_OK
+
+
+def create_clock(time_scale: float) -> Clock:
+    """The application clock; accelerated by `simulation.timeScale` in simulation mode only (HW-064)."""
+    return SystemClock() if time_scale == 1 else ScaledClock(SystemClock(), time_scale)
 
 
 if __name__ == "__main__":
