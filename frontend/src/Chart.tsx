@@ -15,20 +15,25 @@ export function toPlotData(series: ChartSeries[] | null): [number[], number[]] {
   return [values.map((point) => point.x / 1000), values.map((point) => point.y)];
 }
 
-function options(width: number): uPlot.Options {
+const ACCENT = "#646cff";
+const GRID = "rgba(128, 128, 128, 0.25)";
+
+/** `text` is the page's text colour, so the axes stay readable in the light and the dark scheme. */
+function options(width: number, text: string): uPlot.Options {
+  const axis = { stroke: text, grid: { stroke: GRID }, ticks: { stroke: GRID } };
   return {
     width,
     height: HEIGHT,
     scales: { x: { time: true } },
     axes: [
-      { label: "Time", values: (_plot, ticks) => ticks.map(formatTime) },
-      { label: "Temperature", values: (_plot, ticks) => ticks.map(formatDegrees) },
+      { ...axis, label: "Time", values: (_plot, ticks) => ticks.map(formatTime) },
+      { ...axis, label: "Temperature", values: (_plot, ticks) => ticks.map(formatDegrees) },
     ],
     series: [
       { value: (_plot, value) => (value == null ? "--" : formatTimeWithSeconds(value)) },
       {
         label: SERIES_LABEL,
-        stroke: "#337ab7",
+        stroke: ACCENT,
         width: 2,
         value: (_plot, value) => (value == null ? "--" : `${formatDegrees(value)}°C`),
       },
@@ -46,7 +51,7 @@ export function Chart(props: { series: ChartSeries[] | null }) {
       return;
     }
     // Created once and only fed new data afterwards (UI-023); empty until the first message (UI-022).
-    const chart = new uPlot(options(element.clientWidth || 600), toPlotData(null), element);
+    const chart = new uPlot(options(element.clientWidth || 600, getComputedStyle(element).color), toPlotData(null), element);
     plot.current = chart;
     const resize = new ResizeObserver(() => chart.setSize({ width: element.clientWidth, height: HEIGHT }));
     resize.observe(element);

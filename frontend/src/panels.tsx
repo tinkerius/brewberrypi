@@ -151,10 +151,10 @@ export function ProcessPanel(props: {
         </button>
       </div>
       <div class="controls">
-        <button type="button" class="btn btn-success" disabled={!enabled("start")} onClick={() => send("start")}>
+        <button type="button" class="btn" disabled={!enabled("start")} onClick={() => send("start")}>
           Start Process
         </button>
-        <button type="button" class="btn btn-warning" disabled={!enabled("pause")} onClick={() => send("pause")}>
+        <button type="button" class="btn" disabled={!enabled("pause")} onClick={() => send("pause")}>
           Pause Process
         </button>
         <button type="button" class="btn btn-danger" disabled={!enabled("stop")} onClick={props.onStop}>
