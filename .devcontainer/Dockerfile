@@ -1,5 +1,5 @@
 # Development container (ADR-0001). Same OS and Python as the runtime image (Debian Trixie,
-# Python 3.13, python3-libgpiod), plus the build tools: uv, Node 22, make.
+# Python 3.13, python3-libgpiod), plus the build tools: uv, Node 22, make, cosign.
 FROM mcr.microsoft.com/devcontainers/base:trixie
 
 RUN apt-get update \
@@ -7,6 +7,9 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.24 /uv /uvx /usr/local/bin/
+
+# cosign v2, as in CI: Podman 5.4 on the device cannot read cosign v3 signatures (deploy/signing/).
+COPY --from=gcr.io/projectsigstore/cosign:v2.5.0 /ko-app/cosign /usr/local/bin/cosign
 
 COPY --from=node:22-trixie-slim /usr/local/bin/node /usr/local/bin/node
 COPY --from=node:22-trixie-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
