@@ -15,7 +15,7 @@ export function toPlotData(series: ChartSeries[] | null): [number[], number[]] {
   return [values.map((point) => point.x / 1000), values.map((point) => point.y)];
 }
 
-const ACCENT = "#646cff";
+const ACCENT = "#6366f1"; // Tailwind indigo-500, readable in light and dark
 const GRID = "rgba(128, 128, 128, 0.25)";
 
 /** `text` is the page's text colour, so the axes stay readable in the light and the dark scheme. */
@@ -75,5 +75,5 @@ export function Chart(props: { series: ChartSeries[] | null }) {
     chart.setData(toPlotData(props.series), !zoomed);
   }, [props.series]);
 
-  return <div class="chart" ref={container} />;
+  return <div class="min-h-[300px] w-full" ref={container} />;
 }

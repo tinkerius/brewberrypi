@@ -36,11 +36,14 @@ export function App() {
 
   return (
     <>
-      <header>
-        <h1>{APP_TITLE}</h1>
+      <header class="border-b border-slate-200 bg-white dark:border-white/10 dark:bg-slate-900">
+        <div class="mx-auto flex max-w-5xl items-center gap-3 px-4 py-4 sm:px-6">
+          <span class="size-3 rounded-full bg-indigo-600" aria-hidden="true" />
+          <h1 class="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">{APP_TITLE}</h1>
+        </div>
       </header>
-      <ConnectionIndicator connected={state.connected} everConnected={everConnected} />
-      <main>
+      <main class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6">
+        <ConnectionIndicator connected={state.connected} everConnected={everConnected} />
         <HardwareStatusPanel hardware={state.hardware} state={state.process?.state} stale={!state.connected} />
         <Panel title="Chart" stale={!state.connected}>
           <Chart series={state.chart} />
