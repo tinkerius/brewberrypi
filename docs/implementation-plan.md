@@ -9,8 +9,8 @@ criteria green. Tick the boxes as milestones are completed.
 | M1 | **Configuration & recipe loading** — config file + schema validation + defaults; recipe file + validation | NFR-020, NFR-030, RCP-001..005, 07 | AC-080, AC-081, AC-082 | ☑ |
 | M2 | **HAL interface + mock HAL + controllable clock** | HW-001..003, NFR-060 | Unit tests can drive time and temperature | ☑ |
 | M3 | **Temperature controller & progress** | 05 | AC-001..007: controller parts ✅ (goal, interface and UI parts in M4, M7, M8) | ☑ |
-| M4 | **Goals & operator requests** (incl. reminder loop) | 02, 04, DOM-033 | AC-050..057; goal-level parts of AC-004..007 (goal `Done`, goal `statusmessage`) | ☐ |
-| M5 | **Engine lifecycle & execution loop** | 03 | AC-030..039 | ☐ |
+| M4 | **Goals & operator requests** (incl. reminder loop) | 02, 04, DOM-033 | AC-050..057: goal and reminder parts ✅; goal-level parts of AC-004..007 ✅ (engine parts in M5) | ☑ |
+| M5 | **Engine lifecycle & execution loop** | 03 | AC-030..039; engine parts of AC-050..057 (command replies, short beep after a goal, `Finished`, reminders stop on stop/pause/unload) | ☐ |
 | M6 | **Simulation HAL** (physics, beeps, time scale) + `--dummymode` | HW-060..064 | AC-090 (accelerated) | ☐ |
 | M7 | **Real-time interface** (broadcasts, commands, replies, chart thinning) | 08 | AC-070..074; AC-005 `/hardware/status.temperature` is `null` | ☐ |
 | M8 | **Web UI** | 09 | AC-075..077, AC-005 UI shows `Sensor error`, manual UI check against 09 §9.1 | ☐ |
