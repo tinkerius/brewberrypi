@@ -98,3 +98,28 @@ class ManualClock:
 async def _settle() -> None:
     for _ in range(SETTLE_ROUNDS):
         await asyncio.sleep(0)
+
+
+class ScaledClock:
+    """A clock running `scale` times faster than `base` (HW-064, simulation only).
+
+    Used for the whole application in simulation mode, so physics, engine tick, countdowns and reminders are
+    all accelerated by the same factor. Wall time advances at the same accelerated rate from the start time.
+    """
+
+    def __init__(self, base: Clock, scale: float) -> None:
+        if scale < 1:
+            raise ValueError("the time scale must be at least 1")
+        self._base = base
+        self._scale = scale
+        self._base_start = base.monotonic()
+        self._wall_start = base.wall_time()
+
+    def monotonic(self) -> float:
+        return self._base_start + (self._base.monotonic() - self._base_start) * self._scale
+
+    def wall_time(self) -> float:
+        return self._wall_start + (self._base.monotonic() - self._base_start) * self._scale
+
+    async def sleep(self, seconds: float) -> None:
+        await self._base.sleep(seconds / self._scale)

@@ -10,6 +10,26 @@ from abc import ABC, abstractmethod
 Temperature = float | None
 """A kettle temperature in °C, or `None` for INVALID (HW-032). Callers must handle `None` (FIX-02)."""
 
+BeepPattern = tuple[tuple[bool, int], ...]
+"""Buzzer phases as (on, milliseconds)."""
+
+SHORT_BEEP: BeepPattern = ((True, 500),)
+"""HW-040."""
+LONG_BEEP: BeepPattern = (
+    (True, 2000),
+    (False, 300),
+    (True, 200),
+    (False, 300),
+    (True, 200),
+    (False, 300),
+    (True, 200),
+    (False, 300),
+    (True, 2000),
+)
+"""HW-041, the attention pattern (about 5.8 s)."""
+ERROR_BEEP: BeepPattern = ((True, 500),)
+"""HW-042."""
+
 
 class Hal(ABC):
     """The operations of HW-001, nothing else."""

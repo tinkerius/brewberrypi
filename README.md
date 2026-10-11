@@ -88,6 +88,11 @@ the working directory, or uses the built-in defaults if there is none. Every key
 [config.example.json](docs/specification/data/config.example.json) lists every key with its default (the legacy
 wiring). Unknown keys are ignored with a warning; invalid values stop the start with exit code 2.
 
+In simulation (`--dummymode`) a simulated kettle replaces the hardware: it heats by 0.085 °C per second at
+full power and cools by 0.005 °C per second (section `simulation`). `simulation.timeScale` speeds up the
+whole application, e.g. `60` runs a 10-minute rest in 10 seconds. Beeps play on the computer's audio output
+if `paplay`, `aplay`, `afplay` or Windows sound is available, otherwise they are only logged.
+
 The recipes come from `recipes.json` next to the configuration file (`recipes.file`). Without one, the 8 legacy
 recipes built into the application are used. An invalid recipe file stops the start with exit code 3 and names
 the recipe and goal. The format is [recipes.schema.json](docs/specification/data/recipes.schema.json); see

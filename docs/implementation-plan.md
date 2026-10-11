@@ -11,7 +11,7 @@ criteria green. Tick the boxes as milestones are completed.
 | M3 | **Temperature controller & progress** | 05 | AC-001..007: controller parts ✅ (goal, interface and UI parts in M4, M7, M8) | ☑ |
 | M4 | **Goals & operator requests** (incl. reminder loop) | 02, 04, DOM-033 | AC-050..057: goal and reminder parts ✅; goal-level parts of AC-004..007 ✅ (engine parts in M5) | ☑ |
 | M5 | **Engine lifecycle & execution loop** | 03 | AC-030..039 ✅; engine parts of AC-050..057 (command replies, short beep after a goal, `Finished`, reminders stop on stop/pause/unload) ✅ | ☑ |
-| M6 | **Simulation HAL** (physics, beeps, time scale) + `--dummymode` | HW-060..064 | AC-090 (accelerated) | ☐ |
+| M6 | **Simulation HAL** (physics, beeps, time scale) + `--dummymode` | HW-060..064 | AC-090 (accelerated) ✅; the chart itself in M7/M8 | ☑ |
 | M7 | **Real-time interface** (broadcasts, commands, replies, chart thinning) | 08 | AC-070..074; AC-005 `/hardware/status.temperature` is `null` | ☐ |
 | M8 | **Web UI** | 09 | AC-075..077, AC-005 UI shows `Sensor error`, manual UI check against 09 §9.1 | ☐ |
 | M9 | **Raspberry Pi HAL** (GPIO, duty cycle, DS18B20, buzzer, safety) | 06, CTL-040..046 | AC-010..012, AC-020..023, AC-083 on real hardware | ☐ |
