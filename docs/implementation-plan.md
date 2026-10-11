@@ -5,7 +5,7 @@ criteria green. Tick the boxes as milestones are completed.
 
 | # | Milestone | Spec | Done when | Status |
 |---|---|---|---|---|
-| M0 | **Technology decision** — fill in ADR-0001, set up the project skeleton, build, test runner, linter, Containerfile, CI (test, build multi-arch image, sign with cosign v2, push to GHCR, verify the signature against the device policy) | ADR-0001, NFR-063 | ADR accepted ✅ (2026-10-09); project skeleton (source + test folders per the chosen stack's conventions) builds and runs an empty test suite; `make image` builds; CLAUDE.md commands updated ✅ | ☐ |
+| M0 | **Technology decision** — fill in ADR-0001, set up the project skeleton, build, test runner, linter, Containerfile, CI (test, build multi-arch image, sign with cosign v2, push to GHCR, verify the signature against the device policy) | ADR-0001, NFR-063 | ADR accepted ✅ (2026-10-09); project skeleton (source + test folders per the chosen stack's conventions) builds and runs an empty test suite ✅; `make image` builds ✅; first release `v0.1.0` pushed, signed and verified ✅ (2026-10-11); CLAUDE.md commands updated ✅ | ☑ |
 | M1 | **Configuration & recipe loading** — config file + schema validation + defaults; recipe file + validation | NFR-020, NFR-030, RCP-001..005, 07 | AC-080, AC-081, AC-082 | ☐ |
 | M2 | **HAL interface + mock HAL + controllable clock** | HW-001..003, NFR-060 | Unit tests can drive time and temperature | ☐ |
 | M3 | **Temperature controller & progress** | 05 | AC-001..007 | ☐ |
