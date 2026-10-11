@@ -21,4 +21,5 @@ def test_version_option_prints_the_version(capsys: pytest.CaptureFixture[str]) -
 
 def test_dummymode_option_is_accepted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("brewberrypi.__main__.serve", lambda app, port: 0)
     assert main(["--dummymode"]) == 0
