@@ -51,7 +51,8 @@ async def test_AC_091_full_zora_run_in_simulation() -> None:
     assert (hal.get_heating_status(), hal.get_pump_status()) == (0.0, False)
 
     # The rests were held at their temperatures for their durations (GOAL-004, CTL-011).
-    for name, target, minutes in (("Maltoserast", 50, 25), ("Verzuckerungsrast", 62, 30), ("2. Verzuckerungsrast", 70, 40)):
+    rests = (("Maltoserast", 50, 25), ("Verzuckerungsrast", 62, 30), ("2. Verzuckerungsrast", 70, 40))
+    for name, target, minutes in rests:
         samples = rest_samples(trace, name)
         assert minutes * 60 <= len(samples) <= minutes * 60 + 2, name
         assert all(target - 0.3 <= t <= target + 0.3 for t in samples), name
