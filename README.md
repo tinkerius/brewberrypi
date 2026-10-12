@@ -104,3 +104,11 @@ The server serves the web UI and a WebSocket at `/ws` on one port (`server.port`
 is one JSON object `{"topic": ..., "payload": ...}` with the topics and payloads of
 [08-client-server-interface.md](docs/specification/08-client-server-interface.md). Commands are sent on
 `/service/process/*`, and their reply comes back to the sender on `/process/reply`.
+
+### Running as a service
+
+The container image implements the application side of the
+[runtime contract](docs/deployment/runtime-contract.md): exit codes, graceful shutdown on SIGTERM/SIGINT
+with all outputs off, the systemd notify protocol (`READY=1`, `STOPPING=1`, `WATCHDOG=1` every
+`BREWBERRYPI_WATCHDOG_MS` while the engine and broadcasts are alive) when `NOTIFY_SOCKET` is set, and
+`GET /healthz`. `tests/test_contract.py` checks this against the real program.

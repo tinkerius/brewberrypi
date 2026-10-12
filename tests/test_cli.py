@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
-from starlette.types import ASGIApp
+from starlette.applications import Starlette
 
 from brewberrypi.__main__ import (
     EXIT_ERROR,
@@ -27,7 +27,7 @@ def served(monkeypatch: pytest.MonkeyPatch) -> list[int]:
     """Records the port instead of running the web server."""
     ports: list[int] = []
 
-    def serve(app: ASGIApp, port: int) -> int:
+    def serve(app: Starlette, port: int) -> int:
         ports.append(port)
         return EXIT_OK
 
@@ -80,11 +80,11 @@ def test_a_server_that_cannot_start_exits_with_code_1(monkeypatch: pytest.Monkey
     monkeypatch.setattr("brewberrypi.__main__.serve", real_serve)
 
     class NeverStarts:
-        def __init__(self, config: object) -> None:
+        def __init__(self, config: object, on_started: object) -> None:
             pass
 
         def run(self) -> None:
             raise SystemExit(3)  # what uvicorn does when the port is in use
 
-    monkeypatch.setattr("brewberrypi.__main__.uvicorn.Server", NeverStarts)
+    monkeypatch.setattr("brewberrypi.__main__._Server", NeverStarts)
     assert main(["--dummymode"]) == EXIT_ERROR
