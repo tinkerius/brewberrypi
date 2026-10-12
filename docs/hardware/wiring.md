@@ -66,10 +66,11 @@ solder pad; the odd pins are in the row away from the board edge.
 - The contact rating must be higher than the current of the load, with margin. A 3 kW heater on 230 V draws
   about 13 A, which is more than many 10 A relay modules allow. In that case the relay module must switch a
   contactor or a suitable solid-state relay instead of the heater itself.
-- The heater relay switches often: in the duty cycle (`CTL-042`) it switches on and off about once per second
-  at 50 % power, for example within 3 K below the target and during the boil (`CTL-012`). A mechanical relay
-  wears out much faster at that rate than in plain on/off use. Whether a solid-state relay should be used for
-  the heater is open question `Q-26` in [13-open-questions.md](../specification/13-open-questions.md).
+- The heater uses a normal (mechanical) relay (`Q-26`). In the duty cycle (`CTL-042`) it switches on and off
+  at partial power, for example at 50 % within 3 K below the target and during the boil (`CTL-012`). To
+  reduce relay wear, the shortest phase will be raised from 0.5 s to 10 s (10 s on + 10 s off at 50 %), see
+  [issue #33](https://github.com/tinkerius/brewberrypi/issues/33). Pick a relay with a long electrical life
+  at the heater's load.
 - Power-on window: for a few seconds after the Pi is powered on, before the firmware applies its pin
   settings, the relay pins are pulled low. Low is the "on" level. Whether a relay actually switches depends on
   the module. This is an accepted limitation (`Q-18`); the hardware test protocol measures it.
