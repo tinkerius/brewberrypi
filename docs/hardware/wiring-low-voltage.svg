@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 650" width="1120" height="650" role="img" aria-labelledby="title desc">
+  <title id="title">BrewberryPi low-voltage wiring, default pins</title>
+  <desc id="desc">Raspberry Pi header pins wired to a DS18B20 probe with a 4.7 kilo-ohm pull-up, a two-channel active-low relay module for heater and pump, and an active buzzer driven through an NPN transistor. GPIO numbers are BCM.</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; fill: #1f2328; }
+    .title { font-size: 17px; font-weight: 600; }
+    .bold { font-weight: 600; }
+    .small { font-size: 11px; fill: #57606a; }
+    .box { fill: #f6f8fa; stroke: #1f2328; stroke-width: 1.5; }
+    .mains { fill: #fff8f0; stroke: #b45309; stroke-width: 1.5; stroke-dasharray: 6 4; }
+    .pin { fill: #ffffff; stroke: #8c959f; stroke-width: 1; }
+    .w { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .part { fill: none; stroke: #1f2328; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .dash { fill: none; stroke: #b45309; stroke-width: 2; stroke-dasharray: 6 4; }
+    .v33 { stroke: #d97706; } .v5 { stroke: #dc2626; } .gnd { stroke: #1f2328; }
+    .dq { stroke: #0d9488; } .heat { stroke: #2563eb; } .pump { stroke: #16a34a; } .buzz { stroke: #9333ea; }
+  </style>
+  <rect width="1120" height="650" fill="#ffffff"/>
+
+  <text x="30" y="34" class="title">BrewberryPi — low-voltage wiring, default pins (HW-011)</text>
+  <text x="30" y="54" class="small">GPIO numbers are BCM. All grounds are common. The mains side is a separate diagram in wiring.md — qualified person only.</text>
+
+  <!-- Raspberry Pi -->
+  <rect x="30" y="70" width="270" height="540" rx="8" class="box"/>
+  <text x="45" y="95" class="bold">Raspberry Pi</text>
+  <text x="45" y="112" class="small">40-pin header</text>
+  <text x="45" y="140" class="small">header, top view</text>
+  <text x="62" y="159" class="small" text-anchor="end">1</text>
+  <text x="98" y="159" class="small">2</text>
+  <text x="62" y="387" class="small" text-anchor="end">39</text>
+  <text x="98" y="387" class="small">40</text>
+  <g>
+    <circle cx="72" cy="155" r="4.5" fill="#d97706"/>
+    <circle cx="88" cy="155" r="4.5" fill="#dc2626"/>
+    <circle cx="72" cy="167" r="4" class="pin"/>
+    <circle cx="88" cy="167" r="4.5" fill="#dc2626"/>
+    <circle cx="72" cy="179" r="4" class="pin"/>
+    <circle cx="88" cy="179" r="4.5" fill="#1f2328"/>
+    <circle cx="72" cy="191" r="4.5" fill="#0d9488"/>
+    <circle cx="88" cy="191" r="4" class="pin"/>
+    <circle cx="72" cy="203" r="4.5" fill="#1f2328"/>
+    <circle cx="88" cy="203" r="4" class="pin"/>
+    <circle cx="72" cy="215" r="4" class="pin"/>
+    <circle cx="88" cy="215" r="4" class="pin"/>
+    <circle cx="72" cy="227" r="4" class="pin"/>
+    <circle cx="88" cy="227" r="4" class="pin"/>
+    <circle cx="72" cy="239" r="4.5" fill="#16a34a"/>
+    <circle cx="88" cy="239" r="4.5" fill="#2563eb"/>
+    <circle cx="72" cy="251" r="4" class="pin"/>
+    <circle cx="88" cy="251" r="4" class="pin"/>
+    <circle cx="72" cy="263" r="4.5" fill="#9333ea"/>
+    <circle cx="88" cy="263" r="4.5" fill="#1f2328"/>
+    <circle cx="72" cy="275" r="4" class="pin"/>
+    <circle cx="88" cy="275" r="4" class="pin"/>
+    <circle cx="72" cy="287" r="4" class="pin"/>
+    <circle cx="88" cy="287" r="4" class="pin"/>
+    <circle cx="72" cy="299" r="4" class="pin"/>
+    <circle cx="88" cy="299" r="4" class="pin"/>
+    <circle cx="72" cy="311" r="4" class="pin"/>
+    <circle cx="88" cy="311" r="4" class="pin"/>
+    <circle cx="72" cy="323" r="4" class="pin"/>
+    <circle cx="88" cy="323" r="4" class="pin"/>
+    <circle cx="72" cy="335" r="4" class="pin"/>
+    <circle cx="88" cy="335" r="4" class="pin"/>
+    <circle cx="72" cy="347" r="4" class="pin"/>
+    <circle cx="88" cy="347" r="4" class="pin"/>
+    <circle cx="72" cy="359" r="4" class="pin"/>
+    <circle cx="88" cy="359" r="4" class="pin"/>
+    <circle cx="72" cy="371" r="4" class="pin"/>
+    <circle cx="88" cy="371" r="4" class="pin"/>
+    <circle cx="72" cy="383" r="4" class="pin"/>
+    <circle cx="88" cy="383" r="4" class="pin"/>
+  </g>
+  <text x="45" y="412" class="small">odd pins: inner row,</text>
+  <text x="45" y="426" class="small">pin 1 has a square pad</text>
+
+  <!-- Pi terminals -->
+  <g text-anchor="end">
+    <text x="290" y="114">pin 1 · 3V3</text>
+    <text x="290" y="154">pin 7 · BCM 4</text>
+    <text x="290" y="194">pin 9 · GND</text>
+    <text x="290" y="274">pin 2 · 5V</text>
+    <text x="290" y="314">pin 6 · GND</text>
+    <text x="290" y="354">pin 16 · BCM 23</text>
+    <text x="290" y="394">pin 15 · BCM 22</text>
+    <text x="290" y="454">pin 4 · 5V</text>
+    <text x="290" y="504">pin 19 · BCM 10</text>
+    <text x="290" y="584">pin 20 · GND</text>
+  </g>
+
+  <!-- DS18B20 -->
+  <text x="640" y="78" class="bold">DS18B20 temperature probe</text>
+  <rect x="640" y="85" width="230" height="130" rx="6" class="box"/>
+  <text x="652" y="114">VDD</text>
+  <text x="652" y="154">DQ</text>
+  <text x="652" y="194">GND</text>
+  <text x="718" y="114" class="small">3-wire, normal power</text>
+  <text x="718" y="130" class="small">(not parasite power)</text>
+  <text x="718" y="170" class="small">wire colours vary:</text>
+  <text x="718" y="186" class="small">check the probe's sheet</text>
+  <path d="M300 110 H640" class="w v33"/>
+  <path d="M300 150 H640" class="w dq"/>
+  <path d="M300 190 H640" class="w gnd"/>
+  <path d="M520 110 V116 L526 119.5 L514 126.5 L526 133.5 L514 140.5 L520 144 V150" class="part"/>
+  <circle cx="520" cy="110" r="4" fill="#1f2328"/>
+  <circle cx="520" cy="150" r="4" fill="#1f2328"/>
+  <text x="534" y="134">4.7 kΩ pull-up</text>
+  <text x="420" y="104" class="small" text-anchor="middle">3.3 V only</text>
+  <text x="420" y="144" class="small" text-anchor="middle">1-Wire data</text>
+
+  <!-- Relay module -->
+  <text x="640" y="238" class="bold">2-channel relay module, active-low</text>
+  <rect x="640" y="245" width="220" height="170" rx="6" class="box"/>
+  <text x="652" y="274">VCC</text>
+  <text x="652" y="314">GND</text>
+  <text x="652" y="354">IN1 — heater</text>
+  <text x="652" y="394">IN2 — pump</text>
+  <text x="848" y="304" text-anchor="end">K1 COM·NO</text>
+  <text x="848" y="374" text-anchor="end">K2 COM·NO</text>
+  <path d="M300 270 H640" class="w v5"/>
+  <path d="M300 310 H640" class="w gnd"/>
+  <path d="M300 350 H640" class="w heat"/>
+  <path d="M300 390 H640" class="w pump"/>
+  <text x="470" y="344" class="small" text-anchor="middle">LOW = heater on</text>
+  <text x="470" y="384" class="small" text-anchor="middle">LOW = pump on</text>
+
+  <!-- Mains loads (detail in wiring.md) -->
+  <path d="M860 300 H920" class="dash"/>
+  <path d="M860 370 H920" class="dash"/>
+  <rect x="920" y="272" width="170" height="56" rx="6" class="mains"/>
+  <text x="932" y="295" class="bold">Heater</text>
+  <text x="932" y="314" class="small">mains — see wiring.md</text>
+  <rect x="920" y="342" width="170" height="56" rx="6" class="mains"/>
+  <text x="932" y="365" class="bold">Pump</text>
+  <text x="932" y="384" class="small">mains — see wiring.md</text>
+  <text x="920" y="428" class="small">⚠ Mains: wired and checked by</text>
+  <text x="920" y="443" class="small">a qualified person, with an RCD.</text>
+
+  <!-- Buzzer -->
+  <path d="M300 450 H760 V465" class="w v5"/>
+  <rect x="740" y="465" width="40" height="30" rx="4" class="box"/>
+  <text x="760" y="485" text-anchor="middle" class="bold">BZ</text>
+  <text x="747" y="461" class="small" text-anchor="end">+</text>
+  <text x="792" y="478">active buzzer</text>
+  <text x="792" y="494" class="small">(built-in oscillator)</text>
+  <path d="M760 495 V512 L742 526" class="part"/>
+  <path d="M742 520 V548" class="part" style="stroke-width:3"/>
+  <path d="M742 542 L760 556 V580" class="part"/>
+  <polygon points="760,556 751.2,554.3 756.1,547.9" fill="#1f2328"/>
+  <circle cx="750" cy="534" r="22" fill="none" stroke="#1f2328" stroke-width="1.2"/>
+  <text x="792" y="530">NPN transistor</text>
+  <text x="792" y="546" class="small">e.g. BC547 or 2N2222</text>
+  <path d="M300 500 H580 V534 H600" class="w buzz"/>
+  <path d="M600 534 L604 528 L612 540 L620 528 L628 540 L636 528 L644 540 L648 534 H650" class="part"/>
+  <path d="M650 534 H742" class="w buzz"/>
+  <text x="625" y="520" text-anchor="middle">1 kΩ</text>
+  <text x="440" y="494" class="small" text-anchor="middle">HIGH = buzzer on</text>
+  <path d="M300 580 H760" class="w gnd"/>
+  <circle cx="760" cy="580" r="4" fill="#1f2328"/>
+  <text x="640" y="625" class="small">The transistor keeps the GPIO current low; BCM 10 stays active-high.</text>
+</svg>

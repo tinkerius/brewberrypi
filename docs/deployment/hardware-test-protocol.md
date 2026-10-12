@@ -23,7 +23,8 @@ hardware setup and before the first real brew. Fill in the *Result* column (✅ 
 
 - BrewberryPi OS installed with the application image, service `brewberrypi` running
   (`sudo systemctl status brewberrypi`).
-- Wiring as in `HW-011` ([06-hardware-abstraction.md](../specification/06-hardware-abstraction.md)) or as
+- Wiring as in `HW-011` ([06-hardware-abstraction.md](../specification/06-hardware-abstraction.md),
+  diagram in the [wiring guide](../hardware/wiring.md)) or as
   configured in `/config/config.json`:
 
 | Function | BCM | Header pin | Active level |

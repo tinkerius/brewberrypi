@@ -22,6 +22,7 @@ browser in the local network.
 | [docs/recovery/bug-and-deviation-log.md](docs/recovery/bug-and-deviation-log.md) | Where and why the spec deviates from the original implementation |
 | [docs/adr/](docs/adr/) | Architecture decision records |
 | [docs/implementation-plan.md](docs/implementation-plan.md) | Milestones M0–M12 |
+| [docs/hardware/wiring.md](docs/hardware/wiring.md) | Wiring guide and diagram (default pins) |
 
 ## Working with Claude Code
 
