@@ -55,5 +55,5 @@ strict = true
 files = ["src", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["fastjsonschema"]
+module = ["fastjsonschema", "gpiod", "gpiod.*"]
 ignore_missing_imports = true

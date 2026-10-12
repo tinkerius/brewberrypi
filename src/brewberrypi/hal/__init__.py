@@ -70,6 +70,15 @@ class Hal(ABC):
     def switch_everything_off(self) -> None:
         """Heating 0 and pump off."""
 
+    # Lifecycle, not part of HW-001; the application calls them once on startup and shutdown.
+
+    async def start(self) -> None:  # noqa: B027  (optional hook)
+        """Start background work (sensor loop) and wait for the first reading (HW-030, HW-034)."""
+
+    async def close(self) -> None:
+        """Everything off and resources released (HW-021)."""
+        self.switch_everything_off()
+
 
 def clamp_power(power: float) -> float:
     """Clamp a heating power to [0, 1] (HW-001). Anything that is not a number above 0, NaN included, is 0."""
