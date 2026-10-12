@@ -112,3 +112,17 @@ The container image implements the application side of the
 with all outputs off, the systemd notify protocol (`READY=1`, `STOPPING=1`, `WATCHDOG=1` every
 `BREWBERRYPI_WATCHDOG_MS` while the engine and broadcasts are alive) when `NOTIFY_SOCKET` is set, and
 `GET /healthz`. `tests/test_contract.py` checks this against the real program.
+
+### Diagnostic tools
+
+Three command-line tools for installation and diagnosis on the Pi ([12-auxiliary-tools.md](docs/specification/12-auxiliary-tools.md)).
+They read the same configuration (`--config`), and accept `--dummymode` for a test run without hardware:
+
+| Command | What it does |
+|---|---|
+| `brewberrypi-temperature-logger [FILE]` | Appends `yyyy/MM/dd HH:mm:ss;<°C>` (or `ERROR`) to `temperatureLog.csv` every second |
+| `brewberrypi-sensor-test` | Prints the DS18B20 temperature about once per second, failures on stderr |
+| `brewberrypi-gpio-test [--duty-cycle]` | Switches heating, pump and buzzer in a 2-second cycle to check the wiring; all off on Ctrl+C |
+
+The logger and the sensor test only read the sensor, so they can run next to the main application. The GPIO test
+needs the GPIO lines, so stop the main application first.

@@ -9,21 +9,23 @@ exactly. Pump and heating are kept in memory; there are no sensor errors.
 
 import logging
 import threading
-from decimal import ROUND_HALF_UP, Decimal
 
 from brewberrypi.clock import Clock
 from brewberrypi.config import SimulationConfig
-from brewberrypi.hal import LONG_BEEP, SHORT_BEEP, BeepPattern, Hal, Temperature, clamp_power
+from brewberrypi.hal import (
+    LONG_BEEP,
+    SHORT_BEEP,
+    BeepPattern,
+    Hal,
+    Temperature,
+    clamp_power,
+    round_temperature,
+)
 from brewberrypi.hal.sound import Player, pattern_wav
 
 log = logging.getLogger(__name__)
 
 STEP_SECONDS = 1.0
-
-
-def round_temperature(value: float) -> float:
-    """One decimal place, half-up away from zero, like the real sensor (HW-031)."""
-    return float(Decimal(repr(value)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
 
 
 class SimulationHal(Hal):

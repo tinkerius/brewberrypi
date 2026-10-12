@@ -13,6 +13,9 @@ dependencies = [
 
 [project.scripts]
 brewberrypi = "brewberrypi.__main__:main"
+brewberrypi-temperature-logger = "brewberrypi.tools:temperature_logger"
+brewberrypi-gpio-test = "brewberrypi.tools:gpio_test"
+brewberrypi-sensor-test = "brewberrypi.tools:sensor_test"
 
 [dependency-groups]
 dev = [
