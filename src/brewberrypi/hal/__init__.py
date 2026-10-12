@@ -6,6 +6,7 @@ simulation for `--dummymode` (M6) and the Raspberry Pi (M9). Every implementatio
 """
 
 from abc import ABC, abstractmethod
+from decimal import ROUND_HALF_UP, Decimal
 
 Temperature = float | None
 """A kettle temperature in °C, or `None` for INVALID (HW-032). Callers must handle `None` (FIX-02)."""
@@ -85,3 +86,8 @@ def clamp_power(power: float) -> float:
     if not power > 0:
         return 0.0
     return min(power, 1.0)
+
+
+def round_temperature(value: float) -> float:
+    """One decimal place, half-up away from zero, like the real sensor (HW-031)."""
+    return float(Decimal(repr(value)).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))

@@ -13,8 +13,8 @@ import pytest
 from brewberrypi.clock import ManualClock, ScaledClock
 from brewberrypi.config import SimulationConfig, load_config
 from brewberrypi.engine import Engine
-from brewberrypi.hal import LONG_BEEP, SHORT_BEEP, sound
-from brewberrypi.hal.simulation import SimulationHal, round_temperature
+from brewberrypi.hal import LONG_BEEP, SHORT_BEEP, round_temperature, sound
+from brewberrypi.hal.simulation import SimulationHal
 from brewberrypi.recipes import load_recipes
 
 CONFIG = load_config(Path(__file__).parents[1] / "docs" / "specification" / "data" / "config.example.json")
