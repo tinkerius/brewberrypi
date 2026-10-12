@@ -60,6 +60,7 @@ def create_app(  # noqa: PLR0913  (clocks and UI folder are injectable for tests
 
     @asynccontextmanager
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
+        await hal.start()  # sensor loop, first reading (HW-030, HW-034); outputs are already off (HW-020)
         engine = Engine(hal, clock, recipes, config)
         chart = TemperatureChart(config.chart.max_points)
         periods = config.broadcast
@@ -89,6 +90,7 @@ def create_app(  # noqa: PLR0913  (clocks and UI folder are injectable for tests
             broadcasts.cancel()
             await asyncio.gather(broadcasts, return_exceptions=True)
             await engine.shutdown()  # outputs off on every shutdown path (HW-021, ADR-0001)
+            await hal.close()  # buzzer off, GPIO released
 
     async def realtime(websocket: WebSocket) -> None:
         engine: Engine = websocket.app.state.engine

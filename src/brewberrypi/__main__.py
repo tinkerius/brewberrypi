@@ -1,7 +1,7 @@
 """Command-line entry point (`brewberrypi`).
 
 Startup (NFR-021): read and validate the configuration and the recipe file, create the HAL (simulation with
-`--dummymode`; the Raspberry Pi HAL follows in M9), then serve the web application. Refuses to start with the
+`--dummymode`, else the Raspberry Pi), then serve the web application. Refuses to start with the
 exit codes of the runtime contract. Readiness notification, watchdog and `/healthz` follow in M10.
 """
 
@@ -17,6 +17,9 @@ from starlette.types import ASGIApp
 from brewberrypi import __version__
 from brewberrypi.clock import Clock, ScaledClock, SystemClock
 from brewberrypi.config import ConfigError, load_config
+from brewberrypi.hal import Hal
+from brewberrypi.hal.gpio import GpioError
+from brewberrypi.hal.raspberry_pi import RaspberryPiHal
 from brewberrypi.hal.simulation import SimulationHal
 from brewberrypi.hal.sound import find_player
 from brewberrypi.recipes import RecipeError, load_recipes
@@ -72,13 +75,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         log.error("invalid recipe file, refusing to start: %s", error)
         return EXIT_INVALID_RECIPES
     log.info("recipes: %s", ", ".join(recipe.id for recipe in recipes))
-    if not args.dummymode:
-        log.error(
-            "hardware initialisation failed: the Raspberry Pi HAL is not implemented yet (milestone M9)"
-        )
-        return EXIT_HARDWARE
-    clock = create_clock(config.simulation.time_scale)
-    hal = SimulationHal(clock, config.simulation, find_player())
+    clock: Clock
+    hal: Hal
+    if args.dummymode:
+        clock = create_clock(config.simulation.time_scale)
+        hal = SimulationHal(clock, config.simulation, find_player())
+    else:
+        clock = SystemClock()  # simulation.timeScale does not apply to real hardware (HW-064)
+        try:
+            hal = RaspberryPiHal(clock, config.hardware)
+        except GpioError as error:
+            log.error("hardware initialisation failed: %s", error)
+            return EXIT_HARDWARE
     return serve(create_app(config, recipes, hal, clock), config.server.port)
 
 
