@@ -113,6 +113,8 @@ with all outputs off, the systemd notify protocol (`READY=1`, `STOPPING=1`, `WAT
 `BREWBERRYPI_WATCHDOG_MS` while the engine and broadcasts are alive) when `NOTIFY_SOCKET` is set, and
 `GET /healthz`. `tests/test_contract.py` checks this against the real program.
 
+Before the first real brew, run the [hardware test protocol](docs/deployment/hardware-test-protocol.md) on the Pi.
+
 ### Diagnostic tools
 
 Three command-line tools for installation and diagnosis on the Pi ([12-auxiliary-tools.md](docs/specification/12-auxiliary-tools.md)).
