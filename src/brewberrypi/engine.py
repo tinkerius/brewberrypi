@@ -33,6 +33,9 @@ ALREADY_PAUSED = "Process is already paused."
 LOAD_AGAIN = "Load the process again."
 NO_ACTIVE_REQUEST = "There is no active request to respond to."
 
+STALLED_AFTER_TICKS = 10
+"""A running execution loop that has not ticked for this many periods counts as hung (watchdog)."""
+
 
 @dataclass(frozen=True)
 class Reply:
@@ -69,6 +72,7 @@ class Engine:
         self._reminder = RequestReminder(hal, clock, config.ui.request_reminder_interval_seconds)
         self._process: BrewProcess | None = None
         self._loop_task: asyncio.Task[None] | None = None
+        self._last_tick = clock.monotonic()
         self._resumed = asyncio.Event()
 
     @property
@@ -120,10 +124,12 @@ class Engine:
         if process.state == "Paused":
             process.running_time.resume()
             process.state = "Running"
+            self._last_tick = self._clock.monotonic()
             self._resumed.set()
             return self._accept("start", "Process resumed.")
         process.state = "Running"
         self._resumed.set()
+        self._last_tick = self._clock.monotonic()
         self._loop_task = asyncio.get_running_loop().create_task(self._execute(process))
         self._loop_task.add_done_callback(self._execution_ended)
         return self._accept("start", "Process started.")
@@ -173,6 +179,16 @@ class Engine:
         self._follow_request()
         return self._accept("respond", f"Response '{option}' accepted.")
 
+    def alive(self) -> bool:
+        """`False` when a running execution loop has ended or stopped ticking (watchdog, contract §4)."""
+        process = self._process
+        if process is None or process.state != "Running":
+            return True
+        task = self._loop_task
+        if task is None or task.done():
+            return False
+        return self._clock.monotonic() - self._last_tick <= STALLED_AFTER_TICKS * self._tick
+
     async def shutdown(self) -> None:
         """End the execution loop and the reminder and switch everything off (application shutdown)."""
         task = self._cancel_execution()
@@ -191,6 +207,7 @@ class Engine:
                 if process.state == "Paused":
                     await self._resumed.wait()
                     continue
+                self._last_tick = self._clock.monotonic()
                 achieved = self._pursue(goal)
                 self._follow_request()
                 if achieved:
