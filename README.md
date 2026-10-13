@@ -82,8 +82,11 @@ GHCR and signs it with cosign v2. It then verifies the image against the device'
 [deploy/signing/README.md](deploy/signing/README.md). Finally it creates a GitHub release: a **draft** for
 `v1.2.3`, published by hand once the [hardware test protocol](docs/deployment/hardware-test-protocol.md) has
 passed, or a published **pre-release** with an untested-on-hardware warning for `v1.2.3-alpha.N`, `-beta.N`
-or `-rc.N` (`pyproject.toml` then holds `1.2.3-alpha.N`). BrewberryPi OS installs only `MAJOR.MINOR.PATCH`
-versions (runtime contract §1), so a pre-release image has to be run by hand.
+or `-rc.N` (runtime contract §1).
+
+To release, bump the version in `pyproject.toml` (e.g. `0.1.0-alpha.3`), `uv.lock` and
+`frontend/package*.json`, merge, then push the tag, or run the manual workflow *Tag release*
+(`.github/workflows/tag-release.yml`), which tags `main` with that version and starts CI on the tag.
 
 ### Configuration
 

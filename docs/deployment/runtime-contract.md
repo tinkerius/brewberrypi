@@ -14,7 +14,7 @@ open specification questions in [13-open-questions.md](../specification/13-open-
 | Item | Value |
 |---|---|
 | Name | `ghcr.io/tinkerius/brewberrypi` (private registry) |
-| Release tags | Semantic versions `MAJOR.MINOR.PATCH`. Devices never use `latest`. |
+| Release tags | Semantic versions `MAJOR.MINOR.PATCH`, or pre-releases `MAJOR.MINOR.PATCH-alpha.N`, `-beta.N`, `-rc.N`, ordered as in SemVer 2.0 (a pre-release sorts before its release: `0.1.0-alpha.2` < `0.1.0`). The tag equals the label `org.opencontainers.image.version` and the `version` of `/healthz`. Devices never use `latest`. |
 | Platforms | `linux/arm64` (device), `linux/amd64` (simulation on developer machines) |
 | Signature | cosign key-pair signature in the legacy tag format `sha256-<digest>.sig` (cosign v2.x); public key pinned in the host's `policy.json` |
 | Labels | `org.opencontainers.image.version`, `org.brewberrypi.runtime-contract=1` |

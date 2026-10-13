@@ -126,8 +126,8 @@ jobs:
             > **Pre-release: not yet tested on hardware.** It builds and passes CI, but the hardware
             > test protocol (docs/deployment/hardware-test-protocol.md) has not been run on this image.
             > Never connect a mains heater: use LEDs or the relay board on its own.
-            > BrewberryPi OS installs only `MAJOR.MINOR.PATCH` versions (runtime contract §1), so it
-            > does not preload or update to this image; run it with Podman or Docker by hand.
+            > Installing it on BrewberryPi OS needs an OS version that accepts pre-release app versions
+            > (runtime contract §1).
         run: |
           version=${TAG#v}
           notes="Image: \`$IMAGE:$version\` (\`$IMAGE@$DIGEST\`), linux/arm64 and linux/amd64, signed with the key in deploy/signing/cosign.pub."
