@@ -1,13 +1,21 @@
 name: Tag release
 
-# Tags main with v<version> from pyproject.toml and starts CI on that tag, whose
-# 'image' job then pushes, signs and verifies the release image (README, CI).
+# Tags main (or an older commit of main's history, input 'commit') with
+# v<version> from that commit's pyproject.toml and starts CI on that tag, whose
+# 'image' job then pushes, signs and verifies the release image and whose
+# 'release' job creates the GitHub release (README, CI).
 # The same as pushing the tag by hand, for when that is not at hand
 # (Actions tab -> Tag release -> Run workflow). A tag pushed with GITHUB_TOKEN
 # starts no workflow by itself, so CI is dispatched explicitly.
 
 on:
   workflow_dispatch:
+    inputs:
+      commit:
+        description: "Commit to tag (default: the tip of main); must be in main's history"
+        required: false
+        default: main
+        type: string
 
 permissions:
   contents: write
@@ -22,11 +30,15 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Tag main and start CI
+      - name: Tag the commit and start CI
         env:
           GH_TOKEN: ${{ github.token }}
           ACTOR: ${{ github.actor }}
+          COMMIT: ${{ inputs.commit }}
         run: |
+          git merge-base --is-ancestor "$COMMIT" origin/main \
+            || { echo "::error::$COMMIT is not in main's history"; exit 1; }
+          git checkout -q --detach "$COMMIT"
           version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
           tag=v$version
           if git rev-parse -q --verify "refs/tags/$tag" > /dev/null; then
