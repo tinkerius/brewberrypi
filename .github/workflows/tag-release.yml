@@ -1,0 +1,41 @@
+name: Tag release
+
+# Tags main with v<version> from pyproject.toml and starts CI on that tag, whose
+# 'image' job then pushes, signs and verifies the release image (README, CI).
+# The same as pushing the tag by hand, for when that is not at hand
+# (Actions tab -> Tag release -> Run workflow). A tag pushed with GITHUB_TOKEN
+# starts no workflow by itself, so CI is dispatched explicitly.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Tag main and start CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          tag=v$version
+          if git rev-parse -q --verify "refs/tags/$tag" > /dev/null; then
+             echo "::error::tag $tag exists already; bump the version in pyproject.toml first"
+             exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tag" -m "BrewberryPi $tag (requested by $ACTOR)"
+          git push origin "refs/tags/$tag"
+          gh workflow run ci.yml --repo "$GITHUB_REPOSITORY" --ref "$tag"
+          echo "tagged $(git rev-parse --short HEAD) as $tag; CI started"

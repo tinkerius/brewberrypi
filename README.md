@@ -79,7 +79,9 @@ together with the Vite dev server.
 CI (`.github/workflows/ci.yml`) runs lint, test and build on every push and pull request, and builds the image
 for `linux/arm64` and `linux/amd64`. A tag `v<version>` (matching `pyproject.toml`) also pushes the image to
 GHCR and signs it with cosign v2. It then verifies the image against the device's signature policy; see
-[deploy/signing/README.md](deploy/signing/README.md).
+[deploy/signing/README.md](deploy/signing/README.md). To release, bump the version in `pyproject.toml`,
+`uv.lock` and `frontend/package*.json`, merge, then push the tag, or run the manual workflow *Tag release*
+(`.github/workflows/tag-release.yml`), which tags `main` with that version and starts CI on the tag.
 
 ### Configuration
 
