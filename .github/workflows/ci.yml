@@ -37,6 +37,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
     env:
       RELEASE: ${{ startsWith(github.ref, 'refs/tags/v') }}
     steps:
@@ -45,6 +47,8 @@ jobs:
       - name: Release tag must match the project version
         if: env.RELEASE == 'true'
         run: |
+          [[ $GITHUB_REF_NAME =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]] \
+            || { echo "tag $GITHUB_REF_NAME is not v1.2.3 or v1.2.3-alpha.N/-beta.N/-rc.N"; exit 1; }
           version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
           test "${GITHUB_REF_NAME#v}" = "$version" || { echo "tag $GITHUB_REF_NAME != version $version"; exit 1; }
           echo "VERSION=$version" >> "$GITHUB_ENV"
@@ -99,3 +103,37 @@ jobs:
             --policy /signing/policy.json --registries.d /signing/registries.d \
             copy --src-creds "${{ github.actor }}:$GHCR_TOKEN" \
             "docker://$IMAGE@$DIGEST" dir:/tmp/verify
+
+  # A version tag (v1.2.3) makes a draft release: it is published by hand once the hardware test
+  # protocol (docs/deployment/hardware-test-protocol.md) has passed. A pre-release tag (v1.2.3-alpha.1,
+  # -beta.N, -rc.N) is published at once as a GitHub pre-release, never "Latest", with a warning that
+  # it is untested. Same scheme as tinkerius/brewberrypi-os.
+  release:
+    name: GitHub release
+    needs: image
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          DIGEST: ${{ needs.image.outputs.digest }}
+          PRERELEASE_NOTES: |
+            > [!WARNING]
+            > **Pre-release: not yet tested on hardware.** It builds and passes CI, but the hardware
+            > test protocol (docs/deployment/hardware-test-protocol.md) has not been run on this image.
+            > Never connect a mains heater: use LEDs or the relay board on its own.
+            > BrewberryPi OS installs only `MAJOR.MINOR.PATCH` versions (runtime contract §1), so it
+            > does not preload or update to this image; run it with Podman or Docker by hand.
+        run: |
+          version=${TAG#v}
+          notes="Image: \`$IMAGE:$version\` (\`$IMAGE@$DIGEST\`), linux/arm64 and linux/amd64, signed with the key in deploy/signing/cosign.pub."
+          case $TAG in
+             v*-*) mode=(--prerelease --latest=false); notes="$PRERELEASE_NOTES"$'\n'"$notes" ;;
+             *)    mode=(--draft) ;;
+          esac
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --verify-tag "${mode[@]}" \
+            --title "BrewberryPi $TAG" --generate-notes --notes "$notes"

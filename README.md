@@ -79,7 +79,11 @@ together with the Vite dev server.
 CI (`.github/workflows/ci.yml`) runs lint, test and build on every push and pull request, and builds the image
 for `linux/arm64` and `linux/amd64`. A tag `v<version>` (matching `pyproject.toml`) also pushes the image to
 GHCR and signs it with cosign v2. It then verifies the image against the device's signature policy; see
-[deploy/signing/README.md](deploy/signing/README.md).
+[deploy/signing/README.md](deploy/signing/README.md). Finally it creates a GitHub release: a **draft** for
+`v1.2.3`, published by hand once the [hardware test protocol](docs/deployment/hardware-test-protocol.md) has
+passed, or a published **pre-release** with an untested-on-hardware warning for `v1.2.3-alpha.N`, `-beta.N`
+or `-rc.N` (`pyproject.toml` then holds `1.2.3-alpha.N`). BrewberryPi OS installs only `MAJOR.MINOR.PATCH`
+versions (runtime contract §1), so a pre-release image has to be run by hand.
 
 ### Configuration
 
