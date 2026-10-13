@@ -15,9 +15,9 @@ controllable/accelerated clock. `T` = temperature reported by the HAL.
 
 ## 11.2 Duty cycle
 
-- `AC-010` (CTL-042) `setHeating(0.25)` → relay on 500 ms / off 1500 ms repeating (±20 ms). `setHeating(0.75)` → on 1500 / off 500.
-- `AC-011` (CTL-043) Calling `setHeating(0.5)` every 500 ms keeps a regular 500/500 cycle (not restarted).
-- `AC-012` (CTL-044, FIX-03) While a 0.5 cycle runs (in any phase): `setHeating(1.0)` → relay on within 50 ms and **stays on** for ≥ 5 s; `getHeatingStatus()` = 1.0. `setHeating(0)` → relay off and stays off.
+- `AC-010` (CTL-042, FIX-26) `setHeating(0.25)` → relay on 10 s / off 30 s repeating (±20 ms). `setHeating(0.75)` → on 30 s / off 10 s.
+- `AC-011` (CTL-043) Calling `setHeating(0.5)` every 500 ms keeps a regular 10 s / 10 s cycle (not restarted).
+- `AC-012` (CTL-044, FIX-03) While a 0.5 cycle runs (in any phase): `setHeating(1.0)` → relay on within 50 ms and **stays on** for ≥ 25 s (longer than one 0.5 period); `getHeatingStatus()` = 1.0. `setHeating(0)` → relay off and stays off.
 
 ## 11.3 Sensor
 

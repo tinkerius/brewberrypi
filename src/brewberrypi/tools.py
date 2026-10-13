@@ -27,7 +27,7 @@ from brewberrypi.config import Config, ConfigError, load_config
 from brewberrypi.hal import Hal, round_temperature
 from brewberrypi.hal.ds18b20 import SensorError, read_sensor
 from brewberrypi.hal.gpio import GpioError
-from brewberrypi.hal.raspberry_pi import RaspberryPiHal
+from brewberrypi.hal.raspberry_pi import RaspberryPiHal, duty_phases
 from brewberrypi.hal.simulation import SimulationHal
 
 EXIT_OK = 0
@@ -37,7 +37,8 @@ EXIT_HARDWARE = 4
 DEFAULT_LOG_FILE = "temperatureLog.csv"
 READ_PERIOD_SECONDS = 1.0
 GPIO_STEP_SECONDS = 2.0
-DUTY_STEP_SECONDS = 10.0
+DUTY_STEP_PERIODS = 2
+DUTY_MIN_STEP_SECONDS = 20.0
 
 Read = Callable[[], float]
 """One temperature reading; raises `SensorError` when there is none."""
@@ -123,14 +124,22 @@ async def cycle_outputs(hal: Hal, pins: dict[str, int], clock: Clock, rounds: in
         done += 1
 
 
-async def cycle_duty(hal: Hal, clock: Clock, rounds: int | None = None) -> None:
-    """TOOL-002 optional mode: heating power 0.0, 0.1 … 1.0, each for 10 s, to check CTL-042."""
+def duty_step_seconds(power: float, min_phase_ms: int) -> float:
+    """How long the duty-cycle mode holds a power: two periods of its cycle, at least 20 s (TOOL-002)."""
+    period_ms = sum(duty_phases(power, min_phase_ms)) if 0 < power < 1 else 0
+    return max(DUTY_MIN_STEP_SECONDS, DUTY_STEP_PERIODS * period_ms / 1000)
+
+
+async def cycle_duty(hal: Hal, clock: Clock, min_phase_ms: int, rounds: int | None = None) -> None:
+    """TOOL-002 optional mode: heating power 0.0, 0.1 … 1.0, each for two periods, to check CTL-042."""
     done = 0
     while rounds is None or done < rounds:
         for tenth in range(11):
-            hal.set_heating(tenth / 10)
-            print(f"heating power {tenth / 10:.1f}", flush=True)
-            await clock.sleep(DUTY_STEP_SECONDS)
+            power = tenth / 10
+            seconds = duty_step_seconds(power, min_phase_ms)
+            hal.set_heating(power)
+            print(f"heating power {power:.1f} for {seconds:g} s", flush=True)
+            await clock.sleep(seconds)
         done += 1
 
 
@@ -204,7 +213,7 @@ def gpio_test(argv: Sequence[str] | None = None) -> int:
     """`brewberrypi-gpio-test [--duty-cycle]` (TOOL-002)."""
     parser = _parser("Switch the outputs in a cycle to check the wiring (TOOL-002).")
     parser.add_argument(
-        "--duty-cycle", action="store_true", help="cycle the heating power 0.0..1.0 every 10 s"
+        "--duty-cycle", action="store_true", help="cycle the heating power 0.0..1.0, two duty periods each"
     )
     args = parser.parse_args(argv)
     config = _setup(args)
@@ -223,7 +232,10 @@ def gpio_test(argv: Sequence[str] | None = None) -> int:
 
     async def main() -> None:
         try:
-            await (cycle_duty(hal, clock) if args.duty_cycle else cycle_outputs(hal, pins, clock))
+            if args.duty_cycle:
+                await cycle_duty(hal, clock, hardware.heating.min_phase_milliseconds)
+            else:
+                await cycle_outputs(hal, pins, clock)
         finally:
             await hal.close()  # heating, pump and buzzer off, GPIO released
             print("all outputs off", flush=True)

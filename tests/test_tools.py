@@ -135,11 +135,15 @@ async def test_TOOL_002_cycles_the_outputs_every_2_s(capsys: pytest.CaptureFixtu
 async def test_TOOL_002_duty_cycle_mode() -> None:
     clock = ManualClock()
     hal = MockHal(clock)
-    task = asyncio.create_task(tools.cycle_duty(hal, clock, rounds=1))
-    await clock.advance(110)
+    task = asyncio.create_task(tools.cycle_duty(hal, clock, 10000, rounds=1))
+    await clock.advance(1000)
     await task
-    powers = [(e.time, e.value) for e in hal.events if e.operation == "heating"]
-    assert powers == [(i * 10, i / 10) for i in range(11)]
+    powers = [(round(e.time, 3), e.value) for e in hal.events if e.operation == "heating"]
+    # each power for two periods of its duty cycle (CTL-042), at least 20 s
+    steps = [20, 200, 100, 66.666, 50, 40, 50, 66.666, 100, 200]
+    starts = [round(sum(steps[:i]), 3) for i in range(11)]
+    assert powers == [(starts[i], i / 10) for i in range(11)]
+    assert starts[-1] + 20 < 16 * 60  # one round takes about 15 minutes
 
 
 def test_TOOL_002_switches_everything_off_on_exit(

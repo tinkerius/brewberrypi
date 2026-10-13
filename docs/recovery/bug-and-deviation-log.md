@@ -33,6 +33,7 @@ Legacy paths refer to the original Eclipse project `com.brewberrypi` (not part o
 | FIX-22 | An exception in a goal's `pursue` is logged and retried every tick, but the heater keeps its last state (possibly on). | `MashWorker.run` | Heater off on the failing tick. | ENG-020/023 |
 | FIX-24 | Goal descriptions containing `\n` (iodine additional rest) are rendered on one line in HTML. | `index.html` | Render line breaks. | UI-031 |
 | FIX-25 | Timers use wall-clock `new Date()`; the Pi has no RTC, NTP time jumps after boot distort rests. | `MashGoalBase.pursueTimerange` | Monotonic clock. | NFR-005 |
+| FIX-26 | Duty cycle with a **500 ms** minimum phase: at 50 % power (near the target and during the whole boil) the mechanical heater relay switches about once per second and wears out after a few dozen hours of brewing. | `RaspberryPiHardwareControllerDutyCycleImpl` | Same formula, minimum phase **10 s** (10 s on + 10 s off at 50 %), configurable. See Q-26. | CTL-042, AC-010, AC-011, TOOL-002 |
 
 (FIX-23 intentionally unused.)
 

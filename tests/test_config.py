@@ -40,7 +40,7 @@ def test_default_values() -> None:
     config = load_config(EXAMPLE)
     assert config.server.port == 8080
     assert config.hardware.heating.mode == "dutycycle"
-    assert config.hardware.heating.min_phase_milliseconds == 500
+    assert config.hardware.heating.min_phase_milliseconds == 10000  # FIX-26
     assert config.hardware.sensor.sensor_id == "auto"
     assert config.hardware.sensor.devices_path == Path("/sys/bus/w1/devices")
     assert config.hardware.sensor.stale_after_seconds == 5

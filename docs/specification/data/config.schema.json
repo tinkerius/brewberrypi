@@ -25,7 +25,7 @@
             "pin": { "$ref": "#/$defs/bcmPin", "default": 23 },
             "activeLow": { "type": "boolean", "default": true },
             "mode": { "enum": ["dutycycle", "onoff"], "default": "dutycycle" },
-            "minPhaseMilliseconds": { "type": "integer", "minimum": 100, "default": 500 }
+            "minPhaseMilliseconds": { "type": "integer", "minimum": 100, "default": 10000 }
           },
           "additionalProperties": false
         },
