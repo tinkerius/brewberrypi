@@ -87,6 +87,8 @@ or `-rc.N` (runtime contract §1).
 To release, bump the version in `pyproject.toml` (e.g. `0.1.0-alpha.3`), `uv.lock` and
 `frontend/package*.json`, merge, then push the tag, or run the manual workflow *Tag release*
 (`.github/workflows/tag-release.yml`), which tags `main` with that version and starts CI on the tag.
+To retire a version, run *Remove release* (`.github/workflows/remove-release.yml`): it deletes its
+registry image and signatures, its GitHub release and its tag. Devices keep an installed copy.
 
 ### Configuration
 

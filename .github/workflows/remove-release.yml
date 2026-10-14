@@ -1,0 +1,106 @@
+name: Remove release
+
+# Removes one release: its registry image ghcr.io/tinkerius/brewberrypi:<version>
+# (the multi-arch index, its platform manifests unless another tagged release
+# still uses them, and the cosign signature), its GitHub release and its git
+# tag v<version>. For retiring versions that devices must no longer install
+# (Actions tab -> Remove release -> Run workflow). Devices keep an installed
+# image; they only can't download it again. Refuses the version in
+# pyproject.toml on main.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to remove, without the v (e.g. 0.2.0)"
+        required: true
+        type: string
+      confirm:
+        description: "Type the version again"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  OWNER: tinkerius
+  PACKAGE: brewberrypi
+  IMAGE: ghcr.io/tinkerius/brewberrypi
+
+jobs:
+  remove:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Check the request
+        env:
+          VERSION: ${{ inputs.version }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]] \
+            || { echo "::error::'$VERSION' is not a release version"; exit 1; }
+          [ "$CONFIRM" = "$VERSION" ] || { echo "::error::the confirmation does not match"; exit 1; }
+          current=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          [ "$VERSION" != "$current" ] || { echo "::error::$VERSION is the current version on main"; exit 1; }
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove the registry image
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          api=/users/$OWNER/packages/container/$PACKAGE/versions
+          gh api --paginate "$api?per_page=100" --jq '.[] | [.id, .name, ((.metadata.container.tags // []) | join(","))] | @tsv' > versions.tsv
+          index=$(awk -F'\t' -v v="$VERSION" '{n = split($3, t, ","); for (i = 1; i <= n; i++) if (t[i] == v) print $2}' versions.tsv)
+          if [ -z "$index" ]; then
+             echo "no image tagged $VERSION in the registry"
+             exit 0
+          fi
+          children() { docker buildx imagetools inspect --raw "$IMAGE@$1" | jq -r '.manifests[]?.digest'; }
+          # Platform manifests still used by another tagged release are kept.
+          : > keep.txt
+          awk -F'\t' -v d="$index" '$3 != "" && $2 != d && $3 !~ /\.sig$/ {print $2}' versions.tsv |
+             while read -r other; do children "$other" >> keep.txt; done
+          {
+             echo "$index"
+             children "$index" | grep -vxFf keep.txt || true
+          } > manifests.txt
+          # cosign sign --recursive signed the index and each platform manifest:
+          # one sha256-<hex>.sig tag per manifest.
+          cp manifests.txt remove.txt
+          while read -r digest; do
+             sig=$(echo "$digest" | tr ':' '-').sig
+             awk -F'\t' -v s="$sig" '$3 == s {print $2}' versions.tsv >> remove.txt
+          done < manifests.txt
+          while read -r digest; do
+             id=$(awk -F'\t' -v d="$digest" '$2 == d {print $1}' versions.tsv)
+             [ -n "$id" ] || continue
+             gh api -X DELETE "$api/$id"
+             echo "deleted $digest (package version $id)"
+          done < remove.txt
+
+      - name: Remove the GitHub release and the tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          tag=v$VERSION
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+             gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes
+             echo "deleted the release $tag"
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" > /dev/null; then
+             git push origin ":refs/tags/$tag"
+             echo "deleted the tag $tag"
+          fi
