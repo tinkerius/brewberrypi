@@ -21,7 +21,7 @@ tool had its own copy of pin numbers / sensor code).
   4. wait 2 s → pump **off** → print;
   5. wait 2 s → buzzer pulse 500 ms → print `buzzer pulse for 500ms`.
 - On exit (Ctrl+C): heating off, pump off, buzzer off, release GPIO.
-- `[NEW, optional]` A mode that cycles the heating duty cycle through 0.0, 0.1 … 1.0 every 10 s (existed as commented-out code in legacy) to verify `CTL-042`.
+- `[NEW, optional]` A mode that cycles the heating duty cycle through 0.0, 0.1 … 1.0 (existed as commented-out code in legacy, with 10 s per step) to verify `CTL-042`. Each step lasts two periods of its duty cycle, at least 20 s (0.0 and 1.0: 20 s; 0.5: 40 s; 0.1 and 0.9: 200 s; one round about 15 minutes with the default `minPhaseMilliseconds`), and prints the power and the step length.
 
 ## `TOOL-003` Temperature sensor test
 

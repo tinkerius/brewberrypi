@@ -89,44 +89,49 @@ async def hal(clock: ManualClock, outputs: RecordingOutputs, sensor: Sensor) -> 
 
 @pytest.mark.parametrize(
     ("power", "on_ms", "off_ms"),
-    [(0.10, 500, 4500), (0.25, 500, 1500), (0.50, 500, 500), (0.75, 1500, 500), (0.90, 4500, 500)],
+    [
+        (0.10, 10000, 90000),
+        (0.25, 10000, 30000),
+        (0.50, 10000, 10000),
+        (0.75, 30000, 10000),
+        (0.90, 90000, 10000),
+    ],
 )
 def test_CTL_042_duty_cycle_phases(power: float, on_ms: int, off_ms: int) -> None:
-    assert duty_phases(power, 500) == (on_ms, off_ms)
+    assert HARDWARE.heating.min_phase_milliseconds == 10000  # FIX-26 (legacy: 500)
+    assert duty_phases(power, 10000) == (on_ms, off_ms)
 
 
 async def test_AC_010_quarter_and_three_quarter_power(
     hal: RaspberryPiHal, clock: ManualClock, outputs: RecordingOutputs
 ) -> None:
     hal.set_heating(0.25)
-    await clock.advance(6)
+    await clock.advance(120)
     assert outputs.timeline(HEATING) == [
         (0, True),
-        (0.5, False),
-        (2, True),
-        (2.5, False),
-        (4, True),
-        (4.5, False),
-        (6, True),
+        (10, False),
+        (40, True),
+        (50, False),
+        (80, True),
+        (90, False),
+        (120, True),
     ]
     outputs.changes.clear()
-    hal.set_heating(0.75)  # at 6 s: a new cycle, starting with a 1.5 s on-phase
-    await clock.advance(4)
-    assert outputs.timeline(HEATING) == [(7.5, False), (8.0, True), (9.5, False), (10.0, True)]
+    hal.set_heating(0.75)  # at 120 s: a new cycle, starting with a 30 s on-phase
+    await clock.advance(80)
+    assert outputs.timeline(HEATING) == [(150, False), (160, True), (190, False), (200, True)]
 
 
 async def test_AC_011_same_power_again_does_not_restart_the_cycle(
     hal: RaspberryPiHal, clock: ManualClock, outputs: RecordingOutputs
 ) -> None:
-    for _ in range(8):
+    for _ in range(80):  # every 500 ms (one engine tick) for 40 s
         hal.set_heating(0.5)
-        await clock.advance(0.25)
-        hal.set_heating(0.5)
-        await clock.advance(0.25)
-    assert outputs.timeline(HEATING) == [(i * 0.5, i % 2 == 0) for i in range(9)]  # 0 s .. 4 s
+        await clock.advance(0.5)
+    assert outputs.timeline(HEATING) == [(i * 10, i % 2 == 0) for i in range(5)]  # 0 s .. 40 s
 
 
-@pytest.mark.parametrize("phase_offset", [0.0, 0.2, 0.5, 0.7, 0.999])
+@pytest.mark.parametrize("phase_offset", [0.0, 4.0, 10.0, 14.0, 19.999])
 async def test_AC_012_full_power_during_a_cycle_is_applied_at_once_and_stays(
     hal: RaspberryPiHal, clock: ManualClock, outputs: RecordingOutputs, phase_offset: float
 ) -> None:
@@ -136,12 +141,12 @@ async def test_AC_012_full_power_during_a_cycle_is_applied_at_once_and_stays(
     assert outputs.state[HEATING] is True  # at once, not within a later tick (FIX-03)
     assert hal.get_heating_status() == 1.0
     changes = len(outputs.changes)
-    await clock.advance(6)
+    await clock.advance(25)  # longer than one 0.5 period
     assert outputs.state[HEATING] is True
     assert len(outputs.changes) == changes  # the old cycle never touched the relay again
     hal.set_heating(0)
     assert outputs.state[HEATING] is False
-    await clock.advance(6)
+    await clock.advance(25)
     assert outputs.state[HEATING] is False
     assert hal.get_heating_status() == 0.0
 
@@ -150,12 +155,12 @@ async def test_CTL_043_a_different_power_restarts_with_an_on_phase(
     hal: RaspberryPiHal, clock: ManualClock, outputs: RecordingOutputs
 ) -> None:
     hal.set_heating(0.5)
-    await clock.advance(0.7)  # in the off-phase
+    await clock.advance(14)  # in the off-phase
     hal.set_heating(0.25)
     assert outputs.state[HEATING] is True
-    await clock.advance(0.5)
+    await clock.advance(10)
     assert outputs.state[HEATING] is False
-    await clock.advance(1.5)
+    await clock.advance(30)
     assert outputs.state[HEATING] is True
 
 
@@ -163,7 +168,7 @@ async def test_CTL_045_status_is_the_requested_power_not_the_relay(
     hal: RaspberryPiHal, clock: ManualClock, outputs: RecordingOutputs
 ) -> None:
     hal.set_heating(0.5)
-    await clock.advance(0.7)
+    await clock.advance(14)
     assert outputs.state[HEATING] is False
     assert hal.get_heating_status() == 0.5
     hal.set_heating(1.7)
@@ -237,7 +242,7 @@ async def test_HW_021_close_switches_everything_off_and_releases_the_lines(
     assert outputs.state == {HEATING: False, PUMP: False, BUZZER: False}
     assert outputs.closed
     changes = len(outputs.changes)
-    await clock.advance(10)
+    await clock.advance(30)
     assert len(outputs.changes) == changes  # no background task is left
     assert clock.sleepers == 0
 

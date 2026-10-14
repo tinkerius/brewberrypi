@@ -9,7 +9,7 @@
 | Near-target band | `3.0` K | `control.nearTargetBand` | Below this distance, heat with reduced power |
 | Near-target power | `0.5` | `control.nearTargetPower` | Heating power inside the near-target band |
 | Full power | `1.0` | – | Heating power outside the band / during boost |
-| Minimum duty phase | `500` ms | `hardware.heating.minPhaseMilliseconds` | Shortest on- or off-phase of the duty cycle |
+| Minimum duty phase | `10000` ms | `hardware.heating.minPhaseMilliseconds` | Shortest on- or off-phase of the duty cycle `[FIX-26]` |
 
 ## 5.2 `holdTemperature(T, boost)` — hysteresis controller
 
@@ -91,7 +91,7 @@ into relay switching:
 
 - `CTL-040` `p ≤ 0` → relay permanently **off**.
 - `CTL-041` `p ≥ 1` → relay permanently **on**.
-- `CTL-042` `0 < p < 1` → **time-proportional duty cycle** with `MIN = minPhaseMilliseconds` (500 ms):
+- `CTL-042` `0 < p < 1` → **time-proportional duty cycle** with `MIN = minPhaseMilliseconds` (10 000 ms) `[FIX-26]`:
 
 ```text
 if p < 0.5:
@@ -103,13 +103,16 @@ else:
 repeat: relay on for onPhase, relay off for offPhase
 ```
 
-| p | on (ms) | off (ms) | period (ms) |
+| p | on (s) | off (s) | period (s) |
 |---|---|---|---|
-| 0.10 | 500 | 4500 | 5000 |
-| 0.25 | 500 | 1500 | 2000 |
-| 0.50 | 500 | 500 | 1000 |
-| 0.75 | 1500 | 500 | 2000 |
-| 0.90 | 4500 | 500 | 5000 |
+| 0.10 | 10 | 90 | 100 |
+| 0.25 | 10 | 30 | 40 |
+| 0.50 | 10 | 10 | 20 |
+| 0.75 | 30 | 10 | 40 |
+| 0.90 | 90 | 10 | 100 |
+
+  (Legacy: `MIN` = 500 ms, so at 50 % the relay switched about once per second, which wears a mechanical relay
+  out quickly (`Q-26`). The longer phases never delay switching the heater off: `CTL-040`, `CTL-044`.)
 
 - `CTL-043` Setting the **same** power again does not restart the cycle (legacy). A **different** power in (0,1) restarts the cycle with an on-phase.
 - `CTL-044` Transitions MUST be atomic: after `setHeating(p)` returns, the relay state MUST correspond to `p` (for 0/1) or to the new cycle (for 0<p<1). A previously running cycle MUST NOT switch the relay after the new power has been applied. `[FIX-03]`

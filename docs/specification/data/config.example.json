@@ -11,7 +11,7 @@
       "pin": 23,
       "activeLow": true,
       "mode": "dutycycle",
-      "minPhaseMilliseconds": 500
+      "minPhaseMilliseconds": 10000
     },
     "pump": {
       "pin": 22,

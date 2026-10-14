@@ -96,6 +96,12 @@ the working directory, or uses the built-in defaults if there is none. Every key
 [config.example.json](docs/specification/data/config.example.json) lists every key with its default (the legacy
 wiring). Unknown keys are ignored with a warning; invalid values stop the start with exit code 2.
 
+The heater relay runs a duty cycle at partial power with phases of at least 10 s
+(`hardware.heating.minPhaseMilliseconds`, default `10000`; 10 s on + 10 s off at 50 %), so a mechanical relay
+does not wear out ([FIX-26](docs/recovery/bug-and-deviation-log.md)). Earlier versions of the example
+configuration set `500`. If your `config.json` still sets `"minPhaseMilliseconds": 500`, remove the key or set
+it to `10000`. Otherwise the relay keeps switching about once per second.
+
 In simulation (`--dummymode`) a simulated kettle replaces the hardware: it heats by 0.085 °C per second at
 full power and cools by 0.005 °C per second (section `simulation`). `simulation.timeScale` speeds up the
 whole application, e.g. `60` runs a 10-minute rest in 10 seconds. Beeps play on the computer's audio output
@@ -132,7 +138,7 @@ They read the same configuration (`--config`), and accept `--dummymode` for a te
 |---|---|
 | `brewberrypi-temperature-logger [FILE]` | Appends `yyyy/MM/dd HH:mm:ss;<°C>` (or `ERROR`) to `temperatureLog.csv` every second |
 | `brewberrypi-sensor-test` | Prints the DS18B20 temperature about once per second, failures on stderr |
-| `brewberrypi-gpio-test [--duty-cycle]` | Switches heating, pump and buzzer in a 2-second cycle to check the wiring; all off on Ctrl+C |
+| `brewberrypi-gpio-test [--duty-cycle]` | Switches heating, pump and buzzer in a 2-second cycle to check the wiring; all off on Ctrl+C. `--duty-cycle` steps the heating power through 0.0 … 1.0 instead, two duty periods per step (about 15 minutes per round) |
 
 The logger and the sensor test only read the sensor, so they can run next to the main application. The GPIO test
 needs the GPIO lines, so stop the main application first.
