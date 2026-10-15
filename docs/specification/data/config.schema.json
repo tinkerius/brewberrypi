@@ -13,7 +13,7 @@
     },
     "recipes": {
       "type": "object",
-      "properties": { "file": { "type": "string", "default": "recipes.json" } },
+      "properties": { "directory": { "type": "string", "default": "recipes" } },
       "additionalProperties": false
     },
     "hardware": {

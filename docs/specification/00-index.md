@@ -21,7 +21,7 @@
 | 04 | [Goal Types](04-goal-types.md) | Behaviour of every goal (heat-up, rest, mash-in, iodine test, …) |
 | 05 | [Temperature Control](05-temperature-control.md) | Hysteresis controller, heat boost, duty-cycle heating, progress computation |
 | 06 | [Hardware Abstraction](06-hardware-abstraction.md) | Actuators, sensor, buzzer, simulation mode, configuration, safety |
-| 07 | [Recipes](07-recipes.md) | Recipe catalogue (8 recipes) and recipe file format |
+| 07 | [Recipes](07-recipes.md) | Recipe catalogue (8 recipes), one file per recipe, file format |
 | 08 | [Client/Server Interface](08-client-server-interface.md) | Real-time topics, commands, payload schemas |
 | 09 | [User Interface](09-user-interface.md) | Web UI layout and interaction |
 | 10 | [Non-Functional Requirements](10-non-functional-requirements.md) | Safety, configuration, logging, startup/shutdown, deployment |
@@ -33,8 +33,8 @@
 
 | File | Content |
 |------|---------|
-| [data/recipes.json](data/recipes.json) | The 8 legacy recipes in the recipe file format |
-| [data/recipes.schema.json](data/recipes.schema.json) | JSON Schema of the recipe file |
+| [data/recipes/](data/recipes/) | The 8 legacy recipes, one file `<id>.json` per recipe |
+| [data/recipe.schema.json](data/recipe.schema.json) | JSON Schema of one recipe file |
 | [data/config.example.json](data/config.example.json) | Default configuration (legacy wiring and constants) |
 | [data/config.schema.json](data/config.schema.json) | JSON Schema of the configuration file |
 | [data/messages.schema.json](data/messages.schema.json) | JSON Schema of all client/server message payloads |

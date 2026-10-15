@@ -31,10 +31,10 @@ class ServerConfig:
 
 @dataclass(frozen=True)
 class RecipesConfig:
-    file: Path
-    """Recipe file, resolved against the configuration file's directory (Q-19)."""
+    directory: Path
+    """Recipe directory, one file per recipe, resolved against the configuration file's directory (Q-19)."""
     explicit: bool
-    """`recipes.file` is set in the configuration; a missing file is then an error (Q-22)."""
+    """`recipes.directory` is set in the configuration; a missing directory is then an error (Q-22)."""
 
 
 @dataclass(frozen=True)
@@ -178,8 +178,8 @@ def _build(raw: Any, *, source: Path | None, base_dir: Path) -> Config:
         source=source,
         server=ServerConfig(port=section("server")["port"]),
         recipes=RecipesConfig(
-            file=base_dir / section("recipes")["file"],
-            explicit="file" in known.get("recipes", {}),
+            directory=base_dir / section("recipes")["directory"],
+            explicit="directory" in known.get("recipes", {}),
         ),
         hardware=HardwareConfig(
             heating=HeatingConfig(

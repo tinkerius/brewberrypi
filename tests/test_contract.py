@@ -111,7 +111,7 @@ def test_contract_sigint_also_exits_0(tmp_path: Path, notify_socket: socket.sock
     ("files", "args", "code"),
     [
         ({"config.json": '{"server": {"port": "x"}}'}, ["--dummymode"], 2),
-        ({"recipes.json": '{"recipes": []}'}, ["--dummymode"], 3),
+        ({"config.json": '{"recipes": {"directory": "nope"}}'}, ["--dummymode"], 3),
         ({}, ["--config", "missing.json"], 2),
     ],
 )

@@ -1,33 +1,20 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://brewberrypi.local/schemas/recipes.schema.json",
+  "$id": "https://brewberrypi.local/schemas/recipe.schema.json",
   "title": "BrewberryPi recipe file",
-  "description": "Recipe catalogue. See docs/specification/07-recipes.md.",
+  "description": "One recipe per file; the file name without .json is the recipe id (^[A-Za-z0-9_-]+$). See docs/specification/07-recipes.md.",
   "type": "object",
-  "required": ["recipes"],
+  "required": ["name", "goals"],
   "properties": {
     "$schema": { "type": "string" },
-    "recipes": {
-      "type": "array",
-      "minItems": 1,
-      "items": { "$ref": "#/$defs/recipe" }
-    }
+    "name": { "$ref": "#/$defs/text" },
+    "goals": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/goal" } }
   },
   "additionalProperties": false,
   "$defs": {
     "temperature": { "type": "number", "minimum": 0, "maximum": 110 },
     "minutes": { "type": "integer", "minimum": 0 },
     "text": { "type": "string", "minLength": 1 },
-    "recipe": {
-      "type": "object",
-      "required": ["id", "name", "goals"],
-      "properties": {
-        "id": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
-        "name": { "$ref": "#/$defs/text" },
-        "goals": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/goal" } }
-      },
-      "additionalProperties": false
-    },
     "goal": {
       "type": "object",
       "required": ["type"],

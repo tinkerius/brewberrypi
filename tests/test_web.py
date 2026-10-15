@@ -112,16 +112,16 @@ async def test_IF_020_process_state_with_goals_and_active_request(
 def test_IF_030_recipe_list_in_catalogue_order() -> None:
     recipes = recipe_list(CATALOGUE)
     RECIPE_LIST(recipes)
-    assert recipes[0] == {"id": "ZORA", "name": "München 12.6 - SUD1:ZORA"}
+    assert recipes[0] == {"id": "BENIWEISS", "name": "München 12.6 - SUD2:BENIWEISS"}
     assert [r["id"] for r in recipes] == [
-        "ZORA",
+        "BENIWEISS",
+        "Dummy",
         "HANCOCK",
         "HIPA",
-        "WIT",
-        "BENIWEISS",
-        "WaterBoil",
-        "Dummy",
         "TEST",
+        "WIT",
+        "WaterBoil",
+        "ZORA",
     ]
 
 

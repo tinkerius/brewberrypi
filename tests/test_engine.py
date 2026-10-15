@@ -10,7 +10,7 @@ from brewberrypi.config import load_config
 from brewberrypi.engine import Engine, EngineState, Reply
 from brewberrypi.goals import Goal
 from brewberrypi.hal.mock import MockHal
-from brewberrypi.recipes import load_recipes, parse_recipes
+from brewberrypi.recipes import RecipeCatalogue, load_recipes, parse_recipe
 
 CONFIG = load_config(Path(__file__).parents[1] / "docs" / "specification" / "data" / "config.example.json")
 CATALOGUE = load_recipes(CONFIG.recipes)
@@ -36,7 +36,8 @@ async def engine(hal: MockHal, clock: ManualClock) -> AsyncIterator[Engine]:
 
 def engine_with(hal: MockHal, clock: ManualClock, goals: str) -> Engine:
     """An engine whose only recipe `R` has the given goals (JSON list)."""
-    catalogue = parse_recipes(f'{{"recipes": [{{"id": "R", "name": "Recipe", "goals": {goals}}}]}}', "test")
+    recipe = parse_recipe("R", f'{{"name": "Recipe", "goals": {goals}}}', "test")
+    catalogue = RecipeCatalogue(recipes=(recipe,), source="test")
     return Engine(hal, clock, catalogue, CONFIG)
 
 

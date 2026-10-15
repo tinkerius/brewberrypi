@@ -33,7 +33,7 @@ def test_built_in_defaults_equal_the_example_config(tmp_path: Path) -> None:
     assert example.source == EXAMPLE
     for section in ("server", "hardware", "control", "engine", "ui", "broadcast", "chart", "simulation"):
         assert getattr(defaults, section) == getattr(example, section), section
-    assert defaults.recipes.file.name == example.recipes.file.name == "recipes.json"
+    assert defaults.recipes.directory.name == example.recipes.directory.name == "recipes"
 
 
 def test_default_values() -> None:
@@ -59,7 +59,7 @@ def test_Q21_config_json_in_the_working_directory_is_read(tmp_path: Path) -> Non
 def test_Q21_without_config_file_the_built_in_defaults_are_used(tmp_path: Path) -> None:
     config = load_config(cwd=tmp_path)
     assert config.source is None
-    assert config.recipes.file == tmp_path / "recipes.json"
+    assert config.recipes.directory == tmp_path / "recipes"
     assert not config.recipes.explicit
 
 
@@ -71,18 +71,18 @@ def test_missing_values_are_filled_with_defaults(tmp_path: Path) -> None:
     assert config.server.port == 8080
 
 
-def test_Q19_recipe_file_resolves_against_the_config_file_directory(tmp_path: Path) -> None:
+def test_Q19_recipe_directory_resolves_against_the_config_file_directory(tmp_path: Path) -> None:
     (tmp_path / "etc").mkdir()
-    file = write_config(tmp_path / "etc", {"recipes": {"file": "my-recipes.json"}})
+    file = write_config(tmp_path / "etc", {"recipes": {"directory": "my-recipes"}})
     config = load_config(Path("etc/config.json"), cwd=tmp_path)
     assert config.source == file
-    assert config.recipes.file == tmp_path / "etc" / "my-recipes.json"
+    assert config.recipes.directory == tmp_path / "etc" / "my-recipes"
     assert config.recipes.explicit
 
 
-def test_Q19_absolute_recipe_file_is_kept(tmp_path: Path) -> None:
-    config = load_config(write_config(tmp_path, {"recipes": {"file": "/srv/recipes.json"}}))
-    assert config.recipes.file == Path("/srv/recipes.json")
+def test_Q19_absolute_recipe_directory_is_kept(tmp_path: Path) -> None:
+    config = load_config(write_config(tmp_path, {"recipes": {"directory": "/srv/recipes"}}))
+    assert config.recipes.directory == Path("/srv/recipes")
 
 
 def test_unknown_keys_only_warn(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
