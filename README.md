@@ -109,10 +109,13 @@ full power and cools by 0.005 °C per second (section `simulation`). `simulation
 whole application, e.g. `60` runs a 10-minute rest in 10 seconds. Beeps play on the computer's audio output
 if `paplay`, `aplay`, `afplay` or Windows sound is available, otherwise they are only logged.
 
-The recipes come from `recipes.json` next to the configuration file (`recipes.file`). Without one, the 8 legacy
-recipes built into the application are used. An invalid recipe file stops the start with exit code 3 and names
-the recipe and goal. The format is [recipes.schema.json](docs/specification/data/recipes.schema.json); see
-[07-recipes.md](docs/specification/07-recipes.md).
+The recipes come from the directory `recipes/` next to the configuration file (`recipes.directory`), one file per
+recipe: `recipes/ZORA.json` holds the recipe `ZORA`, and the file name is the recipe id. The UI lists the recipes
+sorted by id. Without a recipe directory, the 8 legacy recipes built into the application are used
+([docs/specification/data/recipes/](docs/specification/data/recipes/)). An invalid recipe file is skipped, and the
+log names the file, recipe and goal; the other recipes are still loaded. Only a configured `recipes.directory` that
+does not exist stops the start, with exit code 3. The format of one file is
+[recipe.schema.json](docs/specification/data/recipe.schema.json); see [07-recipes.md](docs/specification/07-recipes.md).
 
 ### Real-time interface
 

@@ -1,53 +1,79 @@
-"""M1: recipe catalogue (RCP-001..005, AC-080, AC-081, Q-22)."""
+"""M1: recipe catalogue, one file per recipe (RCP-001..005, AC-080, AC-081, Q-22, Q-27)."""
 
 import json
+import logging
+import re
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 from brewberrypi.config import RecipesConfig
-from brewberrypi.recipes import BUILT_IN, GoalDefinition, RecipeError, load_recipes, parse_recipes
+from brewberrypi.recipes import (
+    BUILT_IN,
+    GoalDefinition,
+    RecipeDirectoryError,
+    RecipeError,
+    load_recipes,
+    parse_recipe,
+)
 
 SPEC_DATA = Path(__file__).parents[1] / "docs" / "specification" / "data"
 PACKAGE_DATA = Path(__file__).parents[1] / "src" / "brewberrypi" / "data"
-LEGACY_ORDER = ["ZORA", "HANCOCK", "HIPA", "WIT", "BENIWEISS", "WaterBoil", "Dummy", "TEST"]
+SORTED_IDS = ["BENIWEISS", "Dummy", "HANCOCK", "HIPA", "TEST", "WIT", "WaterBoil", "ZORA"]
 
 
-def write_recipes(tmp_path: Path, goals: list[dict[str, Any]], recipe_id: str = "MyRecipe") -> RecipesConfig:
-    file = tmp_path / "recipes.json"
-    file.write_text(json.dumps({"recipes": [{"id": recipe_id, "name": "My recipe", "goals": goals}]}))
-    return RecipesConfig(file=file, explicit=True)
+def write_recipe(directory: Path, goals: list[dict[str, Any]], recipe_id: str = "MyRecipe") -> Path:
+    directory.mkdir(exist_ok=True)
+    file = directory / f"{recipe_id}.json"
+    file.write_text(json.dumps({"name": f"Recipe {recipe_id}", "goals": goals}))
+    return file
 
 
-def test_AC_080_shipped_recipe_file_equals_the_spec_catalogue() -> None:
-    assert (PACKAGE_DATA / "recipes.json").read_bytes() == (SPEC_DATA / "recipes.json").read_bytes()
-    catalogue = load_recipes(RecipesConfig(file=Path("/nonexistent/recipes.json"), explicit=False))
+def configured(directory: Path) -> RecipesConfig:
+    return RecipesConfig(directory=directory, explicit=True)
+
+
+def test_AC_080_shipped_recipe_files_equal_the_spec_catalogue() -> None:
+    spec_files = sorted(file.name for file in (SPEC_DATA / "recipes").iterdir())
+    assert spec_files == [f"{recipe_id}.json" for recipe_id in SORTED_IDS]
+    for name in spec_files:
+        assert (PACKAGE_DATA / "recipes" / name).read_bytes() == (SPEC_DATA / "recipes" / name).read_bytes()
+    assert sorted(file.name for file in (PACKAGE_DATA / "recipes").iterdir()) == spec_files
+    catalogue = load_recipes(RecipesConfig(directory=Path("/nonexistent/recipes"), explicit=False))
     assert catalogue.source == BUILT_IN
-    assert [recipe.id for recipe in catalogue] == LEGACY_ORDER
-    assert [summary["id"] for summary in catalogue.summaries()] == LEGACY_ORDER
+    assert [recipe.id for recipe in catalogue] == SORTED_IDS
+    assert [summary["id"] for summary in catalogue.summaries()] == SORTED_IDS
 
 
-@pytest.mark.parametrize("name", ["recipes.schema.json", "config.schema.json", "messages.schema.json"])
+@pytest.mark.parametrize("name", ["recipe.schema.json", "config.schema.json", "messages.schema.json"])
 def test_shipped_schemas_equal_the_spec(name: str) -> None:
     assert (PACKAGE_DATA / name).read_bytes() == (SPEC_DATA / name).read_bytes()
 
 
-def test_AC_081_rest_without_minutes_refuses_to_start_naming_recipe_and_goal(tmp_path: Path) -> None:
-    config = write_recipes(
-        tmp_path, [{"type": "HeatUp", "temperature": 62}, {"type": "Rest", "temperature": 62}]
+def test_AC_081_rest_without_minutes_is_skipped_naming_file_and_goal(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    directory = tmp_path / "recipes"
+    bad = write_recipe(
+        directory, [{"type": "HeatUp", "temperature": 62}, {"type": "Rest", "temperature": 62}]
     )
-    with pytest.raises(RecipeError) as error:
-        load_recipes(config)
-    message = str(error.value)
-    assert str(config.file) in message
+    write_recipe(directory, [{"type": "MashIn"}], recipe_id="Good")
+    with caplog.at_level(logging.ERROR):
+        catalogue = load_recipes(configured(directory))
+    assert [recipe.id for recipe in catalogue] == ["Good"]  # the other recipes are loaded
+    [record] = caplog.records
+    message = record.getMessage()
+    assert message.startswith("invalid recipe file, recipe skipped: ")
+    assert str(bad) in message
     assert "recipe 'MyRecipe', goal 2 (index 1, Rest)" in message
     assert "minutes" in message
 
 
-def test_spec_recipe_file_is_read_with_verbatim_texts() -> None:
-    catalogue = load_recipes(RecipesConfig(file=SPEC_DATA / "recipes.json", explicit=True))
-    assert catalogue.source == str(SPEC_DATA / "recipes.json")
+def test_spec_recipe_files_are_read_with_verbatim_texts() -> None:
+    catalogue = load_recipes(configured(SPEC_DATA / "recipes"))
+    assert catalogue.source == str(SPEC_DATA / "recipes")
+    assert [recipe.id for recipe in catalogue] == SORTED_IDS
     hipa = catalogue.get("HIPA")
     assert hipa is not None
     assert hipa.name == "München 12.6 - SUD4:HIPA"
@@ -64,25 +90,85 @@ def test_spec_recipe_file_is_read_with_verbatim_texts() -> None:
     assert zora.goals[9] == GoalDefinition(type="IodineTest", temperature=68, minutes=10)  # Q-05
 
 
-def test_recipe_file_from_the_configuration_is_used(tmp_path: Path) -> None:
-    catalogue = load_recipes(write_recipes(tmp_path, [{"type": "MashIn"}]))
-    assert catalogue.summaries() == [{"id": "MyRecipe", "name": "My recipe"}]
+def test_Q27_file_name_is_the_id_and_the_list_is_sorted_by_it(tmp_path: Path) -> None:
+    directory = tmp_path / "recipes"
+    for recipe_id in ["b", "A", "a-2", "B_1"]:
+        write_recipe(directory, [{"type": "MashIn"}], recipe_id=recipe_id)
+    catalogue = load_recipes(configured(directory))
+    assert catalogue.summaries() == [
+        {"id": "A", "name": "Recipe A"},
+        {"id": "B_1", "name": "Recipe B_1"},
+        {"id": "a-2", "name": "Recipe a-2"},
+        {"id": "b", "name": "Recipe b"},
+    ]
 
 
-def test_existing_default_recipe_file_is_used_instead_of_the_built_in_one(tmp_path: Path) -> None:
-    config = write_recipes(tmp_path, [{"type": "MashIn"}])
-    catalogue = load_recipes(RecipesConfig(file=config.file, explicit=False))
-    assert catalogue.source == str(config.file)
+def test_Q27_other_files_and_subdirectories_are_ignored(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    directory = tmp_path / "recipes"
+    write_recipe(directory, [{"type": "MashIn"}])
+    (directory / "README.md").write_text("notes")
+    (directory / "MyRecipe.json~").write_text("editor backup")
+    (directory / "old.json").mkdir()
+    write_recipe(directory / "archive", [{"type": "MashIn"}], recipe_id="Archived")
+    with caplog.at_level(logging.ERROR):
+        catalogue = load_recipes(configured(directory))
+    assert [recipe.id for recipe in catalogue] == ["MyRecipe"]
+    assert caplog.records == []
 
 
-def test_missing_configured_recipe_file_refuses_to_start(tmp_path: Path) -> None:
-    with pytest.raises(RecipeError, match="recipe file not found"):
-        load_recipes(RecipesConfig(file=tmp_path / "missing.json", explicit=True))
+def test_Q27_a_file_name_that_is_no_recipe_id_is_skipped(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    directory = tmp_path / "recipes"
+    write_recipe(directory, [{"type": "MashIn"}], recipe_id="my recipe")
+    with caplog.at_level(logging.ERROR):
+        assert len(load_recipes(configured(directory))) == 0
+    assert "'my recipe' is not a recipe id" in caplog.text
+
+
+def test_an_id_inside_the_file_is_rejected(tmp_path: Path) -> None:
+    with pytest.raises(RecipeError, match=re.escape("must not contain {'id'}")):
+        parse_recipe("R", json.dumps({"id": "R", "name": "r", "goals": [{"type": "MashIn"}]}), "R.json")
+
+
+def test_existing_default_recipe_directory_is_used_instead_of_the_built_in_one(tmp_path: Path) -> None:
+    directory = tmp_path / "recipes"
+    write_recipe(directory, [{"type": "MashIn"}])
+    catalogue = load_recipes(RecipesConfig(directory=directory, explicit=False))
+    assert catalogue.source == str(directory)
+    assert [recipe.id for recipe in catalogue] == ["MyRecipe"]
+
+
+def test_an_empty_recipe_directory_gives_no_recipes(tmp_path: Path) -> None:
+    (tmp_path / "recipes").mkdir()
+    assert len(load_recipes(configured(tmp_path / "recipes"))) == 0
+
+
+def test_missing_configured_recipe_directory_refuses_to_start(tmp_path: Path) -> None:
+    with pytest.raises(RecipeDirectoryError, match="recipe directory not found"):
+        load_recipes(configured(tmp_path / "missing"))
+
+
+def test_a_configured_file_instead_of_a_directory_refuses_to_start(tmp_path: Path) -> None:
+    (tmp_path / "recipes.json").write_text("{}")
+    with pytest.raises(RecipeDirectoryError, match="recipe directory not found"):
+        load_recipes(configured(tmp_path / "recipes.json"))
+
+
+def test_unreadable_recipe_file_is_skipped(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    directory = tmp_path / "recipes"
+    directory.mkdir()
+    (directory / "Latin1.json").write_bytes('{"name": "Eiweißrast"}'.encode("latin-1"))
+    with caplog.at_level(logging.ERROR):
+        assert len(load_recipes(configured(directory))) == 0
+    assert "Latin1.json: cannot read recipe file" in caplog.text
 
 
 def test_invalid_json_names_file_line_and_column() -> None:
     with pytest.raises(RecipeError, match=r"^my.json:2:\d+: invalid JSON"):
-        parse_recipes('{"recipes": [\n  oops ]}', "my.json")
+        parse_recipe("my", '{"name": "x",\n  oops }', "my.json")
 
 
 @pytest.mark.parametrize(
@@ -98,43 +184,32 @@ def test_invalid_json_names_file_line_and_column() -> None:
         ({"type": "Rest", "temperature": 62, "minutes": 1, "name": "Rast"}, "both name and description"),
     ],
 )
-def test_invalid_goal_refuses_to_start_naming_recipe_and_goal(
-    tmp_path: Path, goal: dict[str, Any], expected: str
-) -> None:
+def test_invalid_goal_is_reported_naming_recipe_and_goal(goal: dict[str, Any], expected: str) -> None:
     with pytest.raises(RecipeError) as error:
-        load_recipes(write_recipes(tmp_path, [goal]))
-    assert "recipe 'MyRecipe'" in str(error.value)
+        parse_recipe("MyRecipe", json.dumps({"name": "x", "goals": [goal]}), "MyRecipe.json")
+    assert str(error.value).startswith("MyRecipe.json: recipe 'MyRecipe', goal 1")
     assert expected in str(error.value)
 
 
-def test_rest_with_default_texts_is_valid(tmp_path: Path) -> None:
-    catalogue = load_recipes(write_recipes(tmp_path, [{"type": "Rest", "temperature": 62, "minutes": 10}]))
-    assert catalogue.recipes[0].goals[0] == GoalDefinition(type="Rest", temperature=62, minutes=10)
-
-
-def test_duplicate_recipe_ids_refuse_to_start() -> None:
-    recipe = {"id": "A", "name": "a", "goals": [{"type": "MashIn"}]}
-    with pytest.raises(RecipeError, match="recipe 2: duplicate recipe id 'A'"):
-        parse_recipes(json.dumps({"recipes": [recipe, recipe]}), "r.json")
+def test_rest_with_default_texts_is_valid() -> None:
+    recipe = parse_recipe(
+        "R",
+        json.dumps({"name": "x", "goals": [{"type": "Rest", "temperature": 62, "minutes": 10}]}),
+        "R.json",
+    )
+    assert recipe.goals[0] == GoalDefinition(type="Rest", temperature=62, minutes=10)
 
 
 @pytest.mark.parametrize(
     ("content", "expected"),
     [
-        ({}, "must contain ['recipes']"),
-        ({"recipes": []}, "recipes must contain at least 1 items"),
-        (
-            {"recipes": [{"id": "bad id", "name": "x", "goals": [{"type": "MashIn"}]}]},
-            "recipe 'bad id': id must",
-        ),
-        (
-            {"recipes": [{"id": 7, "name": "x", "goals": [{"type": "MashIn"}]}]},
-            "recipe number 1: id must be string",
-        ),
-        ({"recipes": [{"id": "A", "name": "x", "goals": []}]}, "recipe 'A': goals must contain at least 1"),
+        ({}, "recipe 'R': must contain ['goals', 'name']"),
+        ([], "recipe 'R': must be object"),
+        ({"name": "", "goals": [{"type": "MashIn"}]}, "recipe 'R': name must be longer than or equal to 1"),
+        ({"name": "x", "goals": []}, "recipe 'R': goals must contain at least 1"),
     ],
 )
-def test_invalid_recipe_structure_refuses_to_start(content: dict[str, Any], expected: str) -> None:
+def test_invalid_recipe_structure_is_reported(content: Any, expected: str) -> None:
     with pytest.raises(RecipeError) as error:
-        parse_recipes(json.dumps(content), "r.json")
+        parse_recipe("R", json.dumps(content), "R.json")
     assert expected in str(error.value)

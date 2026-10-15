@@ -32,14 +32,14 @@ open specification questions in [13-open-questions.md](../specification/13-open-
 | 0 | Clean shutdown | none |
 | 1 | Unexpected error | restart; counts towards safe mode |
 | 2 | Invalid configuration (`NFR-021` step 1) | do **not** roll back the image; report a configuration error |
-| 3 | Invalid recipe file (`RCP-003`) | same as 2 |
+| 3 | Configured recipe directory missing or unreadable (`RCP-001`). An invalid recipe file is only logged and skipped (`RCP-003`). | same as 2 |
 | 4 | Hardware initialisation failed | restart; counts towards safe mode |
 
 ## 3. Mounts, devices, network
 
 | Item | Requirement |
 |---|---|
-| `/config` (read-only) | `config.json` and the recipe file. Relative paths in the configuration resolve against the configuration file's directory (`Q-19`). Without a recipe file the image uses its built-in legacy catalogue, unless `recipes.file` is set (`Q-22`). |
+| `/config` (read-only) | `config.json` and the recipe directory `recipes/` (one file `<id>.json` per recipe, `RCP-001`). Relative paths in the configuration resolve against the configuration file's directory (`Q-19`). Without a recipe directory the image uses its built-in legacy catalogue, unless `recipes.directory` is set (`Q-22`). |
 | `/sys` | The container runtime's default read-only sysfs. The image reads `/sys/bus/w1/devices` (`HW-031`). |
 | GPIO devices | **All** `/dev/gpiochip*` nodes present on the host. The image finds the header chip by label, because chip numbers change between kernels. |
 | Network | Listens on `server.port` (default 8080) on all interfaces. The host uses host networking or publishes the port. |

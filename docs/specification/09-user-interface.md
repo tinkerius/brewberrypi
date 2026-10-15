@@ -2,7 +2,7 @@
 
 Single-page web application served by the BrewberryPi server at `/` (`index`).
 Responsive (usable on phone, tablet and desktop). Language of UI texts: English
-(legacy); recipe texts as defined in the recipe file.
+(legacy); recipe texts as defined in the recipe files.
 
 ## 9.1 Layout (top to bottom)
 

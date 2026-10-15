@@ -63,8 +63,8 @@ controllable/accelerated clock. `T` = temperature reported by the HAL.
 
 ## 11.7 Recipes and configuration
 
-- `AC-080` (RCP-002) The shipped recipe file equals [data/recipes.json](data/recipes.json); the recipe list shows 8 recipes in the order ZORA, HANCOCK, HIPA, WIT, BENIWEISS, WaterBoil, Dummy, TEST.
-- `AC-081` (RCP-003) Recipe file with a `Rest` lacking `minutes` → application refuses to start with a message naming the recipe and goal index.
+- `AC-080` (RCP-002) The shipped recipe files equal [data/recipes/](data/recipes/) (8 files `<id>.json`); the recipe list shows 8 recipes in the order BENIWEISS, Dummy, HANCOCK, HIPA, TEST, WIT, WaterBoil, ZORA.
+- `AC-081` (RCP-003) A recipe file with a `Rest` lacking `minutes` → the application starts, logs an error naming the file, recipe and goal index, and that recipe is missing from the recipe list; the other recipes are listed.
 - `AC-082` (HW-011) With the example config, the heating relay is BCM 23 active-low, pump BCM 22 active-low, buzzer BCM 10 active-high.
 - `AC-083` (NFR-001/HW-020) On startup with real hardware, heating and pump relays are off before the web server accepts connections.
 

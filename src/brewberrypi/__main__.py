@@ -1,6 +1,6 @@
 """Command-line entry point (`brewberrypi`).
 
-Startup (NFR-021): read and validate the configuration and the recipe file, create the HAL (simulation with
+Startup (NFR-021): read and validate the configuration and the recipes, create the HAL (simulation with
 `--dummymode`, else the Raspberry Pi), then serve the web application. Refuses to start with the
 exit codes of the runtime contract (§2).
 """
@@ -24,7 +24,7 @@ from brewberrypi.hal.gpio import GpioError
 from brewberrypi.hal.raspberry_pi import RaspberryPiHal
 from brewberrypi.hal.simulation import SimulationHal
 from brewberrypi.hal.sound import find_player
-from brewberrypi.recipes import RecipeError, load_recipes
+from brewberrypi.recipes import RecipeDirectoryError, load_recipes
 from brewberrypi.web.app import create_app
 
 log = logging.getLogger("brewberrypi")
@@ -73,8 +73,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return EXIT_INVALID_CONFIG
     try:
         recipes = load_recipes(config.recipes)
-    except RecipeError as error:
-        log.error("invalid recipe file, refusing to start: %s", error)
+    except RecipeDirectoryError as error:
+        log.error("invalid recipe directory, refusing to start: %s", error)
         return EXIT_INVALID_RECIPES
     log.info("recipes: %s", ", ".join(recipe.id for recipe in recipes))
     clock: Clock
@@ -98,7 +98,7 @@ def serve(app: Starlette, port: int) -> int:
     When the server listens, the app announces readiness (NFR-021 step 6). On SIGINT/SIGTERM the app shuts
     down gracefully, switching the outputs off, and the process exits with 0. A server that cannot start
     (e.g. the port is in use) is an unexpected error (1); uvicorn's own exit code 3 would mean "invalid
-    recipe file" to the host.
+    recipe directory" to the host.
     """
     log.info("web server on port %d", port)
     # All interfaces: the UI is used from other devices in the LAN (IF-002).

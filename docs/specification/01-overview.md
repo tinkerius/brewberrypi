@@ -38,7 +38,7 @@ Out of scope (not present in the legacy system; see [13](13-open-questions.md) f
 | Actor | Description |
 |-------|-------------|
 | **Brewer (operator)** | Uses the web UI on a phone/tablet/PC in the local network. Performs manual steps (water, malt, iodine test, lautering) and answers requests. Hears the buzzer. |
-| **Maintainer** | Installs the system on the Pi, edits configuration and recipe file, runs the auxiliary tools. |
+| **Maintainer** | Installs the system on the Pi, edits configuration and recipe files, runs the auxiliary tools. |
 
 ## 1.4 System context
 

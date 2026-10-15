@@ -2,9 +2,9 @@
 
 ## 7.1 Recipe catalogue
 
-- `RCP-001` Recipes are loaded at startup from a **recipe file** (default `recipes.json`, path configurable `recipes.file`, relative to the configuration file's directory, `Q-19`). If `recipes.file` is not set and the default file does not exist, the legacy catalogue shipped with the application is used; if `recipes.file` is set and the file does not exist, the application refuses to start (`Q-22`). Format: [data/recipes.schema.json](data/recipes.schema.json). `[NEW]` (legacy: recipes hard-coded in source code)
-- `RCP-002` The initial recipe file MUST contain exactly the 8 legacy recipes of [data/recipes.json](data/recipes.json), in this order.
-- `RCP-003` Invalid recipe file (syntax, schema, duplicate IDs, unknown goal type, missing parameter) → the application logs a precise error (file, recipe id, goal index) and **refuses to start**.
+- `RCP-001` Recipes are loaded at startup from a **recipe directory** with **one file per recipe** (`Q-27`): the file `<id>.json` holds the recipe with that `id`, so the file name is the recipe id (letters, digits, `_` and `-`) and the file itself has no `id`. The directory is `recipes` by default, configurable with `recipes.directory`, relative to the configuration file's directory (`Q-19`). Only files ending in `.json` are read; other files and subdirectories are ignored. If `recipes.directory` is not set and the default directory does not exist, the legacy catalogue shipped with the application is used; if `recipes.directory` is set and the directory does not exist, the application refuses to start (`Q-22`). Format of one file: [data/recipe.schema.json](data/recipe.schema.json). `[NEW]` (legacy: recipes hard-coded in source code)
+- `RCP-002` The shipped recipe directory MUST contain exactly the 8 legacy recipes of [data/recipes/](data/recipes/), one file each. The recipe list is sorted by recipe id in character-code order (upper case before lower case): `BENIWEISS`, `Dummy`, `HANCOCK`, `HIPA`, `TEST`, `WIT`, `WaterBoil`, `ZORA` (`Q-27`; legacy: the order of §7.3).
+- `RCP-003` Invalid recipe file (syntax, schema, unknown goal type, missing parameter, file name that is not a valid id, unreadable file) → the application logs a precise error (file, recipe id, goal index) and **skips that recipe**; all other recipes are loaded (`Q-27`). A recipe directory without valid recipes gives an empty recipe list.
 - `RCP-004` The catalogue is read-only at runtime (no recipe editing in the UI; see `Q-09`).
 - `RCP-005` The list of recipes (`id`, `name`) is published to clients (`IF-030`).
 
@@ -34,7 +34,8 @@ Temperatures in °C (number, 0…110), minutes integer ≥ 0.
 
 ## 7.3 Legacy recipe catalogue (human-readable)
 
-Recipe texts (including German names and legacy typos) are reproduced **verbatim**.
+Recipe texts (including German names and legacy typos) are reproduced **verbatim**. The numbering is the
+legacy order; the recipe list is sorted by id (`RCP-002`). Recipe `ZORA` is the file `data/recipes/ZORA.json`, and so on.
 
 ### 1. `ZORA` — `München 12.6 - SUD1:ZORA`
 1. PourInBrewingWater

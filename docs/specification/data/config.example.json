@@ -4,7 +4,7 @@
     "port": 8080
   },
   "recipes": {
-    "file": "recipes.json"
+    "directory": "recipes"
   },
   "hardware": {
     "heating": {

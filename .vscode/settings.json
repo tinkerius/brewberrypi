@@ -1,8 +1,8 @@
 {
   "json.schemas": [
     {
-      "fileMatch": ["**/recipes.json"],
-      "url": "./docs/specification/data/recipes.schema.json"
+      "fileMatch": ["**/recipes/*.json"],
+      "url": "./docs/specification/data/recipe.schema.json"
     },
     {
       "fileMatch": ["**/config.json", "**/config.example.json"],

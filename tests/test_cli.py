@@ -48,7 +48,7 @@ def test_without_dummymode_hardware_initialisation_fails_until_M9(served: list[i
 
 def test_starts_with_built_in_defaults_and_recipes(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--dummymode"]) == EXIT_OK
-    assert "recipes: ZORA, HANCOCK, HIPA, WIT, BENIWEISS, WaterBoil, Dummy, TEST" in capsys.readouterr().out
+    assert "recipes: BENIWEISS, Dummy, HANCOCK, HIPA, TEST, WIT, WaterBoil, ZORA" in capsys.readouterr().out
 
 
 def test_log_lines_have_timestamp_level_and_component(capsys: pytest.CaptureFixture[str]) -> None:
@@ -64,15 +64,27 @@ def test_invalid_configuration_exits_with_code_2(tmp_path: Path, capsys: pytest.
     assert "ERROR brewberrypi: invalid configuration, refusing to start" in capsys.readouterr().out
 
 
-def test_AC_081_invalid_recipe_file_exits_with_code_3(
+def test_AC_081_invalid_recipe_file_is_skipped_and_logged(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], served: list[int]
+) -> None:
+    (tmp_path / "recipes").mkdir()
+    (tmp_path / "recipes" / "R.json").write_text(
+        json.dumps({"name": "r", "goals": [{"type": "Rest", "temperature": 62}]})
+    )
+    (tmp_path / "recipes" / "S.json").write_text(json.dumps({"name": "s", "goals": [{"type": "MashIn"}]}))
+    assert main(["--dummymode"]) == EXIT_OK
+    output = capsys.readouterr().out
+    assert "ERROR brewberrypi.recipes: invalid recipe file, recipe skipped:" in output
+    assert "R.json: recipe 'R', goal 1 (index 0, Rest)" in output
+    assert "recipes: S\n" in output
+
+
+def test_missing_configured_recipe_directory_exits_with_code_3(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    recipes = {"recipes": [{"id": "R", "name": "r", "goals": [{"type": "Rest", "temperature": 62}]}]}
-    (tmp_path / "recipes.json").write_text(json.dumps(recipes))
-    assert main(["--dummymode"]) == EXIT_INVALID_RECIPES
-    output = capsys.readouterr().out
-    assert "ERROR brewberrypi: invalid recipe file, refusing to start" in output
-    assert "recipe 'R', goal 1 (index 0, Rest)" in output
+    (tmp_path / "config.json").write_text(json.dumps({"recipes": {"directory": "nope"}}))
+    assert main(["--config", "config.json"]) == EXIT_INVALID_RECIPES
+    assert "ERROR brewberrypi: invalid recipe directory, refusing to start" in capsys.readouterr().out
 
 
 def test_a_server_that_cannot_start_exits_with_code_1(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -27,7 +27,7 @@ All first-party files were read completely during recovery (2026-09-24).
 | `src/com/brewberrypi/mash/goals/PourInBrewingWaterGoal.java` | Confirmation "Pour in brewing water" | GOAL-001 |
 | `src/com/brewberrypi/mash/goals/IodineTestGoal.java` | Yes/No + additional rest loop | GOAL-005 |
 | `src/com/brewberrypi/mash/goals/LauteringGoal.java` | All off + confirmation "Lauter now" | GOAL-006 |
-| `src/com/brewberrypi/mash/goals/RecipeDatabase.java` | 8 hard-coded recipes | 07, data/recipes.json |
+| `src/com/brewberrypi/mash/goals/RecipeDatabase.java` | 8 hard-coded recipes | 07, data/recipes/ |
 | `src/com/brewberrypi/hardware/HardwareController.java` | HAL interface | HW-001 |
 | `src/com/brewberrypi/hardware/RaspberryPiHardwareControllerBase.java` | GPIO provisioning (WiringPi 4/3/12), active-low relays, sensor loop 100 ms, beeps, shutdown hook | HW-010..043 |
 | `src/com/brewberrypi/hardware/RaspberryPiHardwareControllerDutyCycleImpl.java` | Duty-cycle heating (used by main app) | CTL-040..045 |
