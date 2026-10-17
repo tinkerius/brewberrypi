@@ -1,6 +1,6 @@
 # ADR-0001: Technology Stack for the BrewberryPi Rebuild
 
-- **Status:** Accepted
+- **Status:** Accepted; the "Web/real-time" row is superseded by [ADR-0002](0002-rest-and-server-sent-events.md)
 - **Date:** 2026-10-09
 - **Deciders:** Benedikt Hauptmann (product owner); proposal and research by Claude Code
 
@@ -66,7 +66,7 @@ these facts:
 | Concern | Choice |
 |---|---|
 | Language/runtime | Python ≥ 3.11 (container: Debian Trixie's Python 3.13); `uv` for dependency management and builds on developer machines |
-| Web/real-time | Starlette + uvicorn; plain WebSocket with a `{topic, payload}` JSON envelope on the single port (`IF-001..005`); client reconnect with backoff |
+| Web/real-time | *Superseded by ADR-0002 (REST + server-sent events).* Starlette + uvicorn; plain WebSocket with a `{topic, payload}` JSON envelope on the single port (`IF-001..005`); client reconnect with backoff |
 | Validation | `fastjsonschema` against the schemas in `docs/specification/data/` |
 | GPIO | Own HAL on **libgpiod v2** (`gpiod` module). It finds the header chip by label (`pinctrl-bcm2835` / `pinctrl-bcm2711` / `pinctrl-rp1`, configurable) and requests the relay outputs in the off state with pull-up bias. No gpiozero, no lgpio. |
 | Sensor | DS18B20 via 1-Wire sysfs in a background thread, cached (`HW-030`) |

@@ -87,16 +87,17 @@ class UiConfig:
 
 
 @dataclass(frozen=True)
-class BroadcastConfig:
-    hardware_status_milliseconds: int
-    process_state_milliseconds: int
-    recipes_milliseconds: int
-    chart_milliseconds: int
+class EventsConfig:
+    check_milliseconds: int
+    """How often the server looks for changed state to push (IF-072)."""
+    heartbeat_milliseconds: int
+    """Period of the `ping` event (IF-074)."""
 
 
 @dataclass(frozen=True)
 class ChartConfig:
     max_points: int
+    sample_milliseconds: int
 
 
 @dataclass(frozen=True)
@@ -119,7 +120,7 @@ class Config:
     control: ControlConfig
     engine: EngineConfig
     ui: UiConfig
-    broadcast: BroadcastConfig
+    events: EventsConfig
     chart: ChartConfig
     simulation: SimulationConfig
 
@@ -173,7 +174,7 @@ def _build(raw: Any, *, source: Path | None, base_dir: Path) -> Config:
 
     hardware = section("hardware")
     heating, pump, buzzer, sensor = (hardware[k] for k in ("heating", "pump", "buzzer", "sensor"))
-    control, broadcast, simulation = section("control"), section("broadcast"), section("simulation")
+    control, events, simulation = section("control"), section("events"), section("simulation")
     return Config(
         source=source,
         server=ServerConfig(port=section("server")["port"]),
@@ -206,13 +207,14 @@ def _build(raw: Any, *, source: Path | None, base_dir: Path) -> Config:
         ),
         engine=EngineConfig(tick_milliseconds=section("engine")["tickMilliseconds"]),
         ui=UiConfig(request_reminder_interval_seconds=section("ui")["requestReminderIntervalSeconds"]),
-        broadcast=BroadcastConfig(
-            hardware_status_milliseconds=broadcast["hardwareStatusMilliseconds"],
-            process_state_milliseconds=broadcast["processStateMilliseconds"],
-            recipes_milliseconds=broadcast["recipesMilliseconds"],
-            chart_milliseconds=broadcast["chartMilliseconds"],
+        events=EventsConfig(
+            check_milliseconds=events["checkMilliseconds"],
+            heartbeat_milliseconds=events["heartbeatMilliseconds"],
         ),
-        chart=ChartConfig(max_points=section("chart")["maxPoints"]),
+        chart=ChartConfig(
+            max_points=section("chart")["maxPoints"],
+            sample_milliseconds=section("chart")["sampleMilliseconds"],
+        ),
         simulation=SimulationConfig(
             time_scale=simulation["timeScale"],
             start_temperature=simulation["startTemperature"],

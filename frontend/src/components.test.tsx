@@ -51,7 +51,7 @@ const RUNNING: ProcessState = {
       status: "Active",
       statuspercent: 40,
       statusmessage: "00:36 left",
-      activeRequest: { message: "Iodine test successfull?", options: ["Yes", "No"] },
+      activeRequest: { id: "7", message: "Iodine test successfull?", options: ["Yes", "No"] },
     },
     { name: "Lautering", description: "Now it's your job to lauter.", status: "Waiting", statuspercent: 0, statusmessage: "0%" },
   ],
@@ -115,11 +115,11 @@ describe("Brewing Process panel", () => {
     expect(bars[0].getAttribute("aria-valuetext")).toBe("00:36 left");
   });
 
-  it("AC-075 UI-032 request buttons send the exact option text", () => {
+  it("AC-075 UI-032 request buttons send the exact option text for that request", () => {
     const { send } = processPanel(RUNNING);
     expect(root.querySelector('[role="group"] p')?.textContent).toBe("Iodine test successfull?");
     act(() => button("No").click());
-    expect(send).toHaveBeenCalledWith("respond", { response: "No" });
+    expect(send).toHaveBeenCalledWith("respond", { request: "7", response: "No" });
   });
 
   it("FIX-24 renders line breaks in descriptions", () => {
@@ -153,8 +153,9 @@ describe("Brewing Process panel", () => {
   });
 
   it("UI-041 UI-042 buttons send their commands and are enabled per engine state", () => {
-    const { send, onStop } = processPanel({ ...RUNNING, state: "Running" });
+    const { send, onStop } = processPanel(RUNNING);
     expect(button("Start Process").disabled).toBe(true);
+    expect(button("Resume Process").disabled).toBe(true);
     expect(button("Unload Process").disabled).toBe(true);
     expect((root.querySelector("select") as HTMLSelectElement).disabled).toBe(true);
     act(() => button("Pause Process").click());
@@ -162,7 +163,12 @@ describe("Brewing Process panel", () => {
     act(() => button("Stop Process").click());
     expect(onStop).toHaveBeenCalled(); // UI-043: asks first
 
-    const loaded = processPanel({ ...RUNNING, state: "Loaded" });
+    const paused = processPanel({ ...RUNNING, state: "Paused" } as ProcessState);
+    expect(button("Start Process").disabled).toBe(true);
+    act(() => button("Resume Process").click());
+    expect(paused.send).toHaveBeenCalledWith("resume");
+
+    const loaded = processPanel({ ...RUNNING, state: "Loaded" } as ProcessState);
     act(() => button("Start Process").click());
     expect(loaded.send).toHaveBeenCalledWith("start");
     act(() => button("Unload Process").click());

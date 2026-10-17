@@ -18,7 +18,7 @@
   2. read & validate the recipe files (`RCP-001`, `RCP-003`);
   3. initialise HAL (outputs off), start sensor loop, wait ≤ 2 s for first reading (`HW-034`);
   4. create engine (state `NoProcess`);
-  5. start web server + real-time channel + broadcast loops;
+  5. start web server (UI, requests and push channel, spec 08);
   6. log `BrewberryPI ready for brewing :-)` and play **short beep**.
 - `NFR-022` Graceful shutdown on SIGINT/SIGTERM: stop engine loop, `switchEverythingOff`, buzzer off, release GPIO, log `Shutting down BrewberryPi.`.
 - `NFR-023` `[NEW]` The application SHOULD be installable as a system service that starts on boot and restarts on failure (legacy: manual start via `brewberrypi.sh` with `sudo`).
@@ -31,7 +31,7 @@
 
 ## 10.4 Logging
 
-- `NFR-040` Log to standard output with timestamp, level, component. Levels: `ERROR` (goal failures, broadcast failures), `WARN` (sensor read failures, rejected commands, invalid answers), `INFO` (lifecycle events: startup, commands received, process loaded/started/paused/stopped/finished, goal started/finished, heating power changes, pump changes), `DEBUG` (per-tick controller decisions, countdown remaining time, duty-cycle phases).
+- `NFR-040` Log to standard output with timestamp, level, component. Levels: `ERROR` (goal failures, failures while building pushed state), `WARN` (sensor read failures, rejected commands, invalid answers), `INFO` (lifecycle events: startup, commands received, process loaded/started/paused/stopped/finished, goal started/finished, heating power changes, pump changes), `DEBUG` (per-tick controller decisions, countdown remaining time, duty-cycle phases).
 - `NFR-041` Log messages from legacy worth keeping (for operators familiar with the old system): `starting goal <name>`, `goal <name> finished`, `change heating status to <p>`, `reading DS18b20 sensor failed`.
 
 ## 10.5 Platform and performance

@@ -79,19 +79,20 @@
       "properties": { "requestReminderIntervalSeconds": { "type": "number", "exclusiveMinimum": 0, "default": 10 } },
       "additionalProperties": false
     },
-    "broadcast": {
+    "events": {
       "type": "object",
       "properties": {
-        "hardwareStatusMilliseconds": { "type": "integer", "minimum": 100, "default": 500 },
-        "processStateMilliseconds": { "type": "integer", "minimum": 100, "default": 500 },
-        "recipesMilliseconds": { "type": "integer", "minimum": 100, "default": 500 },
-        "chartMilliseconds": { "type": "integer", "minimum": 100, "default": 1000 }
+        "checkMilliseconds": { "type": "integer", "minimum": 50, "default": 250 },
+        "heartbeatMilliseconds": { "type": "integer", "minimum": 1000, "default": 5000 }
       },
       "additionalProperties": false
     },
     "chart": {
       "type": "object",
-      "properties": { "maxPoints": { "type": "integer", "minimum": 2, "default": 200 } },
+      "properties": {
+        "maxPoints": { "type": "integer", "minimum": 2, "default": 200 },
+        "sampleMilliseconds": { "type": "integer", "minimum": 100, "default": 1000 }
+      },
       "additionalProperties": false
     },
     "simulation": {

@@ -97,6 +97,7 @@ stateDiagram-v2
 - `DOM-032` Answers are matched **case-sensitively** against the options. An answer that is not one of the options is rejected; the request stays unanswered and the sender receives an error reply (legacy: only logged). `[FIX-11]`
 - `DOM-033` While a request is active, the buzzer plays the **long beep** pattern immediately and then repeats it every **10 s** (configurable, `ui.requestReminderIntervalSeconds`) until the request is answered, removed, the goal is done, or the process is stopped, paused or unloaded. There is never more than one reminder loop at a time. `[FIX-12]`
 - `DOM-034` Requests are shown in the UI as the request message plus one button per option (see [09](09-user-interface.md)).
+- `DOM-035` `[NEW]` Every request has an `id` that is unique while the server runs; a new question (e.g. the iodine test asked again after "No") is a new request with a new id. An answer names the request it answers, so a late click on an earlier question is rejected instead of answering the current one (`IF-054`, `Q-28`).
 
 ## 2.5 Enumerations
 

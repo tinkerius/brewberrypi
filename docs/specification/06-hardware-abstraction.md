@@ -17,7 +17,7 @@
 | `switchEverythingOff()` | Heating 0 **and** pump off. |
 
 - `HW-002` Two implementations exist: **Raspberry Pi** (real GPIO + DS18B20) and **Simulation** (`--dummymode`, `HW-060`). The implementation is selected at startup (`NFR-020`).
-- `HW-003` All operations are thread-safe (called from engine loop, command handlers, broadcast loops and shutdown).
+- `HW-003` All operations are thread-safe (called from engine loop, command handlers, the push channel and shutdown).
 
 ## 6.2 Wiring and configuration `[NEW]` (user decision: pins configurable)
 

@@ -6,7 +6,7 @@ import { descriptionLines, formatHeating, formatPump, formatTemperature } from "
 import type { CommandName, EngineState, Goal, HardwareStatus, ProcessState, Recipe } from "./types";
 import { BUTTON_STYLES, CARD_STYLE, SELECT_STYLE } from "./ui";
 
-export type SendCommand = (command: CommandName, payload?: Record<string, string>) => void;
+export type SendCommand = (command: CommandName, args?: Record<string, string>) => void;
 
 /** Page title (§9.1). */
 export const APP_TITLE = "Brewberry Pi";
@@ -163,7 +163,12 @@ export function ProcessPanel(props: {
       )}
       <ol class="mb-6 space-y-2 empty:mb-0" ref={list}>
         {goals.map((goal, index) => (
-          <GoalItem key={index} goal={goal} connected={connected} onRespond={(option) => send("respond", { response: option })} />
+          <GoalItem
+            key={index}
+            goal={goal}
+            connected={connected}
+            onRespond={(option) => send("respond", { request: goal.activeRequest?.id ?? "", response: option })}
+          />
         ))}
       </ol>
       <div class="flex flex-wrap gap-2">
@@ -196,6 +201,9 @@ export function ProcessPanel(props: {
         </button>
         <button type="button" class={BUTTON_STYLES.secondary} disabled={!enabled("pause")} onClick={() => send("pause")}>
           Pause Process
+        </button>
+        <button type="button" class={BUTTON_STYLES.secondary} disabled={!enabled("resume")} onClick={() => send("resume")}>
+          Resume Process
         </button>
         <button type="button" class={BUTTON_STYLES.danger} disabled={!enabled("stop")} onClick={props.onStop}>
           Stop Process

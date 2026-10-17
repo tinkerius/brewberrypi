@@ -12,6 +12,7 @@ import socket
 import sys
 from collections.abc import Callable, Generator, Sequence
 from pathlib import Path
+from types import FrameType
 
 import uvicorn
 from starlette.applications import Starlette
@@ -107,7 +108,13 @@ def serve(app: Starlette, port: int) -> int:
     def announce_ready() -> None:
         app.state.ready()  # set by the app's lifespan startup
 
-    server = _Server(config, on_started=announce_ready)
+    def close_streams() -> None:
+        """Open event streams would hold up the graceful shutdown and so the outputs-off (NFR-022)."""
+        close = getattr(app.state, "close_streams", None)  # set by the app's lifespan startup
+        if close is not None:
+            close()
+
+    server = _Server(config, on_started=announce_ready, on_exit=close_streams)
     try:
         server.run()
     except SystemExit:  # uvicorn exits with its own code 3 when it cannot bind the port
@@ -117,9 +124,17 @@ def serve(app: Starlette, port: int) -> int:
 
 
 class _Server(uvicorn.Server):
-    def __init__(self, config: uvicorn.Config, on_started: Callable[[], None]) -> None:
+    def __init__(
+        self, config: uvicorn.Config, on_started: Callable[[], None], on_exit: Callable[[], None]
+    ) -> None:
         super().__init__(config)
         self._on_started = on_started
+        self._on_exit = on_exit
+
+    def handle_exit(self, sig: int, frame: FrameType | None) -> None:
+        """SIGTERM/SIGINT: also end the event streams, so the shutdown does not wait for them."""
+        super().handle_exit(sig, frame)
+        self._on_exit()
 
     async def startup(self, sockets: list[socket.socket] | None = None) -> None:
         await super().startup(sockets=sockets)

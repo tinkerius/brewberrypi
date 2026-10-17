@@ -2,7 +2,7 @@
 
 All hardware access goes through `Hal`. Implementations: `MockHal` for unit tests (`hal.mock`), the
 simulation for `--dummymode` (M6) and the Raspberry Pi (M9). Every implementation must be thread-safe
-(HW-003): the engine loop, command handlers, broadcast loops and shutdown all call it.
+(HW-003): the engine loop, command handlers, the event stream and shutdown all call it.
 """
 
 from abc import ABC, abstractmethod

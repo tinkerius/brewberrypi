@@ -31,7 +31,7 @@ def test_built_in_defaults_equal_the_example_config(tmp_path: Path) -> None:
     example = load_config(EXAMPLE)
     assert defaults.source is None
     assert example.source == EXAMPLE
-    for section in ("server", "hardware", "control", "engine", "ui", "broadcast", "chart", "simulation"):
+    for section in ("server", "hardware", "control", "engine", "ui", "events", "chart", "simulation"):
         assert getattr(defaults, section) == getattr(example, section), section
     assert defaults.recipes.directory.name == example.recipes.directory.name == "recipes"
 

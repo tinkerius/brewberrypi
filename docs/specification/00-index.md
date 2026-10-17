@@ -3,7 +3,7 @@
 > **Status:** Recovered from the legacy code base `com.brewberrypi` (Java 7, ca. 2014/2015).
 > **Scope of this specification:** *what* the system does. It is deliberately
 > **technology-neutral**. The technology decision is made in phase 2
-> (see [ADR-0001](../adr/0001-technology-stack.md)).
+> (see [ADR-0001](../adr/0001-technology-stack.md) and [ADR-0002](../adr/0002-rest-and-server-sent-events.md)).
 >
 > **Fidelity rule:** the legacy *behaviour* is preserved. Defects found in the
 > legacy code are **fixed at specification level**. Every such fix is marked
@@ -22,7 +22,7 @@
 | 05 | [Temperature Control](05-temperature-control.md) | Hysteresis controller, heat boost, duty-cycle heating, progress computation |
 | 06 | [Hardware Abstraction](06-hardware-abstraction.md) | Actuators, sensor, buzzer, simulation mode, configuration, safety |
 | 07 | [Recipes](07-recipes.md) | Recipe catalogue (8 recipes), one file per recipe, file format |
-| 08 | [Client/Server Interface](08-client-server-interface.md) | Real-time topics, commands, payload schemas |
+| 08 | [Client/Server Interface](08-client-server-interface.md) | Reads and commands (request/response), pushed changes, payload schemas |
 | 09 | [User Interface](09-user-interface.md) | Web UI layout and interaction |
 | 10 | [Non-Functional Requirements](10-non-functional-requirements.md) | Safety, configuration, logging, startup/shutdown, deployment |
 | 11 | [Acceptance Criteria](11-acceptance-criteria.md) | Testable Given/When/Then scenarios |

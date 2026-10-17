@@ -41,8 +41,9 @@ Project skills (in `.claude/skills/`):
 
 ## Development
 
-Technology stack: [ADR-0001](docs/adr/0001-technology-stack.md). In short: Python (Starlette + uvicorn,
-WebSocket) and a Vite/Preact front end, shipped as a signed container image. On the Raspberry Pi the image
+Technology stack: [ADR-0001](docs/adr/0001-technology-stack.md) and
+[ADR-0002](docs/adr/0002-rest-and-server-sent-events.md). In short: Python (Starlette + uvicorn, REST and
+server-sent events) and a Vite/Preact front end, shipped as a signed container image. On the Raspberry Pi the image
 runs under Podman on BrewberryPi OS, which is developed in the separate repository `tinkerius/brewberrypi-os`.
 The interface between the two is the [runtime contract](docs/deployment/runtime-contract.md).
 
@@ -117,19 +118,34 @@ log names the file, recipe and goal; the other recipes are still loaded. Only a 
 does not exist stops the start, with exit code 3. The format of one file is
 [recipe.schema.json](docs/specification/data/recipe.schema.json); see [07-recipes.md](docs/specification/07-recipes.md).
 
-### Real-time interface
+### API
 
-The server serves the web UI and a WebSocket at `/ws` on one port (`server.port`, default 8080). Every message
-is one JSON object `{"topic": ..., "payload": ...}` with the topics and payloads of
-[08-client-server-interface.md](docs/specification/08-client-server-interface.md). Commands are sent on
-`/service/process/*`, and their reply comes back to the sender on `/process/reply`.
+The server serves the web UI, a REST API and an event stream on one port (`server.port`, default 8080); see
+[08-client-server-interface.md](docs/specification/08-client-server-interface.md) and
+[ADR-0002](docs/adr/0002-rest-and-server-sent-events.md).
+
+- **REST** for reads and commands. Each command answers with a status (200, or 404, 409, 422) and
+  `{"command", "success", "message"}`:
+
+  ```sh
+  curl http://brewberrypi.local:8080/api/process
+  curl -X PUT http://brewberrypi.local:8080/api/process -H 'Content-Type: application/json' -d '{"recipe": "Dummy"}'
+  curl -X POST http://brewberrypi.local:8080/api/process/start -H 'Content-Type: application/json' -d '{}'
+  ```
+
+  Also `GET /api/hardware`, `/api/recipes`, `/api/recipes/{id}`, `/api/chart`, `DELETE /api/process` (unload),
+  `POST /api/process/pause|resume|stop`, and `POST /api/process/requests/{id}` with `{"response": "Yes"}` to
+  answer a question.
+- **Server-sent events** at `GET /api/events` (`curl -N`): a `snapshot` first, then `hardware`, `process`,
+  `recipes` and `chart` only when they change, and a `ping` every 5 seconds.
+- Commands must be sent as JSON, and requests from other web pages are refused.
 
 ### Running as a service
 
 The container image implements the application side of the
 [runtime contract](docs/deployment/runtime-contract.md): exit codes, graceful shutdown on SIGTERM/SIGINT
 with all outputs off, the systemd notify protocol (`READY=1`, `STOPPING=1`, `WATCHDOG=1` every
-`BREWBERRYPI_WATCHDOG_MS` while the engine and broadcasts are alive) when `NOTIFY_SOCKET` is set, and
+`BREWBERRYPI_WATCHDOG_MS` while the engine and the event stream are alive) when `NOTIFY_SOCKET` is set, and
 `GET /healthz`. `tests/test_contract.py` checks this against the real program.
 
 Before the first real brew, run the [hardware test protocol](docs/deployment/hardware-test-protocol.md) on the Pi.

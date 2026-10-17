@@ -38,17 +38,17 @@ sending client. `[FIX-15]`
 
 ### Command acceptance matrix
 
-| State ↓ / Command → | `load(id)` | `unload` | `start` | `pause` | `stop` | `respond(option)` |
-|---|---|---|---|---|---|---|
-| `NoProcess` | ✅ | ❌ no process | ❌ no process | ❌ | ❌ | ❌ no active request |
-| `Loaded` | ✅ replaces | ✅ | ✅ → `Running` | ❌ not running | ❌ not running | ❌ no active request |
-| `Running` | ❌ stop first | ❌ stop first | ❌ already running | ✅ → `Paused` | ✅ → `Stopped` | ✅ if request active |
-| `Paused` | ❌ stop first | ❌ stop first | ✅ resume → `Running` | ❌ already paused | ✅ → `Stopped` | ✅ if request active |
-| `Stopped` | ✅ | ✅ | ❌ load again | ❌ | ❌ | ❌ |
-| `Finished` | ✅ | ✅ | ❌ load again | ❌ | ❌ | ❌ |
+| State ↓ / Command → | `load(id)` | `unload` | `start` | `pause` | `resume` | `stop` | `respond(option)` |
+|---|---|---|---|---|---|---|---|
+| `NoProcess` | ✅ | ❌ no process | ❌ no process | ❌ | ❌ no process | ❌ | ❌ no active request |
+| `Loaded` | ✅ replaces | ✅ | ✅ → `Running` | ❌ not running | ❌ not paused | ❌ not running | ❌ no active request |
+| `Running` | ❌ stop first | ❌ stop first | ❌ already running | ✅ → `Paused` | ❌ not paused | ✅ → `Stopped` | ✅ if request active |
+| `Paused` | ❌ stop first | ❌ stop first | ❌ paused, resume it | ❌ already paused | ✅ → `Running` | ✅ → `Stopped` | ✅ if request active |
+| `Stopped` | ✅ | ✅ | ❌ load again | ❌ | ❌ not paused | ❌ | ❌ |
+| `Finished` | ✅ | ✅ | ❌ load again | ❌ | ❌ not paused | ❌ | ❌ |
 
 ❌ = rejected: nothing changes, reply `success=false` with a message explaining why
-(suggested texts in the cells). Rejections MUST NOT crash or disturb the server.
+(suggested texts in the cells) and the outcome *conflict* (`IF-052`). Rejections MUST NOT crash or disturb the server.
 
 ### Command details
 
@@ -59,11 +59,12 @@ sending client. `[FIX-15]`
 - `ENG-011` **unload** — removes the process; state `NoProcess`; all actuators off; reminder loops stop. Reply `Process unloaded.`
 - `ENG-012` **start**
   - From `Loaded`: starts execution at the first goal. Reply `Process started.`
-  - From `Paused`: resumes execution with the goal that was active (timers continue where they were frozen, see `ENG-031`). Reply `Process resumed.`
+  - From `Paused`: rejected, `"Process is paused. Resume it."` — a paused process continues with `resume` (`ENG-016`, `Q-28`).
   - At most **one** execution loop exists at any time. `[FIX-05]`
 - `ENG-013` **pause** `[FIX-07]` — the execution loop stops calling the active goal; **heating off and pump off**; reminder beeps are silenced; the active request (if any) stays visible and can still be answered; time-range timers of the active goal are frozen. Reply `Process paused.`
 - `ENG-014` **stop** — terminates execution within at most one tick (≤ 500 ms); **all actuators off** (heating 0, pump off); reminder loops stop; the active request is removed; goal states stay as they are (active goal stays `Active`) for display. State `Stopped`. Reply `Process stopped.` `[FIX-06, FIX-12]`
-- `ENG-015` **respond(option)** — forwards the answer to the active request of the active goal (`DOM-032`). No process / no active goal / no active request → `success=false`, `"There is no active request to respond to."` Invalid option → `success=false`, `"Response option '<option>' is not valid."` `[FIX-11]`
+- `ENG-015` **respond(option)** — forwards the answer to the active request of the active goal (`DOM-032`). No process / no active goal / no active request → `success=false`, `"There is no active request to respond to."` Invalid option → `success=false`, `"Response option '<option>' is not valid."` `[FIX-11]` An answer that names another request than the active one → `success=false`, `"This request is no longer open."` (`DOM-035`, `IF-054`).
+- `ENG-016` `[NEW]` **resume** — only from `Paused`: continues execution with the goal that was active (timers continue where they were frozen, see `ENG-031`); state `Running`. Reply `Process resumed.` Otherwise rejected: `"No process loaded."` or `"Process is not paused."` (`Q-28`; until then `start` resumed a paused process.)
 
 ## 3.3 Execution loop (worker)
 
