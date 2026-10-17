@@ -34,7 +34,7 @@ controllable/accelerated clock. `T` = temperature reported by the HAL.
 - `AC-033` (FIX-05) start twice → second is rejected; exactly one execution loop (verified by goal tick count).
 - `AC-034` (FIX-06) stop in `Loaded` → `success=false`, no crash.
 - `AC-035` (ENG-014) **Given** `Running` with heater 1.0, pump on **When** stop **Then** within 500 ms: heating 0, pump off, state `Stopped`, active goal still `Active`, no further beeps.
-- `AC-036` (FIX-07) **Given** Rest 62/10 running, 3 min elapsed **When** pause **Then** heating 0, pump off, state `Paused`, countdown frozen at `07:00 left`. **When** 5 min pass and start **Then** state `Running`, countdown continues from `07:00 left`.
+- `AC-036` (FIX-07) **Given** Rest 62/10 running, 3 min elapsed **When** pause **Then** heating 0, pump off, state `Paused`, countdown frozen at `07:00 left`. **When** 5 min pass and resume (`ENG-016`) **Then** state `Running`, countdown continues from `07:00 left`. `start` while paused is rejected (conflict).
 - `AC-037` (FIX-08) Run TEST to `Finished`, load TEST again → all goals `Waiting`, iodine timer not started; starting it asks the question again.
 - `AC-038` (FIX-09) load or unload while `Running` → rejected; running process unaffected.
 - `AC-039` (ENG-025) Process reaching the end → heating 0, pump off, state `Finished`, short beep after the last goal.
@@ -49,17 +49,21 @@ controllable/accelerated clock. `T` = temperature reported by the HAL.
 - `AC-055` (GOAL-006) Lautering active → heating 0 and pump off on every tick, request `Lauter now`.
 - `AC-056` (GOAL-003) MashIn active after HeatUp → heater off, pump stays on, no temperature control until confirmed.
 - `AC-057` (FIX-12) Stop while a request is pending → reminder beeps stop; no reminder loop continues after stop/unload/pause.
+- `AC-058` (DOM-035, IF-054) TEST recipe: answer `No` to the iodine question with its id; when the question is asked again (a new id), an answer naming the first id → `success=false`, `This request is no longer open.`, outcome conflict, the new question stays unanswered; an answer naming the new id is accepted.
 
 ## 11.6 Interface and UI
 
-- `AC-070` (IF-005) New browser connection receives hardware status, process state, recipes and chart within 1 s.
-- `AC-071` (IF-010, FIX-16) `/hardware/status.temperature` is a JSON number with 1 decimal regardless of server locale.
+- `AC-070` (IF-005, IF-071, IF-053) A new push connection receives a `snapshot` with hardware status, process state, recipes and chart within 1 s. After `load`, the new process state is pushed to every connection before the command's reply is sent.
+- `AC-071` (IF-010, FIX-16) `hardware.temperature` is a JSON number with 1 decimal regardless of server locale.
 - `AC-072` (IF-020, FIX-18) No process → `{ "state": "NoProcess" }`.
 - `AC-073` (IF-043) Feeding 201 points with gaps 1 s except one gap of 0.2 s between points 50/51 → point 51 is removed, point count 200.
 - `AC-074` (IF-041) INVALID readings are not added to the chart.
-- `AC-075` (UI-031) Active goal shows progress bar with `statusmessage`; Done goals green; request buttons send the exact option text.
+- `AC-075` (UI-031, UI-032) Active goal shows progress bar with `statusmessage`; Done goals green; request buttons send the exact option text for that request's id.
 - `AC-076` (UI-050) Every command shows the server reply message in the Information modal (or toast per `Q-11`).
 - `AC-077` (UI-060) Stopping the server → UI shows "disconnected"; restarting → UI reconnects and shows live data without page reload.
+- `AC-078` (IF-052) Outcomes: `load ZORA` → accepted; `start` twice → the second is a conflict, `Process is already running.`; `load NOPE` → not found; `respond confirm` (lowercase) → invalid; `load` with `{"recipe": 7}` → invalid. Every reply has `command`, `success`, `message`.
+- `AC-079` (IF-072) With nothing changing, no state event is pushed (only `ping`); a changed temperature is pushed as one `hardware` event within one check period.
+- `AC-060` (IF-061) A command from another web page (`Origin` not the server) → forbidden and nothing changes; a command not sent as JSON → refused; the same command from the server's own page or without `Origin` (command-line tool) is carried out.
 
 ## 11.7 Recipes and configuration
 

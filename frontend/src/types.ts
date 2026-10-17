@@ -1,26 +1,13 @@
 /**
  * Messages of the client/server interface (docs/specification/08-client-server-interface.md,
- * docs/specification/data/messages.schema.json). Every WebSocket message is `{ topic, payload }`.
+ * docs/specification/data/messages.schema.json): REST under `/api`, server-sent events at `/api/events`.
  */
 
-export const TOPICS = {
-  hardwareStatus: "/hardware/status",
-  processState: "/process/state",
-  recipes: "/process/recipes",
-  chart: "/process/chart",
-  reply: "/process/reply",
-} as const;
+export type CommandName = "load" | "unload" | "start" | "pause" | "resume" | "stop" | "respond";
 
-export type CommandName = "load" | "unload" | "start" | "pause" | "stop" | "respond";
-
-export const COMMAND_TOPICS: Record<CommandName, string> = {
-  load: "/service/process/load",
-  unload: "/service/process/unload",
-  start: "/service/process/start",
-  pause: "/service/process/pause",
-  stop: "/service/process/stop",
-  respond: "/service/process/request",
-};
+/** Event names of the event stream (IF-070). */
+export const EVENTS = ["snapshot", "hardware", "process", "recipes", "chart", "ping"] as const;
+export type EventName = (typeof EVENTS)[number];
 
 /** IF-010. `temperature` is `null` when the sensor reading is INVALID. */
 export interface HardwareStatus {
@@ -33,6 +20,8 @@ export type EngineState = "NoProcess" | "Loaded" | "Running" | "Paused" | "Stopp
 export type GoalStatus = "Waiting" | "Active" | "Done";
 
 export interface OperatorRequest {
+  /** Answer it with POST /api/process/requests/{id} (DOM-035). */
+  id: string;
   message: string;
   options: string[];
 }
@@ -63,12 +52,32 @@ export interface Recipe {
 }
 
 /** IF-040: x in epoch milliseconds, y in °C. */
-export interface ChartSeries {
-  key: string;
-  values: { x: number; y: number }[];
+export interface ChartPoint {
+  x: number;
+  y: number;
 }
 
-/** IF-050. */
+export interface ChartSeries {
+  key: string;
+  values: ChartPoint[];
+}
+
+/** IF-073: a new point and the x of each point that thinning removed. */
+export interface ChartUpdate {
+  add: ChartPoint;
+  remove: number[];
+}
+
+/** IF-071: the first event of every stream. */
+export interface Snapshot {
+  hardware: HardwareStatus;
+  process: ProcessState;
+  recipes: Recipe[];
+  chart: ChartSeries[];
+  heartbeatMilliseconds: number;
+}
+
+/** IF-050: the reply to a command, shown in the Information modal (UI-050). */
 export interface CommandReply {
   command: CommandName;
   success: boolean;

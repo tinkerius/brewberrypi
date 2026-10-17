@@ -1,23 +1,21 @@
 /** The single-page UI (docs/specification/09-user-interface.md §9.1). */
 
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { Chart } from "./Chart";
-import { Connection, defaultUrl } from "./connection";
+import { sendCommand } from "./api";
 import { InformationModal, StopConfirmation } from "./dialogs";
+import { EventStream } from "./events";
 import { APP_TITLE, ConnectionIndicator, HardwareStatusPanel, Panel, ProcessPanel, type SendCommand } from "./panels";
-import { type AppState, dismissReply, initialState, receive, setConnected } from "./state";
-import { COMMAND_TOPICS } from "./types";
+import { type AppState, addReply, dismissReply, initialState, receive, setConnected } from "./state";
 
 export function App() {
   const [state, setState] = useState<AppState>(initialState);
   const [everConnected, setEverConnected] = useState(false);
   const [confirmingStop, setConfirmingStop] = useState(false);
-  const connection = useRef<Connection | null>(null);
-
   useEffect(() => {
-    const channel = new Connection({
-      url: defaultUrl(window.location),
-      onMessage: (topic, payload) => setState((current) => receive(current, topic, payload)),
+    const stream = new EventStream({
+      url: "/api/events",
+      onEvent: (name, data) => setState((current) => receive(current, name, data)),
       onConnectedChange: (connected) => {
         setState((current) => setConnected(current, connected));
         if (connected) {
@@ -25,13 +23,12 @@ export function App() {
         }
       },
     });
-    connection.current = channel;
-    channel.start();
-    return () => channel.stop();
+    stream.start();
+    return () => stream.stop();
   }, []);
 
-  const send: SendCommand = (command, payload = {}) => {
-    connection.current?.send(COMMAND_TOPICS[command], payload);
+  const send: SendCommand = (command, args = {}) => {
+    void sendCommand(command, args).then((reply) => setState((current) => addReply(current, reply)));
   };
 
   return (

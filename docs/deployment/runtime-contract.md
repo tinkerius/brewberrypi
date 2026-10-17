@@ -49,7 +49,7 @@ open specification questions in [13-open-questions.md](../specification/13-open-
 
 If `NOTIFY_SOCKET` is set:
 - `READY=1` after startup step 6 of `NFR-021`. The HAL is initialised with outputs off, the first sensor reading has arrived or timed out (`HW-034`), and the web server is listening.
-- `WATCHDOG=1` every `BREWBERRYPI_WATCHDOG_MS` milliseconds (environment variable; the container does not receive `WATCHDOG_USEC`). Pings are sent only while the engine loop and the broadcast loops are alive, so a hang stops them.
+- `WATCHDOG=1` every `BREWBERRYPI_WATCHDOG_MS` milliseconds (environment variable; the container does not receive `WATCHDOG_USEC`). Pings are sent only while the engine loop and the event stream loops are alive, so a hang stops them.
 - `STOPPING=1` when shutdown begins.
 
 ## 5. HTTP endpoints for the host

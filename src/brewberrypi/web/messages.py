@@ -1,29 +1,22 @@
 """Message payloads and command handling of the client/server interface (spec 08).
 
 Payload shapes follow `data/messages.schema.json` (a copy of `docs/specification/data/messages.schema.json`,
-IF-004). Broadcast payloads are built synchronously on the event loop, so each one is a consistent snapshot
-(IF-020, ENG-040). Incoming command payloads are validated; malformed ones get a `success=false` reply
-(IF-051).
+IF-004). State payloads are built synchronously on the event loop, so each one is a consistent snapshot
+(IF-020, ENG-040). Command bodies are validated; a malformed one is rejected with 422, never a crash (IF-051).
 """
 
 import json
 from collections.abc import Callable
+from dataclasses import asdict
 from importlib.resources import files
 from typing import Any
 
 import fastjsonschema
 
-from brewberrypi.engine import Engine, Reply
+from brewberrypi.engine import Engine, ErrorKind, Reply
 from brewberrypi.goals import Goal
 from brewberrypi.hal import Hal
-from brewberrypi.recipes import RecipeCatalogue
-
-HARDWARE_STATUS = "/hardware/status"
-PROCESS_STATE = "/process/state"
-RECIPES = "/process/recipes"
-CHART = "/process/chart"
-REPLY = "/process/reply"
-"""Topic of the CommandReply sent to the issuing client only (IF-050)."""
+from brewberrypi.recipes import Recipe, RecipeCatalogue
 
 _SCHEMA: dict[str, Any] = json.loads(
     files("brewberrypi").joinpath("data/messages.schema.json").read_text("utf-8")
@@ -35,7 +28,7 @@ def validator(definition: str) -> Callable[[Any], Any]:
     return fastjsonschema.compile({"$ref": f"#/$defs/{definition}", "$defs": _SCHEMA["$defs"]})  # type: ignore[no-any-return]
 
 
-# --- broadcasts (spec 8.2) ---
+# --- state (spec 8.2) ---
 
 
 def hardware_status(hal: Hal) -> dict[str, Any]:
@@ -72,7 +65,11 @@ def _goal(goal: Goal) -> dict[str, Any]:
     }
     request = goal.active_request
     if request is not None:  # omitted without a request (legacy)
-        payload["activeRequest"] = {"message": request.message, "options": list(request.options)}
+        payload["activeRequest"] = {
+            "id": request.id,
+            "message": request.message,
+            "options": list(request.options),
+        }
     return payload
 
 
@@ -81,53 +78,62 @@ def recipe_list(recipes: RecipeCatalogue) -> list[dict[str, str]]:
     return recipes.summaries()
 
 
+def recipe_detail(recipe: Recipe) -> dict[str, Any]:
+    """IF-031: one recipe with its goals as written in its recipe file (spec 7.2)."""
+    goals = [
+        {key: value for key, value in asdict(goal).items() if value is not None} for goal in recipe.goals
+    ]
+    return {"id": recipe.id, "name": recipe.name, "goals": goals}
+
+
 # --- commands (spec 8.3) ---
 
-_COMMANDS: dict[str, tuple[str, str]] = {
-    "/service/process/load": ("load", "LoadCommand"),
-    "/service/process/unload": ("unload", "EmptyCommand"),
-    "/service/process/start": ("start", "EmptyCommand"),
-    "/service/process/pause": ("pause", "EmptyCommand"),
-    "/service/process/stop": ("stop", "EmptyCommand"),
-    "/service/process/request": ("respond", "RespondCommand"),
+COMMANDS: dict[str, str] = {
+    "load": "LoadCommand",
+    "unload": "EmptyCommand",
+    "start": "EmptyCommand",
+    "pause": "EmptyCommand",
+    "resume": "EmptyCommand",
+    "stop": "EmptyCommand",
+    "respond": "RespondCommand",
 }
-_VALIDATORS = {topic: validator(definition) for topic, (_, definition) in _COMMANDS.items()}
+"""Command name -> schema definition of its request body."""
+_VALIDATORS = {command: validator(definition) for command, definition in COMMANDS.items()}
+_STATUS: dict[ErrorKind | None, int] = {None: 200, "invalid": 422, "not_found": 404, "conflict": 409}
 
 
-def is_command(topic: str) -> bool:
-    return topic in _COMMANDS
+def run_command(
+    engine: Engine, command: str, body: Any, request_id: str | None = None
+) -> tuple[int, dict[str, Any]]:
+    """Run a command; return the HTTP status (IF-052) and the CommandReply (IF-050).
 
-
-def handle_command(engine: Engine, topic: str, payload: Any) -> dict[str, Any]:
-    """Run a command and return its CommandReply (IF-050). Never raises for bad input (IF-051)."""
-    command, _ = _COMMANDS[topic]
-    payload = {} if payload is None else payload
-    if command == "load" and isinstance(payload, dict) and "recipe" not in payload:
+    `body` is the decoded JSON request body (`None` without one). Never raises for bad input (IF-051).
+    """
+    body = {} if body is None else body
+    if command == "load" and isinstance(body, dict) and "recipe" not in body:
         reply = engine.load(None)  # legacy text "parameter 'recipe' not set."
     else:
         try:
-            _VALIDATORS[topic](payload)
+            _VALIDATORS[command](body)
         except fastjsonschema.JsonSchemaValueException as error:
             message: str = error.message
-            reply = Reply(
-                False, f"Invalid {command} command: {message.removeprefix('data ').removeprefix('data.')}"
-            )
+            problem = message.removeprefix("data ").removeprefix("data.")
+            reply = Reply(False, f"Invalid {command} command: {problem}", "invalid")
         else:
-            reply = _run(engine, command, payload)
-    return {"command": command, "success": reply.success, "message": reply.message}
+            reply = _run(engine, command, body, request_id)
+    return _STATUS[reply.error], {"command": command, "success": reply.success, "message": reply.message}
 
 
-def _run(engine: Engine, command: str, payload: dict[str, Any]) -> Reply:
-    match command:
-        case "load":
-            return engine.load(payload["recipe"])
-        case "unload":
-            return engine.unload()
-        case "start":
-            return engine.start()
-        case "pause":
-            return engine.pause()
-        case "stop":
-            return engine.stop()
-        case _:
-            return engine.respond(payload["response"])
+def _run(engine: Engine, command: str, body: dict[str, Any], request_id: str | None) -> Reply:
+    if command == "load":
+        return engine.load(body["recipe"])
+    if command == "respond":
+        return engine.respond(body["response"], request_id)
+    actions: dict[str, Callable[[], Reply]] = {
+        "unload": engine.unload,
+        "start": engine.start,
+        "pause": engine.pause,
+        "resume": engine.resume,
+        "stop": engine.stop,
+    }
+    return actions[command]()

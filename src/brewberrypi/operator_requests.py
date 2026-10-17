@@ -5,6 +5,7 @@ is active and unanswered, `RequestReminder` plays the long beep immediately and 
 """
 
 import asyncio
+import itertools
 from typing import ClassVar
 
 from brewberrypi.clock import Clock
@@ -15,12 +16,17 @@ class InvalidResponse(ValueError):
     """The answer is not one of the request's options (DOM-032, FIX-11). The message is the reply text."""
 
 
+_IDS = itertools.count(1)
+
+
 class OperatorRequest:
     """A question or instruction with an ordered list of answer options (DOM-030)."""
 
     options: ClassVar[tuple[str, ...]]
 
     def __init__(self, message: str) -> None:
+        self.id = str(next(_IDS))
+        """Unique while the server runs; an answer names the request it answers (DOM-035)."""
         self.message = message
         self.answer: str | None = None
         """The chosen option, `None` while unanswered."""

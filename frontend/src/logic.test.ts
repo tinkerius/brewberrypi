@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
+import { commandRequest, NO_CONNECTION, sendCommand } from "./api";
 import { isAccepted } from "./commands";
-import { Connection, defaultUrl, reconnectDelay, type SocketLike } from "./connection";
+import { EventStream, MISSED_HEARTBEATS, reconnectDelay, type SourceLike } from "./events";
 import { descriptionLines, formatDegrees, formatHeating, formatPump, formatTemperature, formatTime } from "./format";
 import { toPlotData } from "./Chart";
-import { dismissReply, initialState, receive, setConnected } from "./state";
-import type { EngineState } from "./types";
+import { addReply, applyChartUpdate, dismissReply, initialState, receive, setConnected } from "./state";
+import type { EngineState, EventName, Snapshot } from "./types";
 
 describe("UI-010 hardware status texts", () => {
   it("shows -- before the first message", () => {
@@ -51,14 +52,15 @@ describe("FIX-24 descriptions", () => {
 
 describe("UI-042 command acceptance matrix", () => {
   const states: EngineState[] = ["NoProcess", "Loaded", "Running", "Paused", "Stopped", "Finished"];
-  const allowed = (command: "load" | "unload" | "start" | "pause" | "stop") =>
+  const allowed = (command: "load" | "unload" | "start" | "pause" | "resume" | "stop") =>
     states.filter((state) => isAccepted(command, state));
 
   it("matches spec 03 §3.2", () => {
     expect(allowed("load")).toEqual(["NoProcess", "Loaded", "Stopped", "Finished"]);
     expect(allowed("unload")).toEqual(["Loaded", "Stopped", "Finished"]);
-    expect(allowed("start")).toEqual(["Loaded", "Paused"]);
+    expect(allowed("start")).toEqual(["Loaded"]);
     expect(allowed("pause")).toEqual(["Running"]);
+    expect(allowed("resume")).toEqual(["Paused"]);
     expect(allowed("stop")).toEqual(["Running", "Paused"]);
   });
 
@@ -67,21 +69,37 @@ describe("UI-042 command acceptance matrix", () => {
   });
 });
 
+const SNAPSHOT: Snapshot = {
+  hardware: { temperature: 20, pumpstatus: false, heatingstatus: 0 },
+  process: { state: "NoProcess" },
+  recipes: [{ id: "ZORA", name: "München 12.6 - SUD1:ZORA" }],
+  chart: [{ key: "Kettle Temperature", values: [{ x: 1000, y: 20 }, { x: 2000, y: 20.1 }] }],
+  heartbeatMilliseconds: 5000,
+};
+
 describe("state", () => {
-  it("stores the latest broadcast of each topic", () => {
-    let state = receive(initialState, "/hardware/status", { temperature: 20, pumpstatus: false, heatingstatus: 0 });
-    state = receive(state, "/process/state", { state: "NoProcess" });
-    state = receive(state, "/process/recipes", [{ id: "ZORA", name: "München 12.6 - SUD1:ZORA" }]);
-    state = receive(state, "/unknown", 1);
+  it("AC-070 takes everything from the snapshot, then each change", () => {
+    let state = receive(initialState, "snapshot", SNAPSHOT);
     expect(state.hardware?.temperature).toBe(20);
     expect(state.process).toEqual({ state: "NoProcess" });
     expect(state.recipes).toHaveLength(1);
-    expect(state.chart).toBeNull();
+    state = receive(state, "hardware", { temperature: 21, pumpstatus: true, heatingstatus: 1 });
+    state = receive(state, "process", { processid: "ZORA", processname: "München 12.6 - SUD1:ZORA", state: "Loaded", goals: [] });
+    state = receive(state, "ping", {});
+    expect(state.hardware?.temperature).toBe(21);
+    expect(state.process?.state).toBe("Loaded");
+  });
+
+  it("IF-073 applies chart updates: thinned points out, the new point in", () => {
+    let state = receive(initialState, "snapshot", SNAPSHOT);
+    state = receive(state, "chart", { add: { x: 3000, y: 20.2 }, remove: [2000] });
+    expect(state.chart?.[0].values).toEqual([{ x: 1000, y: 20 }, { x: 3000, y: 20.2 }]);
+    expect(applyChartUpdate(null, { add: { x: 1, y: 1 }, remove: [] })).toBeNull(); // before the snapshot
   });
 
   it("AC-076 queues every reply for the Information modal until confirmed", () => {
-    let state = receive(initialState, "/process/reply", { command: "load", success: true, message: "first" });
-    state = receive(state, "/process/reply", { command: "start", success: false, message: "second" });
+    let state = addReply(initialState, { command: "load", success: true, message: "first" });
+    state = addReply(state, { command: "start", success: false, message: "second" });
     expect(state.replies.map((reply) => reply.message)).toEqual(["first", "second"]);
     state = dismissReply(state);
     expect(state.replies.map((reply) => reply.message)).toEqual(["second"]);
@@ -89,100 +107,173 @@ describe("state", () => {
   });
 });
 
-class FakeSocket implements SocketLike {
-  onopen: ((event: Event) => void) | null = null;
-  onclose: ((event: CloseEvent) => void) | null = null;
-  onmessage: ((event: MessageEvent) => void) | null = null;
-  onerror: ((event: Event) => void) | null = null;
-  readyState = 0;
-  sent: string[] = [];
-  closed = false;
+describe("IF-053 commands over REST", () => {
+  it("maps every command to its HTTP request", () => {
+    expect(commandRequest("load", { recipe: "ZORA" })).toEqual({ method: "PUT", path: "/api/process", body: { recipe: "ZORA" } });
+    expect(commandRequest("unload")).toEqual({ method: "DELETE", path: "/api/process", body: {} });
+    for (const command of ["start", "pause", "resume", "stop"] as const) {
+      expect(commandRequest(command)).toEqual({ method: "POST", path: `/api/process/${command}`, body: {} });
+    }
+    expect(commandRequest("respond", { request: "7", response: "Yes" })).toEqual({
+      method: "POST",
+      path: "/api/process/requests/7",
+      body: { response: "Yes" },
+    });
+  });
 
-  send(data: string): void {
-    this.sent.push(data);
+  it("sends JSON and turns the HTTP answer into a reply", async () => {
+    const calls: [string, RequestInit][] = [];
+    const reply = (status: number, body: unknown) => async (path: string, init: RequestInit) => {
+      calls.push([path, init]);
+      return new Response(JSON.stringify(body), { status });
+    };
+    expect(await sendCommand("start", {}, reply(200, { command: "start", success: true, message: "Process started." }))).toEqual({
+      command: "start",
+      success: true,
+      message: "Process started.",
+    });
+    expect(calls[0][1]).toMatchObject({ method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+    expect(await sendCommand("start", {}, reply(409, { command: "start", success: false, message: "Process is already running." }))).toEqual({
+      command: "start",
+      success: false,
+      message: "Process is already running.",
+    });
+    const offline = async () => {
+      throw new TypeError("Failed to fetch");
+    };
+    expect(await sendCommand("stop", {}, offline)).toEqual({ command: "stop", success: false, message: NO_CONNECTION });
+    const proxyError = async () => new Response("<html>Bad Gateway</html>", { status: 502 });
+    expect(await sendCommand("stop", {}, proxyError)).toEqual({ command: "stop", success: false, message: "HTTP 502" });
+  });
+});
+
+class FakeSource implements SourceLike {
+  readyState = 0;
+  onerror: ((event: Event) => void) | null = null;
+  closed = false;
+  private listeners = new Map<string, ((event: MessageEvent) => void)[]>();
+
+  addEventListener(type: string, listener: (event: MessageEvent) => void): void {
+    this.listeners.set(type, [...(this.listeners.get(type) ?? []), listener]);
   }
 
   close(): void {
     this.closed = true;
-    this.readyState = 3;
-    this.onclose?.({} as CloseEvent);
+    this.readyState = 2;
   }
 
-  open(): void {
+  emit(type: string, data: unknown): void {
     this.readyState = 1;
-    this.onopen?.({} as Event);
+    for (const listener of this.listeners.get(type) ?? []) {
+      listener({ data: typeof data === "string" ? data : JSON.stringify(data) } as MessageEvent);
+    }
   }
 
-  receive(data: string): void {
-    this.onmessage?.({ data } as MessageEvent);
+  fail(closed = false): void {
+    this.readyState = closed ? 2 : 0;
+    this.onerror?.({} as Event);
   }
 }
 
 function setup() {
-  const sockets: FakeSocket[] = [];
-  const timers: { callback: () => void; ms: number }[] = [];
-  const messages: [string, unknown][] = [];
+  const sources: FakeSource[] = [];
+  const timers: { callback: () => void; ms: number; cleared: boolean }[] = [];
+  const received: [EventName, unknown][] = [];
   const connected: boolean[] = [];
-  const connection = new Connection({
-    url: "ws://pi:8080/ws",
-    onMessage: (topic, payload) => messages.push([topic, payload]),
+  const stream = new EventStream({
+    url: "/api/events",
+    onEvent: (name, data) => received.push([name, data]),
     onConnectedChange: (value) => connected.push(value),
-    createSocket: () => {
-      const socket = new FakeSocket();
-      sockets.push(socket);
-      return socket;
+    createSource: () => {
+      const source = new FakeSource();
+      sources.push(source);
+      return source;
     },
-    setTimer: (callback, ms) => timers.push({ callback, ms }),
-    clearTimer: vi.fn(),
+    setTimer: (callback, ms) => {
+      const timer = {
+        ms,
+        cleared: false,
+        callback: () => {
+          timer.cleared = true; // a timer that fired is done
+          callback();
+        },
+      };
+      timers.push(timer);
+      return timer;
+    },
+    clearTimer: (timer) => {
+      (timer as { cleared: boolean }).cleared = true;
+    },
   });
-  return { connection, sockets, timers, messages, connected };
+  const live = () => timers.filter((timer) => !timer.cleared);
+  return { stream, sources, timers, live, received, connected };
 }
 
-describe("UI-060 connection", () => {
-  it("builds the WebSocket URL of the page's server", () => {
-    expect(defaultUrl({ protocol: "http:", host: "brewberrypi:8080" })).toBe("ws://brewberrypi:8080/ws");
-    expect(defaultUrl({ protocol: "https:", host: "pi" })).toBe("wss://pi/ws");
-  });
-
-  it("delivers messages and sends commands as {topic, payload}", () => {
-    const { connection, sockets, messages, connected } = setup();
-    connection.start();
-    expect(connection.send("/service/process/start", {})).toBe(false); // not open yet
-    sockets[0].open();
-    sockets[0].receive('{"topic": "/process/state", "payload": {"state": "NoProcess"}}');
-    sockets[0].receive("not json");
-    expect(messages).toEqual([["/process/state", { state: "NoProcess" }]]);
+describe("UI-060 event stream", () => {
+  it("is connected from the snapshot on and delivers events", () => {
+    const { stream, sources, received, connected } = setup();
+    stream.start();
+    expect(connected).toEqual([]);
+    sources[0].emit("process", { state: "NoProcess" }); // before the snapshot: ignored
+    sources[0].emit("snapshot", SNAPSHOT);
+    sources[0].emit("hardware", { temperature: 21, pumpstatus: false, heatingstatus: 0 });
+    sources[0].emit("process", "not json");
+    expect(received.map(([name]) => name)).toEqual(["snapshot", "hardware"]);
     expect(connected).toEqual([true]);
-    expect(connection.send("/service/process/load", { recipe: "ZORA" })).toBe(true);
-    expect(sockets[0].sent).toEqual(['{"topic":"/service/process/load","payload":{"recipe":"ZORA"}}']);
   });
 
-  it("AC-077 reconnects after the server went away, with growing delays", () => {
-    const { connection, sockets, timers, connected } = setup();
-    connection.start();
-    sockets[0].open();
-    sockets[0].close(); // server stopped
+  it("AC-077 shows disconnected while the browser reconnects, connected again with the next snapshot", () => {
+    const { stream, sources, connected } = setup();
+    stream.start();
+    sources[0].emit("snapshot", SNAPSHOT);
+    sources[0].fail(); // the browser retries by itself
     expect(connected).toEqual([true, false]);
-    expect(timers.map((timer) => timer.ms)).toEqual([500]);
-    timers[0].callback();
-    sockets[1].close(); // still down
-    timers[1].callback();
-    expect(timers.map((timer) => timer.ms)).toEqual([500, 1000]);
-    sockets[2].open(); // server back
+    expect(sources).toHaveLength(1);
+    sources[0].emit("snapshot", SNAPSHOT); // the server sends a fresh snapshot on reconnect
     expect(connected).toEqual([true, false, true]);
-    sockets[2].close();
-    expect(timers[2].ms).toBe(500); // delay starts again after a successful connection
   });
 
-  it("caps the reconnect delay at 5 s", () => {
+  it("IF-074 reopens the stream when the heartbeat stops", () => {
+    const { stream, sources, live, connected } = setup();
+    stream.start();
+    sources[0].emit("snapshot", { ...SNAPSHOT, heartbeatMilliseconds: 2000 });
+    const [watchdog] = live();
+    expect(watchdog.ms).toBe(2000 * MISSED_HEARTBEATS);
+    sources[0].emit("ping", {}); // re-armed
+    expect(live()).toHaveLength(1);
+    live()[0].callback(); // nothing arrived for 5 s
+    expect(connected).toEqual([true, false]);
+    expect(sources[0].closed).toBe(true);
+    const [reopen] = live();
+    expect(reopen.ms).toBe(500);
+    reopen.callback();
+    expect(sources).toHaveLength(2);
+  });
+
+  it("reopens with growing delays when the browser gives up", () => {
+    const { stream, sources, live } = setup();
+    stream.start();
+    sources[0].fail(true);
+    expect(live().map((timer) => timer.ms)).toEqual([500]);
+    live()[0].callback();
+    sources[1].fail(true);
+    expect(live().map((timer) => timer.ms)).toEqual([1000]);
+    live()[0].callback();
+    sources[2].emit("snapshot", SNAPSHOT);
+    sources[2].fail(true);
+    expect(live().map((timer) => timer.ms)).toEqual([500]); // starts again after a snapshot
+  });
+
+  it("caps the reopen delay at 5 s", () => {
     expect([0, 1, 2, 3, 4, 10].map(reconnectDelay)).toEqual([500, 1000, 2000, 4000, 5000, 5000]);
   });
 
-  it("does not reconnect after stop", () => {
-    const { connection, sockets, timers } = setup();
-    connection.start();
-    sockets[0].open();
-    connection.stop();
-    expect(timers).toEqual([]);
+  it("does not reopen after stop", () => {
+    const { stream, sources, live } = setup();
+    stream.start();
+    sources[0].emit("snapshot", SNAPSHOT);
+    stream.stop();
+    expect(sources[0].closed).toBe(true);
+    expect(live()).toEqual([]);
   });
 });

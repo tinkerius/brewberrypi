@@ -88,11 +88,11 @@ def test_missing_configured_recipe_directory_exits_with_code_3(
 
 
 def test_a_server_that_cannot_start_exits_with_code_1(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Not uvicorn's 3, which the host would read as an invalid recipe file (runtime contract §2)."""
+    """Not uvicorn's 3, which the host would read as an invalid recipe directory (runtime contract §2)."""
     monkeypatch.setattr("brewberrypi.__main__.serve", real_serve)
 
     class NeverStarts:
-        def __init__(self, config: object, on_started: object) -> None:
+        def __init__(self, config: object, on_started: object, on_exit: object) -> None:
             pass
 
         def run(self) -> None:

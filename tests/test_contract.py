@@ -4,6 +4,7 @@ Each test starts `python -m brewberrypi` as a subprocess, as the host does, with
 These are integration tests: they take real time (a few seconds) and need a free TCP port.
 """
 
+import http.client
 import json
 import os
 import signal
@@ -89,6 +90,35 @@ def test_contract_ready_healthz_watchdog_and_sigterm(tmp_path: Path, notify_sock
     assert listening < ready  # ready only once the server listens (NFR-021 step 6)
     assert any("Shutting down BrewberryPi." in line for line in lines)
     assert any("change pump status" in line or "beep: short" in line for line in lines[ready:])
+
+
+def test_NFR_022_an_open_event_stream_does_not_delay_the_shutdown(
+    tmp_path: Path, notify_socket: socket.socket
+) -> None:
+    """uvicorn waits for open responses before the outputs-off shutdown; a stop signal ends the streams."""
+    port = free_port()
+    process = start(
+        tmp_path,
+        "--dummymode",
+        config={"server": {"port": port}},
+        env={"NOTIFY_SOCKET": str(tmp_path / "notify.sock")},
+    )
+    try:
+        receive(notify_socket, "READY=1")
+        connection = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
+        connection.request("GET", "/api/events")
+        stream = connection.getresponse()
+        assert stream.status == 200
+        assert stream.headers["content-type"].startswith("text/event-stream")
+        assert b"event: snapshot" in stream.readline() + stream.readline() + stream.readline()
+        sent = time.monotonic()
+        process.send_signal(signal.SIGTERM)
+        assert process.wait(timeout=5) == 0
+        assert time.monotonic() - sent < 1.5  # well below uvicorn's 2 s graceful-shutdown timeout
+        connection.close()
+    finally:
+        process.kill()
+        process.communicate()
 
 
 def test_contract_sigint_also_exits_0(tmp_path: Path, notify_socket: socket.socket) -> None:

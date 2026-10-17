@@ -2,7 +2,7 @@
 
 Background work runs as asyncio tasks on the application clock: the heating duty cycle, buzzer patterns and
 the sensor loop (whose blocking file read runs in a worker thread). The HW-001 operations are called from the
-event loop (engine, command handlers, broadcasts, shutdown), which serialises them (HW-003, ENG-040).
+event loop (engine, command handlers, event stream, shutdown), which serialises them (HW-003, ENG-040).
 """
 
 import asyncio

@@ -103,15 +103,9 @@ def test_NFR_021_step_6_ready_logs_beeps_and_notifies(caplog: pytest.LogCaptureF
 def test_NFR_022_shutdown_switches_everything_off() -> None:
     hal = MockHal(temperature=20.0)
     app = create_app(CONFIG, CATALOGUE, hal, ManualClock(), notifier=RecordingNotifier())
-    with TestClient(app) as http, http.websocket_connect("/ws") as websocket:
-        for topic, payload in (
-            ("/service/process/load", {"recipe": "Dummy"}),
-            ("/service/process/start", {}),
-        ):
-            websocket.send_json({"topic": topic, "payload": payload})
-            while (message := websocket.receive_json())["topic"] != "/process/reply":
-                pass
-            assert message["payload"]["success"]
+    with TestClient(app) as http:
+        assert http.put("/api/process", json={"recipe": "Dummy"}).status_code == 200
+        assert http.post("/api/process/start", json={}).status_code == 200
         assert (hal.get_heating_status(), hal.get_pump_status()) == (1.0, True)  # heating up
     assert (hal.get_heating_status(), hal.get_pump_status()) == (0.0, False)
 
@@ -121,33 +115,31 @@ def test_NFR_022_shutdown_switches_everything_off() -> None:
 
 async def test_watchdog_pings_while_alive_and_stops_when_the_engine_hangs() -> None:
     clock = ManualClock()
-    broadcast_clock = ManualClock()
+    event_clock = ManualClock()
     hal = MockHal(clock, temperature=20.0)
     notifier = RecordingNotifier(watchdog_seconds=1.0)
-    app = create_app(CONFIG, CATALOGUE, hal, clock, broadcast_clock=broadcast_clock, notifier=notifier)
+    app = create_app(CONFIG, CATALOGUE, hal, clock, event_clock=event_clock, notifier=notifier)
     async with app.router.lifespan_context(app):
-        await broadcast_clock.advance(3)
+        await event_clock.advance(3)
         assert notifier.messages.count("WATCHDOG=1") == 4  # at 0, 1, 2, 3 s
         engine: Engine = app.state.engine
         engine.load("Dummy")
         engine.start()
         await clock.advance(1)
-        await broadcast_clock.advance(1)
+        await event_clock.advance(1)
         assert notifier.messages.count("WATCHDOG=1") == 5  # running and ticking
 
         engine._last_tick -= 60  # the execution loop has not ticked for a minute: hung
-        await broadcast_clock.advance(5)
+        await event_clock.advance(5)
         assert notifier.messages.count("WATCHDOG=1") == 5  # no more pings: the host restarts the app
 
 
 async def test_no_watchdog_without_an_interval() -> None:
-    broadcast_clock = ManualClock()
+    event_clock = ManualClock()
     notifier = RecordingNotifier(watchdog_seconds=None)
-    app = create_app(
-        CONFIG, CATALOGUE, MockHal(), ManualClock(), broadcast_clock=broadcast_clock, notifier=notifier
-    )
+    app = create_app(CONFIG, CATALOGUE, MockHal(), ManualClock(), event_clock=event_clock, notifier=notifier)
     async with app.router.lifespan_context(app):
-        await broadcast_clock.advance(10)
+        await event_clock.advance(10)
     assert "WATCHDOG=1" not in notifier.messages
 
 
@@ -162,7 +154,7 @@ async def test_engine_is_alive_unless_a_running_loop_is_gone_or_stalled() -> Non
     engine.pause()
     await clock.advance(3600)
     assert engine.alive()  # paused: no ticks expected
-    engine.start()
+    engine.resume()
     await clock.advance(0)
     assert engine.alive()
     assert engine._loop_task is not None

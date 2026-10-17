@@ -41,14 +41,13 @@
   "ui": {
     "requestReminderIntervalSeconds": 10
   },
-  "broadcast": {
-    "hardwareStatusMilliseconds": 500,
-    "processStateMilliseconds": 500,
-    "recipesMilliseconds": 500,
-    "chartMilliseconds": 1000
+  "events": {
+    "checkMilliseconds": 250,
+    "heartbeatMilliseconds": 5000
   },
   "chart": {
-    "maxPoints": 200
+    "maxPoints": 200,
+    "sampleMilliseconds": 1000
   },
   "simulation": {
     "timeScale": 1,

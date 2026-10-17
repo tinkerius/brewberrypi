@@ -8,7 +8,7 @@ task exists (FIX-05).
 
 import asyncio
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 from brewberrypi.clock import Clock
@@ -32,6 +32,12 @@ ALREADY_RUNNING = "Process is already running."
 ALREADY_PAUSED = "Process is already paused."
 LOAD_AGAIN = "Load the process again."
 NO_ACTIVE_REQUEST = "There is no active request to respond to."
+PAUSED_RESUME = "Process is paused. Resume it."
+NOT_PAUSED = "Process is not paused."
+REQUEST_NOT_OPEN = "This request is no longer open."
+
+ErrorKind = Literal["invalid", "not_found", "conflict"]
+"""Why a command was rejected: the outcome of IF-052 (HTTP status 422, 404 or 409)."""
 
 STALLED_AFTER_TICKS = 10
 """A running execution loop that has not ticked for this many periods counts as hung (watchdog)."""
@@ -43,6 +49,8 @@ class Reply:
 
     success: bool
     message: str
+    error: ErrorKind | None = field(default=None, compare=False)
+    """Set when `success` is false."""
 
 
 class BrewProcess:
@@ -91,10 +99,10 @@ class Engine:
         if self.state in ("Running", "Paused"):
             return self._reject("load", STOP_FIRST)
         if not recipe_id:
-            return self._reject("load", "parameter 'recipe' not set.")
+            return self._reject("load", "parameter 'recipe' not set.", "invalid")
         recipe = self._recipes.get(recipe_id)
         if recipe is None:
-            return self._reject("load", f"Unknown recipe '{recipe_id}'.")
+            return self._reject("load", f"Unknown recipe '{recipe_id}'.", "not_found")
         running_time = RunningTime(self._clock)
         context = GoalContext(self._hal, self._config.control, running_time)
         goals = [create_goal(definition, context) for definition in recipe.goals]
@@ -113,20 +121,16 @@ class Engine:
         return self._accept("unload", "Process unloaded.")
 
     def start(self) -> Reply:
-        """ENG-012: start from `Loaded`, resume from `Paused`."""
+        """ENG-012: start from `Loaded`; a paused process is resumed with `resume` (ENG-016)."""
         process = self._process
         if process is None:
             return self._reject("start", NO_PROCESS)
         if process.state == "Running":
             return self._reject("start", ALREADY_RUNNING)
+        if process.state == "Paused":
+            return self._reject("start", PAUSED_RESUME)
         if process.state in ("Stopped", "Finished"):
             return self._reject("start", LOAD_AGAIN)
-        if process.state == "Paused":
-            process.running_time.resume()
-            process.state = "Running"
-            self._last_tick = self._clock.monotonic()
-            self._resumed.set()
-            return self._accept("start", "Process resumed.")
         process.state = "Running"
         self._resumed.set()
         self._last_tick = self._clock.monotonic()
@@ -150,6 +154,19 @@ class Engine:
         self._hal.switch_everything_off()
         return self._accept("pause", "Process paused.")
 
+    def resume(self) -> Reply:
+        """ENG-016: continue a paused process with the goal that was active; timers continue (ENG-031)."""
+        process = self._process
+        if process is None:
+            return self._reject("resume", NO_PROCESS)
+        if process.state != "Paused":
+            return self._reject("resume", NOT_PAUSED)
+        process.running_time.resume()
+        process.state = "Running"
+        self._last_tick = self._clock.monotonic()
+        self._resumed.set()
+        return self._accept("resume", "Process resumed.")
+
     def stop(self) -> Reply:
         """ENG-014: the loop ends at once; all off; the request is removed; goals keep their state."""
         process = self._process
@@ -166,16 +183,18 @@ class Engine:
             active.active_request = None
         return self._accept("stop", "Process stopped.")
 
-    def respond(self, option: str) -> Reply:
-        """ENG-015: answer the active request of the active goal."""
+    def respond(self, option: str, request_id: str | None = None) -> Reply:
+        """ENG-015: answer the active request of the active goal; with `request_id` only that request."""
         goal = None if self._process is None else self._process.active_goal()
         request = None if goal is None else goal.active_request
         if request is None:
             return self._reject("respond", NO_ACTIVE_REQUEST)
+        if request_id is not None and request_id != request.id:
+            return self._reject("respond", REQUEST_NOT_OPEN)  # a late answer to an earlier question
         try:
             request.respond(option)
         except InvalidResponse as error:
-            return self._reject("respond", str(error))
+            return self._reject("respond", str(error), "invalid")
         self._follow_request()
         return self._accept("respond", f"Response '{option}' accepted.")
 
@@ -257,6 +276,6 @@ class Engine:
         log.info("%s: %s", command, message)
         return Reply(True, message)
 
-    def _reject(self, command: str, message: str) -> Reply:
+    def _reject(self, command: str, message: str, error: ErrorKind = "conflict") -> Reply:
         log.warning("%s rejected: %s", command, message)
-        return Reply(False, message)
+        return Reply(False, message, error)

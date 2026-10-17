@@ -55,4 +55,6 @@ These are *not* fixed; they are listed in [../specification/13-open-questions.md
 Configurable wiring & constants (OV-007, HW-010..013, NFR-030), recipe directory with one file per recipe (RCP-001),
 sensor staleness (HW-032), simulation time scale (HW-064), `--config` (NFR-020),
 service installation / non-root (NFR-023/024), crash-safe outputs (NFR-003),
-button enabling & stop confirmation (UI-042/043), engine state display (UI-011).
+button enabling & stop confirmation (UI-042/043), engine state display (UI-011),
+request/response commands with outcomes and changes pushed instead of 500 ms broadcasts (IF-001, IF-052, IF-072, Q-28),
+`resume` command (ENG-016), request ids (DOM-035), recipe details (IF-031), same-origin rule (IF-061, Q-17).

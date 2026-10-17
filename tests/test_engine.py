@@ -183,7 +183,7 @@ async def test_AC_036_pause_freezes_the_rest_and_resume_continues(hal: MockHal, 
     assert rest.status_message == "07:00 left"
     assert (hal.get_heating_status(), hal.get_pump_status()) == (0.0, False)  # no pursue while paused
 
-    assert engine.start() == Reply(True, "Process resumed.")
+    assert engine.resume() == Reply(True, "Process resumed.")
     assert state(engine) == "Running"
     await clock.advance(0)
     assert rest.status_message == "07:00 left"
@@ -202,6 +202,28 @@ async def test_pause_rejections(engine: Engine) -> None:
     assert engine.pause() == Reply(False, "Process is already paused.")
 
 
+async def test_ENG_016_resume_only_from_paused_and_start_does_not_resume(engine: Engine) -> None:
+    assert engine.resume() == Reply(False, "No process loaded.")
+    engine.load("TEST")
+    assert engine.resume() == Reply(False, "Process is not paused.")
+    engine.start()
+    assert engine.resume() == Reply(False, "Process is not paused.")
+    engine.pause()
+    reply = engine.start()  # AC-036: start while paused is rejected
+    assert reply == Reply(False, "Process is paused. Resume it.")
+    assert reply.error == "conflict"
+    assert state(engine) == "Paused"
+    assert engine.resume() == Reply(True, "Process resumed.")
+    await engine.shutdown()
+
+
+def test_IF_051_rejections_carry_their_error_kind(engine: Engine) -> None:
+    assert engine.load(None).error == "invalid"
+    assert engine.load("NOPE").error == "not_found"
+    assert engine.unload().error == "conflict"
+    assert engine.load("TEST").error is None
+
+
 async def test_ENG_032_start_temperature_survives_pause(hal: MockHal, clock: ManualClock) -> None:
     engine = engine_with(hal, clock, '[{"type": "HeatUp", "temperature": 62}]')
     engine.load("R")
@@ -210,7 +232,7 @@ async def test_ENG_032_start_temperature_survives_pause(hal: MockHal, clock: Man
     engine.pause()
     hal.set_temperature(41.0)
     await clock.advance(10)
-    engine.start()
+    engine.resume()
     await clock.advance(0)
     assert active(engine).status_message == "50%"  # still measured from 20.0
     await engine.shutdown()
@@ -264,7 +286,7 @@ async def test_AC_038_load_or_unload_while_running_is_rejected(
     engine.pause()
     assert engine.load("ZORA") == Reply(False, "Stop the process first.")
     assert engine.unload() == Reply(False, "Stop the process first.")
-    engine.start()
+    engine.resume()
     await clock.advance(1)
     assert hal.get_heating_status() == 1.0  # running process unaffected
 
@@ -324,6 +346,28 @@ async def test_AC_051_invalid_answer_is_rejected_and_the_request_stays(
     assert not request.answered
 
 
+async def test_AC_058_an_answer_naming_an_earlier_request_is_rejected(
+    engine: Engine, hal: MockHal, clock: ManualClock
+) -> None:
+    hal.set_temperature(25.0)
+    engine.load("TEST")
+    engine.start()
+    await clock.advance(0)
+    first = active(engine).active_request
+    assert first is not None
+    assert engine.respond("No", first.id).success  # iodine: rest 1 min, then ask again
+    await clock.advance(TICK + 60 + 2 * TICK)
+    second = active(engine).active_request
+    assert second is not None
+    assert second.id != first.id
+    late = engine.respond("Yes", first.id)  # a late click on the earlier question
+    assert late == Reply(False, "This request is no longer open.")
+    assert late.error == "conflict"
+    assert not second.answered
+    assert engine.respond("Yes", second.id).success
+    await engine.shutdown()
+
+
 async def test_AC_052_respond_without_an_active_request_is_rejected(
     engine: Engine, clock: ManualClock
 ) -> None:
@@ -370,7 +414,7 @@ async def test_AC_057_no_reminders_after_stop_pause_or_unload(
     await clock.advance(60)
     assert hal.beeps() == ["long_beep"] * 2  # silenced while paused
     assert active(engine).active_request is not None  # but still visible
-    engine.start()
+    engine.resume()
     await clock.advance(0)
     assert hal.beeps() == ["long_beep"] * 3  # back on resume
 
@@ -395,7 +439,7 @@ async def test_respond_while_paused_is_accepted_without_reminders(
     assert engine.respond("Yes").success
     await clock.advance(30)
     assert state(engine) == "Paused"
-    engine.start()
+    engine.resume()
     await clock.advance(0)
     assert state(engine) == "Finished"
 

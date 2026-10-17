@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://brewberrypi.local/schemas/messages.schema.json",
   "title": "BrewberryPi client/server message payloads",
-  "description": "Payload definitions for the topics in docs/specification/08-client-server-interface.md. Use '#/$defs/<Name>'.",
+  "description": "Payloads of the REST API and the event stream in docs/specification/08-client-server-interface.md. Use '#/$defs/<Name>'.",
   "$defs": {
     "HardwareStatus": {
-      "description": "Topic /hardware/status (server -> all).",
+      "description": "GET /api/hardware; event `hardware`.",
       "type": "object",
       "required": ["temperature", "pumpstatus", "heatingstatus"],
       "properties": {
@@ -19,8 +19,9 @@
     "EngineState": { "enum": ["NoProcess", "Loaded", "Running", "Paused", "Stopped", "Finished"] },
     "OperatorRequest": {
       "type": "object",
-      "required": ["message", "options"],
+      "required": ["id", "message", "options"],
       "properties": {
+        "id": { "type": "string", "description": "Answer it with POST /api/process/requests/{id} (DOM-035)" },
         "message": { "type": "string" },
         "options": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
       },
@@ -40,7 +41,7 @@
       "additionalProperties": false
     },
     "ProcessState": {
-      "description": "Topic /process/state (server -> all).",
+      "description": "GET /api/process; event `process`.",
       "oneOf": [
         {
           "type": "object",
@@ -62,7 +63,7 @@
       ]
     },
     "RecipeList": {
-      "description": "Topic /process/recipes (server -> all).",
+      "description": "GET /api/recipes; event `recipes`.",
       "type": "array",
       "items": {
         "type": "object",
@@ -72,7 +73,7 @@
       }
     },
     "ChartData": {
-      "description": "Topic /process/chart (server -> all).",
+      "description": "GET /api/chart[?since=<epoch ms>]; part of the event `snapshot`.",
       "type": "array",
       "items": {
         "type": "object",
@@ -82,46 +83,94 @@
           "values": {
             "type": "array",
             "description": "At most chart.maxPoints entries (default 200).",
-            "items": {
-              "type": "object",
-              "required": ["x", "y"],
-              "properties": {
-                "x": { "type": "integer", "description": "epoch milliseconds" },
-                "y": { "type": "number", "description": "°C" }
-              },
-              "additionalProperties": false
-            }
+            "items": { "$ref": "#/$defs/ChartPoint" }
           }
         },
         "additionalProperties": false
       }
     },
+    "ChartPoint": {
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "integer", "description": "epoch milliseconds" },
+        "y": { "type": "number", "description": "°C" }
+      },
+      "additionalProperties": false
+    },
+    "ChartUpdate": {
+      "description": "Event `chart`: a new point, and the points thinning removed (IF-043, IF-073).",
+      "type": "object",
+      "required": ["add", "remove"],
+      "properties": {
+        "add": { "$ref": "#/$defs/ChartPoint" },
+        "remove": { "type": "array", "items": { "type": "integer" }, "description": "x of each removed point" }
+      },
+      "additionalProperties": false
+    },
+    "RecipeDetail": {
+      "description": "GET /api/recipes/{id}: the recipe with its goals as in its recipe file (spec 7.2).",
+      "type": "object",
+      "required": ["id", "name", "goals"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "goals": {
+          "type": "array",
+          "items": { "type": "object", "required": ["type"], "properties": { "type": { "type": "string" } } }
+        }
+      },
+      "additionalProperties": false
+    },
+    "Snapshot": {
+      "description": "Event `snapshot`: the first event of every stream (IF-071).",
+      "type": "object",
+      "required": ["hardware", "process", "recipes", "chart", "heartbeatMilliseconds"],
+      "properties": {
+        "hardware": { "$ref": "#/$defs/HardwareStatus" },
+        "process": { "$ref": "#/$defs/ProcessState" },
+        "recipes": { "$ref": "#/$defs/RecipeList" },
+        "chart": { "$ref": "#/$defs/ChartData" },
+        "heartbeatMilliseconds": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
     "LoadCommand": {
-      "description": "Topic /service/process/load (client -> server).",
+      "description": "Body of PUT /api/process.",
       "type": "object",
       "required": ["recipe"],
       "properties": { "recipe": { "type": "string" } },
       "additionalProperties": false
     },
     "EmptyCommand": {
-      "description": "Topics /service/process/unload|start|pause|stop (client -> server).",
+      "description": "Body (optional) of DELETE /api/process and POST /api/process/start|pause|resume|stop.",
       "type": "object",
       "additionalProperties": false
     },
     "RespondCommand": {
-      "description": "Topic /service/process/request (client -> server).",
+      "description": "Body of POST /api/process/requests/{id}.",
       "type": "object",
       "required": ["response"],
       "properties": { "response": { "type": "string" } },
       "additionalProperties": false
     },
     "CommandReply": {
-      "description": "Reply to the sender of any command.",
+      "description": "Response body of every command, with its HTTP status (IF-050, IF-052).",
       "type": "object",
       "required": ["command", "success", "message"],
       "properties": {
-        "command": { "enum": ["load", "unload", "start", "pause", "stop", "respond"] },
+        "command": { "enum": ["load", "unload", "start", "pause", "resume", "stop", "respond"] },
         "success": { "type": "boolean" },
+        "message": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "ErrorReply": {
+      "description": "Response body of an error that is not a command's own reply: 403, 404, 415, 422 (IF-052).",
+      "type": "object",
+      "required": ["success", "message"],
+      "properties": {
+        "success": { "const": false },
         "message": { "type": "string" }
       },
       "additionalProperties": false
