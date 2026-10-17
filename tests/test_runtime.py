@@ -106,6 +106,9 @@ def test_NFR_022_shutdown_switches_everything_off() -> None:
     with TestClient(app) as http:
         assert http.put("/api/process", json={"recipe": "Dummy"}).status_code == 200
         assert http.post("/api/process/start", json={}).status_code == 200
+        for _ in range(100):  # the execution loop is its own task: wait for its first tick (ENG-022)
+            if http.get("/api/hardware").json()["heatingstatus"] == 1.0:
+                break
         assert (hal.get_heating_status(), hal.get_pump_status()) == (1.0, True)  # heating up
     assert (hal.get_heating_status(), hal.get_pump_status()) == (0.0, False)
 
