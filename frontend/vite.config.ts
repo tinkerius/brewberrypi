@@ -14,8 +14,8 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 5173,
     strictPort: true,
-    // `make dev`: the REST API and the event stream go to the back end (`make run`, port 8080).
-    proxy: { "/api": { target: "http://127.0.0.1:8080" } },
+    // `make dev`: the REST API, the event stream and /healthz (version) go to the back end (`make run`, port 8080).
+    proxy: { "/api": { target: "http://127.0.0.1:8080" }, "/healthz": { target: "http://127.0.0.1:8080" } },
   },
   build: {
     outDir: "../src/brewberrypi/web/static",

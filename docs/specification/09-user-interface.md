@@ -8,7 +8,7 @@ Responsive (usable on phone, tablet and desktop). Language of UI texts: English
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
-│ Brewberry Pi                                   (dark top bar) │
+│ Brewberry Pi  <host> · <app version>               (top bar) │
 ├──────────────────────────────────────────────────────────────┤
 │ [Hardware Status]                                             │
 │  Temperature: 62.5°C   Pump: on   Heating: 50%   Process: …   │
@@ -38,6 +38,12 @@ Phase 2 uses such a refresh (product-owner decision 2026-10-11; styling technolo
 scheme following the operating system, cards instead of panels, and the status
 colours of `UI-031`. (Legacy look, for reference: Bootstrap 3 panels ("panel-primary")
 with blue headers and a dark navbar titled **Brewberry Pi**.)
+
+- `UI-001` `[NEW]` The top bar shows the page heading `Brewberry Pi`, the host name the page was
+  opened with and the application version (`version` of `GET /healthz`,
+  [runtime contract §5](../deployment/runtime-contract.md)), as `<host> · <version>`; the version
+  is read again after every reconnection. The top bar looks like the one of the BrewberryPi OS
+  device web interface (product-owner decision 2026-10-17).
 
 ## 9.2 Hardware Status panel
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { commandRequest, NO_CONNECTION, sendCommand } from "./api";
+import { commandRequest, fetchVersion, NO_CONNECTION, sendCommand } from "./api";
 import { isAccepted } from "./commands";
 import { EventStream, MISSED_HEARTBEATS, reconnectDelay, type SourceLike } from "./events";
 import { descriptionLines, formatDegrees, formatHeating, formatPump, formatTemperature, formatTime } from "./format";
@@ -104,6 +104,21 @@ describe("state", () => {
     state = dismissReply(state);
     expect(state.replies.map((reply) => reply.message)).toEqual(["second"]);
     expect(setConnected(state, true).connected).toBe(true);
+  });
+});
+
+describe("UI-001 app version", () => {
+  it("AC-092 reads the version from /healthz", async () => {
+    const paths: string[] = [];
+    const healthz = (status: number, body: string) => async (path: string) => {
+      paths.push(path);
+      return new Response(body, { status });
+    };
+    expect(await fetchVersion(healthz(200, '{"status":"ok","version":"0.1.0-alpha.4","engine":"NoProcess"}'))).toBe("0.1.0-alpha.4");
+    expect(paths).toEqual(["/healthz"]);
+    expect(await fetchVersion(healthz(503, '{"version":"0.1.0-alpha.4"}'))).toBeNull();
+    expect(await fetchVersion(healthz(200, "not json"))).toBeNull();
+    expect(await fetchVersion(() => Promise.reject(new TypeError("offline")))).toBeNull();
   });
 });
 

@@ -61,6 +61,7 @@ controllable/accelerated clock. `T` = temperature reported by the HAL.
 - `AC-075` (UI-031, UI-032) Active goal shows progress bar with `statusmessage`; Done goals green; request buttons send the exact option text for that request's id.
 - `AC-076` (UI-050) Every command shows the server reply message in the Information modal (or toast per `Q-11`).
 - `AC-077` (UI-060) Stopping the server → UI shows "disconnected"; restarting → UI reconnects and shows live data without page reload.
+- `AC-092` (UI-001) The top bar shows `Brewberry Pi` and `<host> · <version>` with the `version` of `/healthz`; without a readable version only the host is shown.
 - `AC-078` (IF-052) Outcomes: `load ZORA` → accepted; `start` twice → the second is a conflict, `Process is already running.`; `load NOPE` → not found; `respond confirm` (lowercase) → invalid; `load` with `{"recipe": 7}` → invalid. Every reply has `command`, `success`, `message`.
 - `AC-079` (IF-072) With nothing changing, no state event is pushed (only `ping`); a changed temperature is pushed as one `hardware` event within one check period.
 - `AC-060` (IF-061) A command from another web page (`Origin` not the server) → forbidden and nothing changes; a command not sent as JSON → refused; the same command from the server's own page or without `Origin` (command-line tool) is carried out.
