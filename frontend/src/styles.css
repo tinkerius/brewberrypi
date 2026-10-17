@@ -7,6 +7,12 @@
     @apply bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
   }
 
+  /* The browser draws a select's option list itself; with the translucent dark-mode select background it
+     falls back to white while the options inherit white text. Give the options explicit colours. */
+  option {
+    @apply bg-white text-slate-900 dark:bg-slate-800 dark:text-white;
+  }
+
   /* uPlot's hover legend follows the page colours. */
   .u-legend {
     color: inherit;
