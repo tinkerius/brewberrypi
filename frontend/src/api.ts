@@ -62,3 +62,14 @@ export async function sendCommand(
   const message = typeof data.message === "string" ? data.message : `HTTP ${response.status}`;
   return { command, success: response.ok && data.success !== false, message };
 }
+
+/** UI-001: the application version from `GET /healthz` (runtime contract §5); null if it cannot be read. */
+export async function fetchVersion(fetchFn: Fetch = (path, init) => fetch(path, init)): Promise<string | null> {
+  try {
+    const response = await fetchFn("/healthz", { method: "GET", cache: "no-store" });
+    const data = (await response.json()) as { version?: unknown };
+    return response.ok && typeof data.version === "string" ? data.version : null;
+  } catch {
+    return null;
+  }
+}

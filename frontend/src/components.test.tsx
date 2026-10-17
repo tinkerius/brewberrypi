@@ -3,7 +3,7 @@ import { render } from "preact";
 import { act } from "preact/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { InformationModal, STOP_QUESTION, StopConfirmation } from "./dialogs";
-import { APP_TITLE, ConnectionIndicator, GOAL_STYLES, HardwareStatusPanel, ProcessPanel, type SendCommand } from "./panels";
+import { APP_TITLE, ConnectionIndicator, GOAL_STYLES, HardwareStatusPanel, PageHeader, ProcessPanel, type SendCommand } from "./panels";
 import type { ProcessState, Recipe } from "./types";
 
 let root: HTMLElement;
@@ -67,6 +67,14 @@ function processPanel(process: ProcessState | null, connected = true, recipes: R
 describe("page", () => {
   it("uses the title from the specification", () => {
     expect(APP_TITLE).toBe("Brewberry Pi");
+  });
+
+  it("AC-092 the top bar shows the title, the host and the app version", () => {
+    show(<PageHeader host="brewberrypi.local" version="0.1.0-alpha.4" />);
+    expect(root.querySelector("h1")?.textContent).toBe("Brewberry Pi");
+    expect(root.querySelector("header")?.textContent).toBe("Brewberry Pi" + "brewberrypi.local · 0.1.0-alpha.4");
+    show(<PageHeader host="brewberrypi.local" version={null} />);
+    expect(root.querySelector("header")?.textContent).toBe("Brewberry Pi" + "brewberrypi.local");
   });
 });
 
