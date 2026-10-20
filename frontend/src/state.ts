@@ -56,14 +56,18 @@ export function receive(state: AppState, name: EventName, data: unknown): AppSta
   }
 }
 
-/** IF-073: drop the thinned points, append the new one. */
+/**
+ * IF-073: append the new point, then drop the thinned ones. The new point itself is usually among them once the
+ * chart is full (IF-043 removes the later point of the closest pair), so appending last would keep it and the
+ * chart would grow by one point per sample, forever.
+ */
 export function applyChartUpdate(chart: ChartSeries[] | null, update: ChartUpdate): ChartSeries[] | null {
   if (chart === null || chart.length === 0) {
     return chart;
   }
   const removed = new Set(update.remove);
   const [series, ...rest] = chart;
-  return [{ ...series, values: [...series.values.filter((point) => !removed.has(point.x)), update.add] }, ...rest];
+  return [{ ...series, values: [...series.values, update.add].filter((point) => !removed.has(point.x)) }, ...rest];
 }
 
 export function setConnected(state: AppState, connected: boolean): AppState {

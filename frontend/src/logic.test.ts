@@ -5,7 +5,7 @@ import { EventStream, MISSED_HEARTBEATS, reconnectDelay, type SourceLike } from 
 import { descriptionLines, formatDegrees, formatHeating, formatPump, formatTemperature, formatTime } from "./format";
 import { toPlotData } from "./Chart";
 import { addReply, applyChartUpdate, dismissReply, initialState, receive, setConnected } from "./state";
-import type { EngineState, EventName, Snapshot } from "./types";
+import type { ChartSeries, EngineState, EventName, Snapshot } from "./types";
 
 describe("UI-010 hardware status texts", () => {
   it("shows -- before the first message", () => {
@@ -95,6 +95,39 @@ describe("state", () => {
     state = receive(state, "chart", { add: { x: 3000, y: 20.2 }, remove: [2000] });
     expect(state.chart?.[0].values).toEqual([{ x: 1000, y: 20 }, { x: 3000, y: 20.2 }]);
     expect(applyChartUpdate(null, { add: { x: 1, y: 1 }, remove: [] })).toBeNull(); // before the snapshot
+  });
+
+  it("IF-073 drops a new point that thinning removed at once (full chart)", () => {
+    let state = receive(initialState, "snapshot", SNAPSHOT);
+    state = receive(state, "chart", { add: { x: 2500, y: 20.2 }, remove: [2500] });
+    expect(state.chart?.[0].values).toEqual(SNAPSHOT.chart[0].values);
+  });
+
+  it("IF-044 applying the updates gives exactly the server's thinned series", () => {
+    // The server's thinning (IF-043, chart.py): append, then while over the limit remove point i+1 of the first
+    // adjacent pair with the smallest gap.
+    const max = 20;
+    const server: { x: number; y: number }[] = [];
+    let chart: ChartSeries[] | null = [{ key: "Kettle Temperature", values: [] }];
+    let x = 0;
+    for (let sample = 0; sample < 1000; sample++) {
+      x += 1000 + ((sample * 7919) % 13) * 50; // uneven gaps, as from a real sensor loop
+      const add = { x, y: 20 + (sample % 10) / 10 };
+      server.push(add);
+      const remove: number[] = [];
+      while (server.length > max) {
+        let smallest = 0;
+        for (let i = 1; i < server.length - 1; i++) {
+          if (server[i + 1].x - server[i].x < server[smallest + 1].x - server[smallest].x) {
+            smallest = i;
+          }
+        }
+        remove.push(server.splice(smallest + 1, 1)[0].x);
+      }
+      chart = applyChartUpdate(chart, { add, remove });
+      expect(chart?.[0].values).toEqual(server);
+    }
+    expect(chart?.[0].values).toHaveLength(max);
   });
 
   it("AC-076 queues every reply for the Information modal until confirmed", () => {
