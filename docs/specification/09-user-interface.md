@@ -89,6 +89,7 @@ with blue headers and a dark navbar titled **Brewberry Pi**.)
 
 - `UI-060` On connection failure the UI shows a clear, non-blocking "disconnected — reconnecting…" indicator and reconnects automatically (legacy: `alert('sad')` on failed handshake). The UI counts as connected from the first `snapshot` of a push connection on (`IF-071`), and as disconnected after an error or a missing heartbeat (`IF-074`).
 - `UI-061` While disconnected, displayed values are marked as stale and command buttons are disabled.
+- `UI-062` `[NEW]` While the page is hidden (another tab, minimised window), the UI closes its push connection, and opens it again with a fresh snapshot (`IF-071`) when the page is shown. Browsers allow only a few connections per server; open background tabs must not use them up, or commands from the visible tab would wait.
 
 ## 9.8 Assets
 

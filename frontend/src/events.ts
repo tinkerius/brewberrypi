@@ -3,6 +3,9 @@
  * `snapshot`; the UI counts as connected from then on (UI-060). The browser reconnects by itself after a lost
  * connection; a missing heartbeat (IF-074) or a stream the browser gave up on is reopened here, with a
  * growing delay.
+ *
+ * While the page is hidden the stream is suspended (UI-062): browsers allow only six HTTP/1.1 connections per
+ * server, and an event stream holds one for good, so six open tabs would leave no connection for commands.
  */
 
 import { EVENTS, type EventName } from "./types";
@@ -39,6 +42,7 @@ export class EventStream {
   private heartbeat = 5000;
   private attempt = 0;
   private stopped = true;
+  private suspended = false;
   private connected = false;
   private readonly createSource: (url: string) => SourceLike;
   private readonly setTimer: (callback: () => void, milliseconds: number) => unknown;
@@ -52,11 +56,35 @@ export class EventStream {
 
   start(): void {
     this.stopped = false;
-    this.open();
+    if (!this.suspended) {
+      this.open();
+    }
   }
 
   stop(): void {
     this.stopped = true;
+    this.close();
+  }
+
+  /** Release the connection while the page is hidden (UI-062); the UI keeps showing the last state. */
+  suspend(): void {
+    this.suspended = true;
+    this.close();
+  }
+
+  /** Reopen when the page is visible again; the new snapshot brings the UI up to date (IF-071). */
+  resume(): void {
+    if (!this.suspended) {
+      return;
+    }
+    this.suspended = false;
+    if (!this.stopped) {
+      this.attempt = 0;
+      this.open();
+    }
+  }
+
+  private close(): void {
     this.cancelTimers();
     this.source?.close();
     this.source = null;
@@ -120,7 +148,7 @@ export class EventStream {
     this.source?.close();
     this.source = null;
     this.cancelTimers();
-    if (this.stopped) {
+    if (this.stopped || this.suspended) {
       return;
     }
     this.reopenTimer = this.setTimer(() => {

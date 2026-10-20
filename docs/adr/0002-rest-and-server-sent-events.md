@@ -77,6 +77,7 @@ therefore ends every event stream first (`IF-076`); the contract test checks the
 - Positive: every command has its own reply and status; a failed command is visible as a network error. State
   changes reach all clients at once, and nothing is sent while nothing changes. The state and the commands can be
   used from `curl`, scripts and other services. Other web pages cannot send commands.
-- Negative / risks: two mechanisms instead of one. Browsers allow only six HTTP/1.1 connections per host, and
-  each tab holds one for its event stream; fine for a kitchen controller with a few open tabs.
+- Negative / risks: two mechanisms instead of one. Browsers allow only six HTTP/1.1 connections per host and
+  port, and an open event stream holds one for good: with six tabs open, commands waited forever in the
+  browser. Hidden tabs therefore close their stream and reopen it when shown (`UI-062`).
 - Follow-ups: `tinkerius/brewberrypi-os` can ask `GET /api/process` before an update restarts the app.

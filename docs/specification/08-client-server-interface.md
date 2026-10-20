@@ -174,7 +174,8 @@ Every command gets exactly one reply, sent only to the issuing client:
   building one payload is logged and MUST NOT stop the push channel (legacy behaviour).
   (Legacy: every topic was broadcast every 500 ms, changed or not; `Q-28`.)
 - `IF-073` A `chart` event carries the new point and the `x` of every point that thinning (`IF-043`) removed with it.
-  A client removes those points and appends the new one.
+  A client appends the new point and **then** removes those points: once the chart is full, the new point is usually
+  among them (thinning removes the later point of the closest pair), so it must not stay.
 - `IF-074` A `ping` event is sent every `events.heartbeatMilliseconds` (5000 ms; the snapshot tells the client the
   period). A client that receives no event for **2.5** heartbeat periods treats the connection as dead and reconnects.
 - `IF-075` A client that falls too far behind (more than 100 pending events) is disconnected; it reconnects and gets a

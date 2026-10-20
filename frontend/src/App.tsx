@@ -24,8 +24,15 @@ export function App() {
         }
       },
     });
+    // UI-062: a hidden tab gives its connection back (browsers allow six per server).
+    const followVisibility = () => (document.hidden ? stream.suspend() : stream.resume());
+    followVisibility();
+    document.addEventListener("visibilitychange", followVisibility);
     stream.start();
-    return () => stream.stop();
+    return () => {
+      document.removeEventListener("visibilitychange", followVisibility);
+      stream.stop();
+    };
   }, []);
   // UI-001: read the version on every (re)connection; the app may have been updated in between.
   useEffect(() => {
