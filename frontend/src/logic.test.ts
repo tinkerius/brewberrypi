@@ -283,6 +283,29 @@ describe("UI-060 event stream", () => {
     expect([0, 1, 2, 3, 4, 10].map(reconnectDelay)).toEqual([500, 1000, 2000, 4000, 5000, 5000]);
   });
 
+  it("UI-062 releases the connection while hidden and gets a fresh snapshot when visible again", () => {
+    const { stream, sources, live, received, connected } = setup();
+    stream.start();
+    sources[0].emit("snapshot", SNAPSHOT);
+    stream.suspend(); // tab hidden
+    expect(sources[0].closed).toBe(true);
+    expect(live()).toEqual([]); // no watchdog, no reopen while hidden
+    expect(connected).toEqual([true]); // the UI keeps its last state
+    stream.resume(); // tab visible again
+    expect(sources).toHaveLength(2);
+    sources[1].emit("snapshot", SNAPSHOT);
+    expect(received.filter(([name]) => name === "snapshot")).toHaveLength(2);
+  });
+
+  it("UI-062 opens nothing for a tab that starts hidden, until it is shown", () => {
+    const { stream, sources } = setup();
+    stream.suspend();
+    stream.start();
+    expect(sources).toHaveLength(0);
+    stream.resume();
+    expect(sources).toHaveLength(1);
+  });
+
   it("does not reopen after stop", () => {
     const { stream, sources, live } = setup();
     stream.start();
