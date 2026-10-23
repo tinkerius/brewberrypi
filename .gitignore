@@ -16,6 +16,8 @@ CLAUDE.local.md
 *.log
 temperatureLog.csv
 /config.json
+/recipes/
+/.run/
 
 # Build output
 /dist/

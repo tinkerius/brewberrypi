@@ -1,7 +1,8 @@
 """Command-line entry point (`brewberrypi`).
 
-Startup (NFR-021): read and validate the configuration and the recipes, create the HAL (simulation with
-`--dummymode`, else the Raspberry Pi), then serve the web application. Refuses to start with the
+Startup (NFR-021): read and validate the configuration and the recipes (creating the configuration file and
+the recipe directory if they are missing, Q-29), create the HAL (simulation with `--dummymode`, else the
+Raspberry Pi), then serve the web application. Refuses to start with the
 exit codes of the runtime contract (§2).
 """
 
@@ -25,7 +26,7 @@ from brewberrypi.hal.gpio import GpioError
 from brewberrypi.hal.raspberry_pi import RaspberryPiHal
 from brewberrypi.hal.simulation import SimulationHal
 from brewberrypi.hal.sound import find_player
-from brewberrypi.recipes import RecipeDirectoryError, load_recipes
+from brewberrypi.recipes import RecipeDirectoryError, RecipeLibrary
 from brewberrypi.web.app import create_app
 
 log = logging.getLogger("brewberrypi")
@@ -46,7 +47,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--config",
         metavar="PATH",
         type=Path,
-        help="configuration file (JSON); default: ./config.json if it exists, else the built-in defaults",
+        help="configuration file (JSON), written with the defaults if missing; default: ./config.json",
     )
     return parser
 
@@ -73,11 +74,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         log.error("invalid configuration, refusing to start: %s", error)
         return EXIT_INVALID_CONFIG
     try:
-        recipes = load_recipes(config.recipes)
+        recipes = RecipeLibrary.open(config.recipes)
     except RecipeDirectoryError as error:
         log.error("invalid recipe directory, refusing to start: %s", error)
         return EXIT_INVALID_RECIPES
-    log.info("recipes: %s", ", ".join(recipe.id for recipe in recipes))
+    log.info("recipes: %s", ", ".join(recipe.id for recipe in recipes.catalogue))
     clock: Clock
     hal: Hal
     if args.dummymode:

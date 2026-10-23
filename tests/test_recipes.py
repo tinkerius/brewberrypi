@@ -1,8 +1,9 @@
-"""M1: recipe catalogue, one file per recipe (RCP-001..005, AC-080, AC-081, Q-22, Q-27)."""
+"""M1: recipe catalogue, one file per recipe (RCP-001..006, AC-080, AC-081, AC-084, AC-085, Q-27, Q-29)."""
 
 import json
 import logging
 import re
+import stat
 from pathlib import Path
 from typing import Any
 
@@ -10,10 +11,10 @@ import pytest
 
 from brewberrypi.config import RecipesConfig
 from brewberrypi.recipes import (
-    BUILT_IN,
     GoalDefinition,
     RecipeDirectoryError,
     RecipeError,
+    RecipeLibrary,
     load_recipes,
     parse_recipe,
 )
@@ -31,7 +32,7 @@ def write_recipe(directory: Path, goals: list[dict[str, Any]], recipe_id: str = 
 
 
 def configured(directory: Path) -> RecipesConfig:
-    return RecipesConfig(directory=directory, explicit=True)
+    return RecipesConfig(directory=directory, check_milliseconds=1000)
 
 
 def test_AC_080_shipped_recipe_files_equal_the_spec_catalogue() -> None:
@@ -40,8 +41,7 @@ def test_AC_080_shipped_recipe_files_equal_the_spec_catalogue() -> None:
     for name in spec_files:
         assert (PACKAGE_DATA / "recipes" / name).read_bytes() == (SPEC_DATA / "recipes" / name).read_bytes()
     assert sorted(file.name for file in (PACKAGE_DATA / "recipes").iterdir()) == spec_files
-    catalogue = load_recipes(RecipesConfig(directory=Path("/nonexistent/recipes"), explicit=False))
-    assert catalogue.source == BUILT_IN
+    catalogue = load_recipes(configured(SPEC_DATA / "recipes"))
     assert [recipe.id for recipe in catalogue] == SORTED_IDS
     assert [summary["id"] for summary in catalogue.summaries()] == SORTED_IDS
 
@@ -133,10 +133,51 @@ def test_an_id_inside_the_file_is_rejected(tmp_path: Path) -> None:
         parse_recipe("R", json.dumps({"id": "R", "name": "r", "goals": [{"type": "MashIn"}]}), "R.json")
 
 
-def test_existing_default_recipe_directory_is_used_instead_of_the_built_in_one(tmp_path: Path) -> None:
+def test_AC_084_a_missing_recipe_directory_is_created_with_the_shipped_recipes(tmp_path: Path) -> None:
+    directory = tmp_path / "recipes"
+    catalogue = load_recipes(configured(directory))
+    assert catalogue.source == str(directory)
+    assert [recipe.id for recipe in catalogue] == SORTED_IDS
+    assert sorted(file.name for file in directory.iterdir()) == [f"{id}.json" for id in SORTED_IDS]
+    for file in directory.iterdir():
+        assert file.read_bytes() == (SPEC_DATA / "recipes" / file.name).read_bytes()
+        assert stat.S_IMODE(file.stat().st_mode) == 0o664  # the brewer edits them as another user
+    assert stat.S_IMODE(directory.stat().st_mode) & 0o777 == 0o775
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["recipes"]  # no staging left
+
+
+def test_AC_084_deleted_recipes_are_not_written_again(tmp_path: Path) -> None:
+    directory = tmp_path / "recipes"
+    load_recipes(configured(directory))
+    (directory / "ZORA.json").unlink()
+    (directory / "Dummy.json").unlink()
+    catalogue = load_recipes(configured(directory))
+    assert [recipe.id for recipe in catalogue] == ["BENIWEISS", "HANCOCK", "HIPA", "TEST", "WIT", "WaterBoil"]
+    assert not (directory / "ZORA.json").exists()
+    for file in list(directory.iterdir()):
+        file.unlink()
+    assert len(load_recipes(configured(directory))) == 0  # an empty directory stays empty
+
+
+def test_AC_084_set_group_id_of_the_parent_is_kept(tmp_path: Path) -> None:
+    tmp_path.chmod(0o2775)
+    load_recipes(configured(tmp_path / "recipes"))
+    assert stat.S_IMODE((tmp_path / "recipes").stat().st_mode) == 0o2775
+
+
+def test_a_staging_directory_left_over_from_an_interrupted_start_is_replaced(tmp_path: Path) -> None:
+    staging = tmp_path / ".recipes.new"
+    staging.mkdir()
+    (staging / "ZORA.json").write_text("half written")
+    catalogue = load_recipes(configured(tmp_path / "recipes"))
+    assert [recipe.id for recipe in catalogue] == SORTED_IDS
+    assert not staging.exists()
+
+
+def test_an_existing_recipe_directory_is_read_as_it_is(tmp_path: Path) -> None:
     directory = tmp_path / "recipes"
     write_recipe(directory, [{"type": "MashIn"}])
-    catalogue = load_recipes(RecipesConfig(directory=directory, explicit=False))
+    catalogue = load_recipes(configured(directory))
     assert catalogue.source == str(directory)
     assert [recipe.id for recipe in catalogue] == ["MyRecipe"]
 
@@ -146,15 +187,122 @@ def test_an_empty_recipe_directory_gives_no_recipes(tmp_path: Path) -> None:
     assert len(load_recipes(configured(tmp_path / "recipes"))) == 0
 
 
-def test_missing_configured_recipe_directory_refuses_to_start(tmp_path: Path) -> None:
-    with pytest.raises(RecipeDirectoryError, match="recipe directory not found"):
-        load_recipes(configured(tmp_path / "missing"))
+def test_hidden_files_are_no_recipes(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    directory = tmp_path / "recipes"
+    write_recipe(directory, [{"type": "MashIn"}])
+    (directory / "._MyRecipe.json").write_bytes(b"\x00\x05\x16\x07")  # macOS metadata over SMB
+    (directory / ".MyRecipe.json.tmp").write_text("{")
+    with caplog.at_level(logging.ERROR):
+        assert [recipe.id for recipe in load_recipes(configured(directory))] == ["MyRecipe"]
+    assert caplog.records == []
 
 
-def test_a_configured_file_instead_of_a_directory_refuses_to_start(tmp_path: Path) -> None:
+def test_a_recipe_directory_that_cannot_be_created_refuses_to_start(tmp_path: Path) -> None:
+    (tmp_path / "file").write_text("")
+    with pytest.raises(RecipeDirectoryError, match="cannot create recipe directory"):
+        load_recipes(configured(tmp_path / "file" / "recipes"))
+
+
+def test_a_file_instead_of_a_directory_refuses_to_start(tmp_path: Path) -> None:
     (tmp_path / "recipes.json").write_text("{}")
     with pytest.raises(RecipeDirectoryError, match="recipe directory not found"):
         load_recipes(configured(tmp_path / "recipes.json"))
+
+
+# --- RCP-006: the recipe directory is read again when it changes ---
+
+
+def open_library(directory: Path) -> RecipeLibrary:
+    directory.mkdir(exist_ok=True)
+    return RecipeLibrary.open(configured(directory))
+
+
+def ids(library: RecipeLibrary) -> list[str]:
+    return [recipe.id for recipe in library.catalogue]
+
+
+def test_AC_085_added_changed_and_removed_recipe_files_are_read_again(tmp_path: Path) -> None:
+    directory = tmp_path / "recipes"
+    library = open_library(directory)
+    assert not library.refresh()
+    write_recipe(directory, [{"type": "MashIn"}], recipe_id="HOLD30")
+    assert library.refresh()
+    assert ids(library) == ["HOLD30"]
+    assert not library.refresh()  # nothing changed since
+    (directory / "HOLD30.json").write_text(json.dumps({"name": "Hold 30 °C", "goals": [{"type": "MashIn"}]}))
+    assert library.refresh()
+    recipe = library.get("HOLD30")
+    assert recipe is not None
+    assert recipe.name == "Hold 30 °C"
+    (directory / "HOLD30.json").unlink()
+    assert library.refresh()
+    assert ids(library) == []
+
+
+def test_AC_085_an_invalid_new_file_is_skipped(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+    directory = tmp_path / "recipes"
+    library = open_library(directory)
+    write_recipe(directory, [{"type": "MashIn"}], recipe_id="Good")
+    (directory / "Bad.json").write_text("{")
+    with caplog.at_level(logging.ERROR):
+        assert library.refresh()
+    assert ids(library) == ["Good"]
+    assert "Bad.json:1:2: invalid JSON" in caplog.text
+
+
+def test_a_file_saved_again_without_change_is_no_change(tmp_path: Path) -> None:
+    directory = tmp_path / "recipes"
+    file = write_recipe(directory, [{"type": "MashIn"}])
+    library = open_library(directory)
+    file.write_text(file.read_text())
+    assert not library.refresh()
+    assert ids(library) == ["MyRecipe"]
+
+
+def test_other_files_do_not_count_as_a_change(tmp_path: Path) -> None:
+    directory = tmp_path / "recipes"
+    library = open_library(directory)
+    (directory / "notes.txt").write_text("notes")
+    (directory / "._X.json").write_text("metadata")
+    assert not library.refresh()
+
+
+def test_a_removed_recipe_directory_is_created_again(tmp_path: Path) -> None:
+    directory = tmp_path / "recipes"
+    library = open_library(directory)
+    directory.rmdir()
+    assert library.refresh()
+    assert ids(library) == SORTED_IDS
+
+
+def test_an_unreadable_directory_keeps_the_recipe_list_and_logs_once(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    directory = tmp_path / "recipes"
+    write_recipe(directory, [{"type": "MashIn"}])
+    library = open_library(directory)
+
+    def unreadable(directory: Path) -> None:
+        raise PermissionError(13, "Permission denied")
+
+    monkeypatch.setattr("brewberrypi.recipes._signature", unreadable)
+    with caplog.at_level(logging.ERROR):
+        assert not library.refresh()
+        assert not library.refresh()
+    assert ids(library) == ["MyRecipe"]
+    assert len([record for record in caplog.records if record.levelno >= logging.ERROR]) == 1
+    assert "the recipe list stays as it is" in caplog.text
+    monkeypatch.undo()
+    write_recipe(directory, [{"type": "MashIn"}], recipe_id="New")
+    assert library.refresh()
+    assert ids(library) == ["MyRecipe", "New"]
+
+
+def test_a_library_without_directory_never_changes() -> None:
+    catalogue = load_recipes(configured(SPEC_DATA / "recipes"))
+    library = RecipeLibrary(catalogue)
+    assert not library.refresh()
+    assert library.catalogue is catalogue
 
 
 def test_unreadable_recipe_file_is_skipped(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:

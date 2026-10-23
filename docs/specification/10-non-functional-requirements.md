@@ -12,10 +12,10 @@
 
 - `NFR-020` Command line:
   - `--dummymode` → simulation HAL (legacy flag name, keep).
-  - `--config <path>` `[NEW]` → configuration file (default: `config.json` in the working directory; if missing, built-in defaults = [data/config.example.json](data/config.example.json); `Q-21`). Relative paths in the configuration resolve against the configuration file's directory (`Q-19`).
+  - `--config <path>` `[NEW]` → configuration file (default: `config.json` in the working directory, `Q-21`). If the file does not exist, the application writes it with every key at its default, the content of [data/config.example.json](data/config.example.json) without `$schema`, and then reads it; if it cannot be written, the application refuses to start (`Q-29`). Relative paths in the configuration resolve against the configuration file's directory (`Q-19`).
 - `NFR-021` Startup order `[FIX-21]` (legacy started the web server before the engine and services existed):
-  1. read & validate configuration → fail fast with clear message;
-  2. read & validate the recipe files (`RCP-001`, `RCP-003`);
+  1. read & validate configuration (written first if missing, `NFR-020`) → fail fast with clear message;
+  2. read & validate the recipe files, creating the recipe directory first if it is missing (`RCP-001`, `RCP-003`);
   3. initialise HAL (outputs off), start sensor loop, wait ≤ 2 s for first reading (`HW-034`);
   4. create engine (state `NoProcess`);
   5. start web server (UI, requests and push channel, spec 08);
@@ -27,7 +27,8 @@
 ## 10.3 Configuration
 
 - `NFR-030` All tunable constants of this spec have a configuration key with the documented default ([data/config.schema.json](data/config.schema.json)). Unknown keys → warning; invalid values → refuse to start.
-- `NFR-031` Configuration is read at startup only (no hot reload required).
+- `NFR-031` Configuration is read at startup only (no hot reload required). The recipe directory is read again when it changes (`RCP-006`).
+- `NFR-032` `[NEW]` Files the application writes into its configuration directory (the configuration file of `NFR-020`, the recipe directory and the recipes of `RCP-001`) are written atomically (temporary file, then rename) and are writable by the owner's group (files `rw-rw-r--`, directories `rwxrwxr-x`), so a brewer of the same group can edit them (`Q-29`).
 
 ## 10.4 Logging
 

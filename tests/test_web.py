@@ -1,6 +1,7 @@
 """Client/server interface: REST API and server-sent events (spec 08; AC-070..074, AC-005 interface part)."""
 
 import asyncio
+import dataclasses
 import json
 import logging
 from collections.abc import AsyncIterator, MutableMapping
@@ -16,7 +17,7 @@ from brewberrypi.clock import ManualClock
 from brewberrypi.config import load_config
 from brewberrypi.engine import Engine
 from brewberrypi.hal.mock import MockHal
-from brewberrypi.recipes import load_recipes
+from brewberrypi.recipes import RecipeLibrary, load_recipes
 from brewberrypi.web.app import create_app
 from brewberrypi.web.events import MAX_BACKLOG, EventHub, Subscriber, frame
 from brewberrypi.web.messages import (
@@ -554,6 +555,40 @@ async def test_AC_070_event_stream_snapshot_then_the_effect_of_a_command(
         assert any(name == "chart" for name, _ in stream.events())
         await stream.close()
         assert app.state.hub.subscribers == 0
+
+
+async def test_AC_085_a_new_recipe_file_reaches_every_client_and_a_loaded_process_keeps_its_recipe(
+    hal: MockHal, clock: ManualClock, tmp_path: Path
+) -> None:
+    directory = tmp_path / "recipes"
+    directory.mkdir()
+    recipe = {"name": "Hold 30 °C", "goals": [{"type": "HeatUp", "temperature": 30}]}
+    (directory / "HOLD30.json").write_text(json.dumps(recipe))
+    library = RecipeLibrary.open(dataclasses.replace(CONFIG.recipes, directory=directory))
+    event_clock = ManualClock()
+    app = create_app(CONFIG, library, hal, clock, event_clock=event_clock)
+    async with app.router.lifespan_context(app):
+        streams = [Stream(app), Stream(app)]
+        await event_clock.advance(0)
+        assert (await call(app, "PUT", "/api/process", {"recipe": "HOLD30"}))[0] == 200
+
+        (directory / "WATER.json").write_text(json.dumps({"name": "Water", "goals": [{"type": "MashIn"}]}))
+        (directory / "HOLD30.json").write_text(json.dumps({**recipe, "name": "Hold at 30 °C, renamed"}))
+        await event_clock.advance(CONFIG.recipes.check_milliseconds / 1000)
+        expected = [{"id": "HOLD30", "name": "Hold at 30 °C, renamed"}, {"id": "WATER", "name": "Water"}]
+        for stream in streams:
+            [pushed] = [data for name, data in stream.events() if name == "recipes"]
+            assert pushed == expected
+            RECIPE_LIST(pushed)
+        assert (await call(app, "GET", "/api/recipes"))[1] == expected
+        assert app.state.engine.process.process_name == "Hold 30 °C"  # the loaded process is unchanged
+
+        (directory / "WATER.json").unlink()
+        await event_clock.advance(CONFIG.recipes.check_milliseconds / 1000)
+        assert [data for name, data in streams[0].events() if name == "recipes"][-1] == expected[:1]
+        assert (await call(app, "GET", "/api/recipes/WATER"))[0] == 404
+        for stream in streams:
+            await stream.close()
 
 
 async def test_shutdown_ends_open_streams(hal: MockHal, clock: ManualClock) -> None:
