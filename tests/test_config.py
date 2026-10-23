@@ -1,7 +1,8 @@
-"""M1: configuration (NFR-020, NFR-030, HW-010..013, AC-082, Q-19, Q-21)."""
+"""M1: configuration (NFR-020, NFR-030, NFR-032, HW-010..013, AC-082, AC-086, Q-19, Q-29)."""
 
 import json
 import logging
+import stat
 from pathlib import Path
 from typing import Any
 
@@ -26,14 +27,14 @@ def test_AC_082_example_config_has_the_legacy_wiring() -> None:
     assert (hardware.buzzer.pin, hardware.buzzer.active_low) == (10, False)
 
 
-def test_built_in_defaults_equal_the_example_config(tmp_path: Path) -> None:
-    defaults = load_config(cwd=tmp_path)
+def test_defaults_equal_the_example_config(tmp_path: Path) -> None:
+    defaults = load_config(write_config(tmp_path, {}))
     example = load_config(EXAMPLE)
-    assert defaults.source is None
     assert example.source == EXAMPLE
     for section in ("server", "hardware", "control", "engine", "ui", "events", "chart", "simulation"):
         assert getattr(defaults, section) == getattr(example, section), section
     assert defaults.recipes.directory.name == example.recipes.directory.name == "recipes"
+    assert defaults.recipes.check_milliseconds == example.recipes.check_milliseconds == 1000
 
 
 def test_default_values() -> None:
@@ -49,18 +50,43 @@ def test_default_values() -> None:
     assert config.simulation.heating_rate_per_second == 0.085
 
 
-def test_Q21_config_json_in_the_working_directory_is_read(tmp_path: Path) -> None:
+def test_config_json_in_the_working_directory_is_read(tmp_path: Path) -> None:
     write_config(tmp_path, {"server": {"port": 9000}})
     config = load_config(cwd=tmp_path)
     assert config.source == tmp_path / "config.json"
     assert config.server.port == 9000
 
 
-def test_Q21_without_config_file_the_built_in_defaults_are_used(tmp_path: Path) -> None:
-    config = load_config(cwd=tmp_path)
-    assert config.source is None
+def test_AC_086_a_missing_config_file_is_written_with_every_key_at_its_default(tmp_path: Path) -> None:
+    config = load_config(Path("config.json"), cwd=tmp_path)
+    file = tmp_path / "config.json"
+    assert config.source == file
     assert config.recipes.directory == tmp_path / "recipes"
-    assert not config.recipes.explicit
+    example = json.loads(EXAMPLE.read_text())
+    del example["$schema"]
+    assert json.loads(file.read_text()) == example
+    assert file.read_text().startswith('{\n  "server": {\n    "port": 8080\n  },')
+    assert stat.S_IMODE(file.stat().st_mode) == 0o664  # the brewer edits it as another user
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["config.json"]  # no temporary file left
+
+
+def test_AC_086_without_config_argument_config_json_in_the_working_directory_is_written(
+    tmp_path: Path,
+) -> None:
+    config = load_config(cwd=tmp_path)
+    assert config.source == tmp_path / "config.json"
+    assert (tmp_path / "config.json").is_file()
+
+
+def test_an_existing_config_file_is_not_written(tmp_path: Path) -> None:
+    file = write_config(tmp_path, {"server": {"port": 9000}})
+    load_config(file)
+    assert json.loads(file.read_text()) == {"server": {"port": 9000}}
+
+
+def test_a_config_file_that_cannot_be_written_refuses_to_start(tmp_path: Path) -> None:
+    with pytest.raises(ConfigError, match="cannot create configuration file: No such file or directory"):
+        load_config(tmp_path / "missing" / "config.json")
 
 
 def test_missing_values_are_filled_with_defaults(tmp_path: Path) -> None:
@@ -77,7 +103,6 @@ def test_Q19_recipe_directory_resolves_against_the_config_file_directory(tmp_pat
     config = load_config(Path("etc/config.json"), cwd=tmp_path)
     assert config.source == file
     assert config.recipes.directory == tmp_path / "etc" / "my-recipes"
-    assert config.recipes.explicit
 
 
 def test_Q19_absolute_recipe_directory_is_kept(tmp_path: Path) -> None:
@@ -127,11 +152,6 @@ def test_invalid_json_names_file_line_and_column(tmp_path: Path) -> None:
     file.write_text('{\n  "server": }')
     with pytest.raises(ConfigError, match=r"config.json:2:\d+: invalid JSON"):
         load_config(file)
-
-
-def test_missing_explicit_config_file_refuses_to_start(tmp_path: Path) -> None:
-    with pytest.raises(ConfigError, match="configuration file not found"):
-        load_config(tmp_path / "missing.json")
 
 
 def test_configuration_is_read_only() -> None:

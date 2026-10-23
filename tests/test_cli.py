@@ -46,9 +46,13 @@ def test_without_dummymode_hardware_initialisation_fails_until_M9(served: list[i
     assert served == []
 
 
-def test_starts_with_built_in_defaults_and_recipes(capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["--dummymode"]) == EXIT_OK
+def test_AC_084_AC_086_first_start_writes_the_config_file_and_the_recipes(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["--dummymode", "--config", "config.json"]) == EXIT_OK
     assert "recipes: BENIWEISS, Dummy, HANCOCK, HIPA, TEST, WIT, WaterBoil, ZORA" in capsys.readouterr().out
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["config.json", "recipes"]
+    assert len(list((tmp_path / "recipes").iterdir())) == 8
 
 
 def test_log_lines_have_timestamp_level_and_component(capsys: pytest.CaptureFixture[str]) -> None:
@@ -79,10 +83,11 @@ def test_AC_081_invalid_recipe_file_is_skipped_and_logged(
     assert "recipes: S\n" in output
 
 
-def test_missing_configured_recipe_directory_exits_with_code_3(
+def test_a_recipe_directory_that_is_no_directory_exits_with_code_3(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     (tmp_path / "config.json").write_text(json.dumps({"recipes": {"directory": "nope"}}))
+    (tmp_path / "nope").write_text("a file")
     assert main(["--config", "config.json"]) == EXIT_INVALID_RECIPES
     assert "ERROR brewberrypi: invalid recipe directory, refusing to start" in capsys.readouterr().out
 

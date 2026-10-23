@@ -69,7 +69,7 @@ make and Docker (or Podman: `make image CONTAINER=podman`).
 | `make test` | pytest and Vitest |
 | `make build` | Build the front end into the package and the Python wheel (`dist/`) |
 | `make image` | Build the container image `ghcr.io/tinkerius/brewberrypi:<version>` for the local platform |
-| `make run` | Run in simulation: `uv run brewberrypi --dummymode` |
+| `make run` | Run in simulation: `uv run brewberrypi --dummymode --config .run/config.json` (configuration and recipes are created in `.run/`) |
 | `make dev` | `make run` plus the Vite dev server with live reload on http://localhost:5173; Ctrl+C stops both |
 | `make format` | Auto-format and auto-fix lint findings |
 
@@ -93,8 +93,9 @@ registry image and signatures, its GitHub release and its tag. Devices keep an i
 
 ### Configuration
 
-`brewberrypi --config <file>` reads a JSON configuration file. Without `--config` it reads `config.json` from
-the working directory, or uses the built-in defaults if there is none. Every key is optional. The format is
+`brewberrypi --config <file>` reads a JSON configuration file, by default `config.json` in the working
+directory. If the file does not exist, the application writes it with every key at its default, so it can be
+edited from there. Every key is optional. The format is
 [config.schema.json](docs/specification/data/config.schema.json), and
 [config.example.json](docs/specification/data/config.example.json) lists every key with its default (the legacy
 wiring). Unknown keys are ignored with a warning; invalid values stop the start with exit code 2.
@@ -112,10 +113,14 @@ if `paplay`, `aplay`, `afplay` or Windows sound is available, otherwise they are
 
 The recipes come from the directory `recipes/` next to the configuration file (`recipes.directory`), one file per
 recipe: `recipes/ZORA.json` holds the recipe `ZORA`, and the file name is the recipe id. The UI lists the recipes
-sorted by id. Without a recipe directory, the 8 legacy recipes built into the application are used
-([docs/specification/data/recipes/](docs/specification/data/recipes/)). An invalid recipe file is skipped, and the
-log names the file, recipe and goal; the other recipes are still loaded. Only a configured `recipes.directory` that
-does not exist stops the start, with exit code 3. The format of one file is
+sorted by id. If the directory does not exist, the application creates it with the 8 legacy recipes
+([docs/specification/data/recipes/](docs/specification/data/recipes/)); recipes you delete there are not written
+again. A recipe file you add, change or remove shows up in every open UI within a second
+(`recipes.checkMilliseconds`), without a restart; a loaded process keeps its recipe. An invalid recipe file is
+skipped, and the log names the file, recipe and goal; the other recipes are still loaded. A recipe directory that
+cannot be created or read stops the start, with exit code 3. Everything the application writes there is
+group-writable, so the brewer can edit it as another user of the same group (on BrewberryPi OS: the share's
+`app` folder). The format of one file is
 [recipe.schema.json](docs/specification/data/recipe.schema.json); see [07-recipes.md](docs/specification/07-recipes.md).
 
 ### API

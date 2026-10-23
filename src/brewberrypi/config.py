@@ -1,8 +1,9 @@
-"""Configuration file: loading, validation and defaults (NFR-020, NFR-030, NFR-031, HW-010..013).
+"""Configuration file: loading, validation and defaults (NFR-020, NFR-030, NFR-031, NFR-032, HW-010..013).
 
 The file format is `data/config.schema.json`, a copy of `docs/specification/data/config.schema.json`. All
 keys are optional; the defaults are the schema's `default` values, which reproduce the legacy behaviour.
-Unknown keys only produce a warning (NFR-030); invalid values raise `ConfigError` (startup exit code 2).
+A missing configuration file is written with every key at its default (Q-29). Unknown keys only produce a
+warning (NFR-030); invalid values raise `ConfigError` (startup exit code 2).
 """
 
 import copy
@@ -14,6 +15,8 @@ from pathlib import Path
 from typing import Any, Literal
 
 import fastjsonschema
+
+from brewberrypi.files import write_file
 
 log = logging.getLogger(__name__)
 
@@ -33,8 +36,8 @@ class ServerConfig:
 class RecipesConfig:
     directory: Path
     """Recipe directory, one file per recipe, resolved against the configuration file's directory (Q-19)."""
-    explicit: bool
-    """`recipes.directory` is set in the configuration; a missing directory is then an error (Q-22)."""
+    check_milliseconds: int
+    """How often the recipe directory is checked for changed files (RCP-006)."""
 
 
 @dataclass(frozen=True)
@@ -112,8 +115,8 @@ class SimulationConfig:
 
 @dataclass(frozen=True)
 class Config:
-    source: Path | None
-    """The file the configuration was read from; `None` for the built-in defaults."""
+    source: Path
+    """The file the configuration was read from."""
     server: ServerConfig
     recipes: RecipesConfig
     hardware: HardwareConfig
@@ -128,20 +131,26 @@ class Config:
 def load_config(path: Path | None = None, *, cwd: Path | None = None) -> Config:
     """Read the configuration (NFR-020).
 
-    `path` is the `--config` argument. Without it, `config.json` in the working directory is read, or the
-    built-in defaults are used if that file does not exist (Q-21). A given `path` must exist.
+    `path` is the `--config` argument, by default `config.json` in the working directory. A missing file is
+    first written with every key at its default (NFR-032, Q-29); if that fails, `ConfigError`.
     """
     cwd = Path.cwd() if cwd is None else cwd
-    if path is None:
-        default = cwd / DEFAULT_CONFIG_FILE
-        if not default.is_file():
-            log.info("no %s in %s, using the built-in defaults", DEFAULT_CONFIG_FILE, cwd)
-            return _build({}, source=None, base_dir=cwd)
-        path = default
-    path = cwd / path
+    path = cwd / (DEFAULT_CONFIG_FILE if path is None else path)
+    if not path.exists():
+        try:
+            write_file(path, default_config_text())
+        except OSError as error:
+            raise ConfigError(f"{path}: cannot create configuration file: {error.strerror}") from None
+        log.info("configuration file %s created with the default values", path)
     raw = _read_json(path)
     log.info("configuration read from %s", path)
     return _build(raw, source=path, base_dir=path.parent)
+
+
+def default_config_text() -> str:
+    """The configuration file written when there is none: every key with its default (= config.example.json
+    without `$schema`)."""
+    return json.dumps(_DEFAULTS, indent=2, ensure_ascii=False) + "\n"
 
 
 def _read_json(path: Path) -> Any:
@@ -157,8 +166,8 @@ def _read_json(path: Path) -> Any:
         raise ConfigError(f"{path}:{error.lineno}:{error.colno}: invalid JSON: {error.msg}") from None
 
 
-def _build(raw: Any, *, source: Path | None, base_dir: Path) -> Config:
-    name = str(source) if source is not None else "built-in configuration"
+def _build(raw: Any, *, source: Path, base_dir: Path) -> Config:
+    name = str(source)
     if not isinstance(raw, dict):
         raise ConfigError(f"{name}: the configuration must be a JSON object")
     known = _strip_unknown_keys(raw, _SCHEMA, "", name)
@@ -180,7 +189,7 @@ def _build(raw: Any, *, source: Path | None, base_dir: Path) -> Config:
         server=ServerConfig(port=section("server")["port"]),
         recipes=RecipesConfig(
             directory=base_dir / section("recipes")["directory"],
-            explicit="directory" in known.get("recipes", {}),
+            check_milliseconds=section("recipes")["checkMilliseconds"],
         ),
         hardware=HardwareConfig(
             heating=HeatingConfig(

@@ -17,7 +17,7 @@ from brewberrypi.control import RunningTime
 from brewberrypi.goals import Goal, GoalContext, create_goal
 from brewberrypi.hal import Hal
 from brewberrypi.operator_requests import InvalidResponse, RequestReminder
-from brewberrypi.recipes import RecipeCatalogue
+from brewberrypi.recipes import RecipeSource
 
 log = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ class BrewProcess:
 
 
 class Engine:
-    def __init__(self, hal: Hal, clock: Clock, recipes: RecipeCatalogue, config: Config) -> None:
+    def __init__(self, hal: Hal, clock: Clock, recipes: RecipeSource, config: Config) -> None:
         self._hal = hal
         self._clock = clock
         self._recipes = recipes

@@ -25,7 +25,7 @@ ARG VERSION=0.0.0
 LABEL org.opencontainers.image.title="BrewberryPi" \
       org.opencontainers.image.source="https://github.com/tinkerius/brewberrypi" \
       org.opencontainers.image.version="${VERSION}" \
-      org.brewberrypi.runtime-contract="1"
+      org.brewberrypi.runtime-contract="2"
 
 # Debian's python3 + libgpiod v2 bindings (no compiler needed); the venv sees them via
 # --system-site-packages. All other dependencies are installed hash-checked from uv.lock.

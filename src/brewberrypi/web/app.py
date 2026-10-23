@@ -31,7 +31,7 @@ from brewberrypi.config import Config
 from brewberrypi.engine import Engine
 from brewberrypi.hal import Hal
 from brewberrypi.notify import Notifier
-from brewberrypi.recipes import RecipeCatalogue
+from brewberrypi.recipes import RecipeCatalogue, RecipeLibrary
 from brewberrypi.web.events import RETRY_MILLISECONDS, EventHub
 from brewberrypi.web.messages import (
     hardware_status,
@@ -48,7 +48,7 @@ STATIC_DIR = Path(__file__).parent / "static"
 
 def create_app(  # noqa: PLR0913  (clocks and UI folder are injectable for tests)
     config: Config,
-    recipes: RecipeCatalogue,
+    recipes: RecipeLibrary | RecipeCatalogue,
     hal: Hal,
     clock: Clock,
     *,
@@ -57,24 +57,27 @@ def create_app(  # noqa: PLR0913  (clocks and UI folder are injectable for tests
     notifier: Notifier | None = None,
 ) -> Starlette:
     """The application. `clock` drives the engine and the chart timestamps (scaled in simulation, HW-064);
-    `event_clock` paces the event stream in real time."""
+    `event_clock` paces the event stream and the recipe directory checks in real time. A plain
+    `RecipeCatalogue` is never read again."""
     event_clock = SystemClock() if event_clock is None else event_clock
+    library = recipes if isinstance(recipes, RecipeLibrary) else RecipeLibrary(recipes)
     notifier = Notifier() if notifier is None else notifier
 
     @asynccontextmanager
     async def lifespan(app: Starlette) -> AsyncIterator[None]:
         await hal.start()  # sensor loop, first reading (HW-030, HW-034); outputs are already off (HW-020)
-        engine = Engine(hal, clock, recipes, config)
+        engine = Engine(hal, clock, library, config)
         chart = TemperatureChart(config.chart.max_points)
         hub = _event_hub(
-            config, recipes=recipes, hal=hal, clock=clock, engine=engine, chart=chart, event_clock=event_clock
+            config, recipes=library, hal=hal, clock=clock, engine=engine, chart=chart, event_clock=event_clock
         )
         app.state.engine, app.state.hub, app.state.chart = engine, hub, chart
-        app.state.hal, app.state.recipes = hal, recipes
+        app.state.hal, app.state.recipes = hal, library
         loop = asyncio.get_running_loop()
         app.state.close_streams = lambda: loop.call_soon_threadsafe(hub.close)  # for serve()'s signal handler
         events = asyncio.create_task(hub.run())
-        background = [events]
+        watch = _watch_recipes(library, hub, event_clock, config.recipes.check_milliseconds / 1000)
+        background = [events, asyncio.create_task(watch)]
         if notifier.watchdog_seconds is not None:
 
             def alive() -> bool:
@@ -136,7 +139,7 @@ async def _get_process(request: Request) -> Response:
 
 
 async def _get_recipes(request: Request) -> Response:
-    return JSONResponse(recipe_list(request.app.state.recipes))
+    return JSONResponse(recipe_list(request.app.state.recipes.catalogue))
 
 
 async def _get_recipe(request: Request) -> Response:
@@ -258,7 +261,7 @@ class SameOriginApi:
 def _event_hub(  # noqa: PLR0913
     config: Config,
     *,
-    recipes: RecipeCatalogue,
+    recipes: RecipeLibrary,
     hal: Hal,
     clock: Clock,
     engine: Engine,
@@ -271,7 +274,7 @@ def _event_hub(  # noqa: PLR0913
         {
             "hardware": lambda: hardware_status(hal),
             "process": lambda: process_state(engine),
-            "recipes": lambda: recipe_list(recipes),
+            "recipes": lambda: recipe_list(recipes.catalogue),
         },
         chart.data,
         lambda: chart.sample(clock.wall_time(), hal.get_temperature()),
@@ -279,6 +282,19 @@ def _event_hub(  # noqa: PLR0913
         chart_seconds=config.chart.sample_milliseconds / 1000,
         heartbeat_seconds=config.events.heartbeat_milliseconds / 1000,
     )
+
+
+async def _watch_recipes(library: RecipeLibrary, hub: EventHub, clock: Clock, interval: float) -> None:
+    """Read the recipe directory again when its files change and push the new recipe list (RCP-006)."""
+    while True:
+        await clock.sleep(interval)
+        try:
+            changed = library.refresh()
+        except Exception:
+            log.exception("checking the recipe directory failed")
+            continue
+        if changed:
+            hub.check()
 
 
 async def _watchdog(notifier: Notifier, clock: Clock, interval: float, alive: Callable[[], bool]) -> None:

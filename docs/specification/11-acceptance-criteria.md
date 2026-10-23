@@ -72,6 +72,9 @@ controllable/accelerated clock. `T` = temperature reported by the HAL.
 - `AC-081` (RCP-003) A recipe file with a `Rest` lacking `minutes` → the application starts, logs an error naming the file, recipe and goal index, and that recipe is missing from the recipe list; the other recipes are listed.
 - `AC-082` (HW-011) With the example config, the heating relay is BCM 23 active-low, pump BCM 22 active-low, buzzer BCM 10 active-high.
 - `AC-083` (NFR-001/HW-020) On startup with real hardware, heating and pump relays are off before the web server accepts connections.
+- `AC-084` (RCP-001) First start without a recipe directory → the directory is created with the 8 shipped recipe files, and the recipe list shows them. After two of the files are deleted, the next start lists 6 recipes and does not write the deleted files again.
+- `AC-085` (RCP-006) While a recipe is loaded, a recipe file is added and the loaded recipe's file is changed → within `recipes.checkMilliseconds` every client receives the new recipe list; the loaded process keeps its name and goals. Removing the file again removes the recipe from the list.
+- `AC-086` (NFR-020, NFR-032) Start with `--config` naming a file that does not exist → the file is written with every key of [data/config.example.json](data/config.example.json) at its default (without `$schema`), group-writable, and the application starts.
 
 ## 11.8 End-to-end (simulation, accelerated)
 

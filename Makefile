@@ -51,12 +51,17 @@ format:
 	uv run ruff format .
 	uv run ruff check --fix .
 
+# Configuration and recipes of local runs; the application creates them on the first run (Q-29).
+RUN_DIR ?= .run
+
 run:
-	uv run brewberrypi --dummymode
+	mkdir -p $(RUN_DIR)
+	uv run brewberrypi --dummymode --config $(RUN_DIR)/config.json
 
 # Back end and Vite dev server side by side; Ctrl+C stops both (same process group).
 dev: frontend/node_modules
-	uv run brewberrypi --dummymode & cd frontend && npm run dev; wait
+	mkdir -p $(RUN_DIR)
+	uv run brewberrypi --dummymode --config $(RUN_DIR)/config.json & cd frontend && npm run dev; wait
 
 clean:
 	rm -rf dist build .venv .pytest_cache .mypy_cache .ruff_cache \

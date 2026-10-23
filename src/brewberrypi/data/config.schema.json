@@ -13,7 +13,10 @@
     },
     "recipes": {
       "type": "object",
-      "properties": { "directory": { "type": "string", "default": "recipes" } },
+      "properties": {
+        "directory": { "type": "string", "default": "recipes" },
+        "checkMilliseconds": { "type": "integer", "minimum": 100, "default": 1000 }
+      },
       "additionalProperties": false
     },
     "hardware": {
