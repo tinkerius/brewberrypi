@@ -48,6 +48,7 @@ def test_default_values() -> None:
     assert config.control.hysteresis_lower_offset == -0.1
     assert config.engine.tick_milliseconds == 500
     assert config.simulation.heating_rate_per_second == 0.085
+    assert config.ui.device_link == "http://{host}:8081/"
 
 
 def test_config_json_in_the_working_directory_is_read(tmp_path: Path) -> None:
@@ -110,6 +111,10 @@ def test_Q19_absolute_recipe_directory_is_kept(tmp_path: Path) -> None:
     assert config.recipes.directory == Path("/srv/recipes")
 
 
+def test_an_empty_device_link_means_no_link(tmp_path: Path) -> None:
+    assert load_config(write_config(tmp_path, {"ui": {"deviceLink": ""}})).ui.device_link is None
+
+
 def test_unknown_keys_only_warn(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
     file = write_config(tmp_path, {"colour": "red", "hardware": {"pump": {"pin": 5, "speed": 3}}})
     with caplog.at_level(logging.WARNING):
@@ -136,6 +141,7 @@ def test_schema_key_is_not_unknown(tmp_path: Path, caplog: pytest.LogCaptureFixt
         ({"server": {"port": 0}}, "server.port must be bigger than or equal to 1"),
         ({"control": {"nearTargetPower": 0}}, "control.nearTargetPower must be bigger than 0"),
         ({"server": 8080}, "server must be object"),
+        ({"ui": {"deviceLink": "javascript:alert(1)"}}, "ui.deviceLink must match pattern"),
         ([], "must be a JSON object"),
     ],
 )

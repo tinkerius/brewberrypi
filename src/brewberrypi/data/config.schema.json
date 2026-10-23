@@ -79,7 +79,15 @@
     },
     "ui": {
       "type": "object",
-      "properties": { "requestReminderIntervalSeconds": { "type": "number", "exclusiveMinimum": 0, "default": 10 } },
+      "properties": {
+        "requestReminderIntervalSeconds": { "type": "number", "exclusiveMinimum": 0, "default": 10 },
+        "deviceLink": {
+          "type": "string",
+          "pattern": "^(https?://.+)?$",
+          "default": "http://{host}:8081/",
+          "description": "Link to the device web interface in the top bar (UI-002); {host} is the host the page was opened with; empty: no link"
+        }
+      },
       "additionalProperties": false
     },
     "events": {

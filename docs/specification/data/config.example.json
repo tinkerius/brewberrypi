@@ -40,7 +40,8 @@
     "tickMilliseconds": 500
   },
   "ui": {
-    "requestReminderIntervalSeconds": 10
+    "requestReminderIntervalSeconds": 10,
+    "deviceLink": "http://{host}:8081/"
   },
   "events": {
     "checkMilliseconds": 250,

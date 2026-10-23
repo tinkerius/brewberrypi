@@ -63,6 +63,22 @@ export async function sendCommand(
   return { command, success: response.ok && data.success !== false, message };
 }
 
+/** UI-002: the device link of `GET /api/ui` (IF-080) with `{host}` not yet replaced; null if none. */
+export async function fetchDeviceLink(fetchFn: Fetch = (path, init) => fetch(path, init)): Promise<string | null> {
+  try {
+    const response = await fetchFn("/api/ui", { method: "GET", cache: "no-store" });
+    const data = (await response.json()) as { deviceLink?: unknown };
+    return response.ok && typeof data.deviceLink === "string" ? data.deviceLink : null;
+  } catch {
+    return null;
+  }
+}
+
+/** UI-002: the device link for the host the page was opened with. */
+export function deviceUrl(link: string, host: string): string {
+  return link.replaceAll("{host}", host);
+}
+
 /** UI-001: the application version from `GET /healthz` (runtime contract §5); null if it cannot be read. */
 export async function fetchVersion(fetchFn: Fetch = (path, init) => fetch(path, init)): Promise<string | null> {
   try {

@@ -13,6 +13,7 @@ from typing import Any
 
 import fastjsonschema
 
+from brewberrypi.config import Config
 from brewberrypi.engine import Engine, ErrorKind, Reply
 from brewberrypi.goals import Goal
 from brewberrypi.hal import Hal
@@ -76,6 +77,11 @@ def _goal(goal: Goal) -> dict[str, Any]:
 def recipe_list(recipes: RecipeCatalogue) -> list[dict[str, str]]:
     """IF-030, in catalogue order."""
     return recipes.summaries()
+
+
+def ui_settings(config: Config) -> dict[str, Any]:
+    """UiSettings (IF-080): the device link as configured; the UI puts in its own host (UI-002)."""
+    return {"deviceLink": config.ui.device_link}
 
 
 def recipe_detail(recipe: Recipe) -> dict[str, Any]:

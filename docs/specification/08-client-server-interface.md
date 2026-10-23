@@ -31,6 +31,7 @@
 | `recipes` | `RecipeList` | `IF-030` |
 | `recipe` (one, by id) | `RecipeDetail` | `IF-031` |
 | `chart` | `ChartData` | `IF-040` |
+| `ui` | `UiSettings` | `IF-080` |
 
 Each resource can be read at any time; `hardware`, `process`, `recipes` and `chart` are also pushed (§8.4).
 
@@ -115,6 +116,15 @@ before it is loaded. Unknown id → not found (`IF-052`).
 - `IF-043` **Thinning**: after appending, while the number of points exceeds **200** (`chart.maxPoints`):
   find the adjacent pair `(i, i+1)` with the **smallest time gap** `x[i+1] − x[i]` (first such pair on ties) and **remove point `i+1`**. The first point is never removed. This keeps the full time range with decreasing resolution for older data.
 - `IF-044` The whole series is sent only on request and in the snapshot (`IF-071`); after that each sample is pushed as a **ChartUpdate** (`IF-073`). Applying the updates gives exactly the series of `IF-043`. A read MAY ask for only the points after a given `x`. (Legacy: the whole series was broadcast every second; `Q-28`.)
+
+### `IF-080` UiSettings `[NEW]`
+
+Settings of the web UI from the configuration (`Q-30`), read by the UI on every (re)connection; not pushed.
+`deviceLink` is `ui.deviceLink` with `{host}` not yet replaced, or `null` when it is empty (`UI-002`).
+
+```json
+{ "deviceLink": "http://{host}:8081/" }
+```
 
 ## 8.3 Commands (request/response)
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "preact/hooks";
 import { Chart } from "./Chart";
-import { fetchVersion, sendCommand } from "./api";
+import { deviceUrl, fetchDeviceLink, fetchVersion, sendCommand } from "./api";
 import { InformationModal, StopConfirmation } from "./dialogs";
 import { EventStream } from "./events";
 import { ConnectionIndicator, HardwareStatusPanel, PageHeader, Panel, ProcessPanel, type SendCommand } from "./panels";
@@ -13,6 +13,7 @@ export function App() {
   const [everConnected, setEverConnected] = useState(false);
   const [confirmingStop, setConfirmingStop] = useState(false);
   const [version, setVersion] = useState<string | null>(null);
+  const [deviceLink, setDeviceLink] = useState<string | null>(null);
   useEffect(() => {
     const stream = new EventStream({
       url: "/api/events",
@@ -34,10 +35,12 @@ export function App() {
       stream.stop();
     };
   }, []);
-  // UI-001: read the version on every (re)connection; the app may have been updated in between.
+  // UI-001, UI-002: read the version and the device link on every (re)connection; the app may have been
+  // updated or reconfigured in between.
   useEffect(() => {
     if (state.connected) {
       void fetchVersion().then((current) => current !== null && setVersion(current));
+      void fetchDeviceLink().then(setDeviceLink);
     }
   }, [state.connected]);
 
@@ -47,7 +50,11 @@ export function App() {
 
   return (
     <>
-      <PageHeader host={location.hostname} version={version} />
+      <PageHeader
+        host={location.hostname}
+        version={version}
+        deviceUrl={deviceLink === null ? null : deviceUrl(deviceLink, location.hostname)}
+      />
       <main class="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6">
         <ConnectionIndicator connected={state.connected} everConnected={everConnected} />
         <HardwareStatusPanel hardware={state.hardware} state={state.process?.state} stale={!state.connected} />
