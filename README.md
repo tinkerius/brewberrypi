@@ -106,6 +106,10 @@ does not wear out ([FIX-26](docs/recovery/bug-and-deviation-log.md)). Earlier ve
 configuration set `500`. If your `config.json` still sets `"minPhaseMilliseconds": 500`, remove the key or set
 it to `10000`. Otherwise the relay keeps switching about once per second.
 
+The top bar links to the BrewberryPi OS device web interface (`ui.deviceLink`, default
+`http://{host}:8081/`, where `{host}` is the host the page was opened with). Set it to `""` to hide
+the link, for example when the app does not run on BrewberryPi OS.
+
 In simulation (`--dummymode`) a simulated kettle replaces the hardware: it heats by 0.085 °C per second at
 full power and cools by 0.005 °C per second (section `simulation`). `simulation.timeScale` speeds up the
 whole application, e.g. `60` runs a 10-minute rest in 10 seconds. Beeps play on the computer's audio output
@@ -138,7 +142,7 @@ The server serves the web UI, a REST API and an event stream on one port (`serve
   curl -X POST http://brewberrypi.local:8080/api/process/start -H 'Content-Type: application/json' -d '{}'
   ```
 
-  Also `GET /api/hardware`, `/api/recipes`, `/api/recipes/{id}`, `/api/chart`, `DELETE /api/process` (unload),
+  Also `GET /api/hardware`, `/api/recipes`, `/api/recipes/{id}`, `/api/chart`, `/api/ui`, `DELETE /api/process` (unload),
   `POST /api/process/pause|resume|stop`, and `POST /api/process/requests/{id}` with `{"response": "Yes"}` to
   answer a question.
 - **Server-sent events** at `GET /api/events` (`curl -N`): a `snapshot` first, then `hardware`, `process`,

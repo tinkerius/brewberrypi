@@ -39,6 +39,7 @@ from brewberrypi.web.messages import (
     recipe_detail,
     recipe_list,
     run_command,
+    ui_settings,
 )
 
 log = logging.getLogger(__name__)
@@ -72,7 +73,7 @@ def create_app(  # noqa: PLR0913  (clocks and UI folder are injectable for tests
             config, recipes=library, hal=hal, clock=clock, engine=engine, chart=chart, event_clock=event_clock
         )
         app.state.engine, app.state.hub, app.state.chart = engine, hub, chart
-        app.state.hal, app.state.recipes = hal, library
+        app.state.hal, app.state.recipes, app.state.config = hal, library, config
         loop = asyncio.get_running_loop()
         app.state.close_streams = lambda: loop.call_soon_threadsafe(hub.close)  # for serve()'s signal handler
         events = asyncio.create_task(hub.run())
@@ -115,6 +116,7 @@ def create_app(  # noqa: PLR0913  (clocks and UI folder are injectable for tests
         Route("/api/recipes", _get_recipes, methods=["GET"]),
         Route("/api/recipes/{recipe_id:str}", _get_recipe, methods=["GET"]),
         Route("/api/chart", _get_chart, methods=["GET"]),
+        Route("/api/ui", _get_ui, methods=["GET"]),
         Route("/api/events", _events, methods=["GET"]),
         Route("/healthz", _healthz),
     ]
@@ -148,6 +150,10 @@ async def _get_recipe(request: Request) -> Response:
     if recipe is None:
         return _error(f"Unknown recipe '{recipe_id}'.", 404)
     return JSONResponse(recipe_detail(recipe))
+
+
+async def _get_ui(request: Request) -> Response:
+    return JSONResponse(ui_settings(request.app.state.config))
 
 
 async def _get_chart(request: Request) -> Response:

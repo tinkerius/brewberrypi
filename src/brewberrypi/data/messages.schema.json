@@ -174,6 +174,18 @@
         "message": { "type": "string" }
       },
       "additionalProperties": false
+    },
+    "UiSettings": {
+      "description": "GET /api/ui (IF-080): settings of the web UI from the configuration.",
+      "type": "object",
+      "required": ["deviceLink"],
+      "properties": {
+        "deviceLink": {
+          "description": "ui.deviceLink with {host} not yet replaced (UI-002); null: no link",
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

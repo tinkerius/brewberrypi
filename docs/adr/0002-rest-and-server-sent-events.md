@@ -41,6 +41,7 @@ All under `/api`, JSON (UTF-8).
 | `GET /api/recipes` | `IF-030` | 200 RecipeList | |
 | `GET /api/recipes/{id}` | `IF-031` | 200 RecipeDetail | 404 |
 | `GET /api/chart[?since=<epoch ms>]` | `IF-040`, `IF-044` | 200 ChartData | 422 bad `since` |
+| `GET /api/ui` | `IF-080` | 200 UiSettings | |
 | `PUT /api/process` `{"recipe": id}` | `load` | 200 | 404 unknown recipe, 409, 422 |
 | `DELETE /api/process` | `unload` | 200 | 409 |
 | `POST /api/process/start` · `/pause` · `/resume` · `/stop` | | 200 | 404 unknown command, 409 |

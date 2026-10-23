@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { commandRequest, fetchVersion, NO_CONNECTION, sendCommand } from "./api";
+import { commandRequest, deviceUrl, fetchDeviceLink, fetchVersion, NO_CONNECTION, sendCommand } from "./api";
 import { isAccepted } from "./commands";
 import { EventStream, MISSED_HEARTBEATS, reconnectDelay, type SourceLike } from "./events";
 import { descriptionLines, formatDegrees, formatHeating, formatPump, formatTemperature, formatTime } from "./format";
@@ -346,5 +346,22 @@ describe("UI-060 event stream", () => {
     stream.stop();
     expect(sources[0].closed).toBe(true);
     expect(live()).toEqual([]);
+  });
+});
+
+describe("UI-002 device link", () => {
+  it("AC-093 reads GET /api/ui and puts in the page's host", async () => {
+    const paths: string[] = [];
+    const ui = (status: number, body: string) => async (path: string) => {
+      paths.push(path);
+      return new Response(body, { status });
+    };
+    expect(await fetchDeviceLink(ui(200, '{"deviceLink":"http://{host}:8081/"}'))).toBe("http://{host}:8081/");
+    expect(paths).toEqual(["/api/ui"]);
+    expect(await fetchDeviceLink(ui(200, '{"deviceLink":null}'))).toBeNull();
+    expect(await fetchDeviceLink(ui(404, '{"success":false,"message":"x"}'))).toBeNull();
+    expect(await fetchDeviceLink(() => Promise.reject(new TypeError("offline")))).toBeNull();
+    expect(deviceUrl("http://{host}:8081/", "brewberrypi.local")).toBe("http://brewberrypi.local:8081/");
+    expect(deviceUrl("http://{host}:8081/", "[fe80::1]")).toBe("http://[fe80::1]:8081/");
   });
 });

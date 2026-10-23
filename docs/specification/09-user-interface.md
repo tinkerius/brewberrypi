@@ -8,7 +8,7 @@ Responsive (usable on phone, tablet and desktop). Language of UI texts: English
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
-│ Brewberry Pi  <host> · <app version>               (top bar) │
+│ Brewberry Pi  <host> · <app version>    Device settings ↗    │
 ├──────────────────────────────────────────────────────────────┤
 │ [Hardware Status]                                             │
 │  Temperature: 62.5°C   Pump: on   Heating: 50%   Process: …   │
@@ -44,6 +44,10 @@ with blue headers and a dark navbar titled **Brewberry Pi**.)
   [runtime contract §5](../deployment/runtime-contract.md)), as `<host> · <version>`; the version
   is read again after every reconnection. The top bar looks like the one of the BrewberryPi OS
   device web interface (product-owner decision 2026-10-17).
+- `UI-002` `[NEW]` The top bar ends with a link `Device settings` to the BrewberryPi OS device web
+  interface, opened in a new tab (`Q-30`). Its address is `ui.deviceLink` (default
+  `http://{host}:8081/`, `IF-080`) with `{host}` replaced by the host name the page was opened
+  with; with an empty `ui.deviceLink` there is no link. It is read again after every reconnection.
 
 ## 9.2 Hardware Status panel
 

@@ -11,13 +11,27 @@ export type SendCommand = (command: CommandName, args?: Record<string, string>) 
 /** Page title (§9.1). */
 export const APP_TITLE = "Brewberry Pi";
 
-/** UI-001: the top bar, styled like the BrewberryPi OS device web interface; host and version once known. */
-export function PageHeader(props: { host: string; version: string | null }) {
+/** UI-002: text of the link to the BrewberryPi OS device web interface. */
+export const DEVICE_LINK_TEXT = "Device settings";
+
+/** UI-001: the top bar, styled like the BrewberryPi OS device web interface; host and version once known.
+ * UI-002: a link to the device web interface, when one is configured. */
+export function PageHeader(props: { host: string; version: string | null; deviceUrl?: string | null }) {
   const info = [props.host, props.version].filter((part) => part).join(" · ");
   return (
     <header class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
       <h1 class="text-lg font-bold text-slate-900 dark:text-white">{APP_TITLE}</h1>
       {info && <span class="text-slate-500 dark:text-slate-400">{info}</span>}
+      {props.deviceUrl && (
+        <a
+          href={props.deviceUrl}
+          target="_blank"
+          rel="noopener"
+          class="ml-auto text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+        >
+          {DEVICE_LINK_TEXT}
+        </a>
+      )}
     </header>
   );
 }

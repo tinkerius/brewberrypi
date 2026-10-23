@@ -87,6 +87,8 @@ class EngineConfig:
 @dataclass(frozen=True)
 class UiConfig:
     request_reminder_interval_seconds: float
+    device_link: str | None
+    """Link to the device web interface with `{host}` still in it (UI-002); `None`: no link."""
 
 
 @dataclass(frozen=True)
@@ -215,7 +217,10 @@ def _build(raw: Any, *, source: Path, base_dir: Path) -> Config:
             near_target_power=control["nearTargetPower"],
         ),
         engine=EngineConfig(tick_milliseconds=section("engine")["tickMilliseconds"]),
-        ui=UiConfig(request_reminder_interval_seconds=section("ui")["requestReminderIntervalSeconds"]),
+        ui=UiConfig(
+            request_reminder_interval_seconds=section("ui")["requestReminderIntervalSeconds"],
+            device_link=section("ui")["deviceLink"] or None,
+        ),
         events=EventsConfig(
             check_milliseconds=events["checkMilliseconds"],
             heartbeat_milliseconds=events["heartbeatMilliseconds"],

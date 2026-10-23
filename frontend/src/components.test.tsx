@@ -3,7 +3,7 @@ import { render } from "preact";
 import { act } from "preact/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { InformationModal, STOP_QUESTION, StopConfirmation } from "./dialogs";
-import { APP_TITLE, ConnectionIndicator, GOAL_STYLES, HardwareStatusPanel, PageHeader, ProcessPanel, type SendCommand } from "./panels";
+import { APP_TITLE, ConnectionIndicator, DEVICE_LINK_TEXT, GOAL_STYLES, HardwareStatusPanel, PageHeader, ProcessPanel, type SendCommand } from "./panels";
 import type { ProcessState, Recipe } from "./types";
 
 let root: HTMLElement;
@@ -75,6 +75,16 @@ describe("page", () => {
     expect(root.querySelector("header")?.textContent).toBe("Brewberry Pi" + "brewberrypi.local · 0.1.0-alpha.4");
     show(<PageHeader host="brewberrypi.local" version={null} />);
     expect(root.querySelector("header")?.textContent).toBe("Brewberry Pi" + "brewberrypi.local");
+  });
+
+  it("AC-093 the top bar links to the device web interface when one is configured", () => {
+    show(<PageHeader host="brewberrypi.local" version="0.1.0-alpha.7" deviceUrl="http://brewberrypi.local:8081/" />);
+    const link = root.querySelector("a");
+    expect(link?.textContent).toBe(DEVICE_LINK_TEXT);
+    expect(link?.getAttribute("href")).toBe("http://brewberrypi.local:8081/");
+    expect(link?.getAttribute("target")).toBe("_blank");
+    show(<PageHeader host="brewberrypi.local" version="0.1.0-alpha.7" deviceUrl={null} />);
+    expect(root.querySelector("a")).toBeNull();
   });
 });
 

@@ -40,6 +40,7 @@ CHART_UPDATE = validator("ChartUpdate")
 SNAPSHOT = validator("Snapshot")
 COMMAND_REPLY = validator("CommandReply")
 ERROR_REPLY = validator("ErrorReply")
+UI_SETTINGS = validator("UiSettings")
 JSON = {"Content-Type": "application/json"}
 
 
@@ -367,6 +368,16 @@ def test_rest_reads(hal: MockHal, clock: ManualClock) -> None:
         ERROR_REPLY(missing.json())
         CHART_DATA(http.get("/api/chart").json())
         assert http.get("/api/chart?since=x").status_code == 422
+
+
+def test_AC_093_ui_settings_name_the_device_link(hal: MockHal, clock: ManualClock) -> None:
+    with TestClient(create_app(CONFIG, CATALOGUE, hal, clock)) as http:
+        settings = http.get("/api/ui").json()
+    UI_SETTINGS(settings)
+    assert settings == {"deviceLink": "http://{host}:8081/"}
+    no_link = dataclasses.replace(CONFIG, ui=dataclasses.replace(CONFIG.ui, device_link=None))
+    with TestClient(create_app(no_link, CATALOGUE, hal, clock)) as http:
+        assert http.get("/api/ui").json() == {"deviceLink": None}
 
 
 def test_IF_042_chart_since_returns_only_newer_points(hal: MockHal, clock: ManualClock) -> None:
