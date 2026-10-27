@@ -25,8 +25,8 @@ uses the host's Docker, so the key would be written to a folder on the host inst
 ```bash
 cd deploy/signing
 cosign generate-key-pair                                    # choose a strong password, entered twice
-gh secret set COSIGN_PRIVATE_KEY -R tinkerius/brewberrypi < cosign.key
-gh secret set COSIGN_PASSWORD -R tinkerius/brewberrypi        # paste the password
+gh secret set COSIGN_PRIVATE_KEY -R tinkerius/brewberrypi-app < cosign.key
+gh secret set COSIGN_PASSWORD -R tinkerius/brewberrypi-app        # paste the password
 # store cosign.key and the password in your password manager, then:
 shred -u cosign.key
 git add cosign.pub

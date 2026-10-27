@@ -13,7 +13,7 @@ import sys
 
 OWNER = "tinkerius"
 PROJECT = "2"  # https://github.com/users/tinkerius/projects/2 ("BrewberryPi")
-REPO = "tinkerius/brewberrypi"
+REPO = "tinkerius/brewberrypi-app"
 
 
 def gh(*args: str) -> str:

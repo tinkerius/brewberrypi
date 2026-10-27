@@ -3,7 +3,7 @@
 .DEFAULT_GOAL := help
 
 CONTAINER ?= docker
-IMAGE     ?= ghcr.io/tinkerius/brewberrypi
+IMAGE     ?= ghcr.io/tinkerius/brewberrypi-app
 VERSION   := $(shell python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
 PLATFORM  ?= linux/$(shell uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/')
 
