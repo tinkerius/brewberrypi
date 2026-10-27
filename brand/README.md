@@ -68,10 +68,14 @@ revision (`tinkerius/brewberrypi-case`), using `mark-mono.svg` as the source.
 
 ## Rebuilding
 
-Needs Python with `fonttools`, `uharfbuzz` and `pillow`, and Node with `playwright` (for the PNG and ICO files).
+Needs Python with `fonttools`, `uharfbuzz`, `brotli` and `pillow`, and Node with `playwright` (for the PNG and ICO files).
 The font is downloaded into `tools/.cache/` on the first run.
 
+The build also copies the files the website uses into `site/` (stacked logos, favicons, touch icon, social
+preview) and writes a Latin subset of Zilla Slab Medium to `site/fonts/`, so the site never goes out of step
+with the brand. Commit those changes together with the brand files.
+
 ```sh
-pip install fonttools uharfbuzz pillow
+pip install fonttools uharfbuzz brotli pillow
 python3 brand/tools/build_brand.py
 ```
