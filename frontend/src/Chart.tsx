@@ -15,11 +15,11 @@ export function toPlotData(series: ChartSeries[] | null): [number[], number[]] {
   return [values.map((point) => point.x / 1000), values.map((point) => point.y)];
 }
 
-const ACCENT = "#6366f1"; // Tailwind indigo-500, readable in light and dark
 const GRID = "rgba(128, 128, 128, 0.25)";
 
-/** `text` is the page's text colour, so the axes stay readable in the light and the dark scheme. */
-function options(width: number, text: string): uPlot.Options {
+/** `text` is the page's text colour and `line` the brand's berry for the scheme in use (the container's
+ * `--chart-line`), so axes and line stay readable in the light and the dark scheme. */
+function options(width: number, text: string, line: string): uPlot.Options {
   const axis = { stroke: text, grid: { stroke: GRID }, ticks: { stroke: GRID } };
   return {
     width,
@@ -33,7 +33,7 @@ function options(width: number, text: string): uPlot.Options {
       { value: (_plot, value) => (value == null ? "--" : formatTimeWithSeconds(value)) },
       {
         label: SERIES_LABEL,
-        stroke: ACCENT,
+        stroke: line,
         width: 2,
         value: (_plot, value) => (value == null ? "--" : `${formatDegrees(value)}°C`),
       },
@@ -51,7 +51,9 @@ export function Chart(props: { series: ChartSeries[] | null }) {
       return;
     }
     // Created once and only fed new data afterwards (UI-023); empty until the first message (UI-022).
-    const chart = new uPlot(options(element.clientWidth || 600, getComputedStyle(element).color), toPlotData(null), element);
+    const style = getComputedStyle(element);
+    const line = style.getPropertyValue("--chart-line").trim() || "#8a2a4a";
+    const chart = new uPlot(options(element.clientWidth || 600, style.color, line), toPlotData(null), element);
     plot.current = chart;
     const resize = new ResizeObserver(() => chart.setSize({ width: element.clientWidth, height: HEIGHT }));
     resize.observe(element);
@@ -75,5 +77,5 @@ export function Chart(props: { series: ChartSeries[] | null }) {
     chart.setData(toPlotData(props.series), !zoomed);
   }, [props.series]);
 
-  return <div class="min-h-[300px] w-full" ref={container} />;
+  return <div class="min-h-[300px] w-full [--chart-line:var(--color-berry)] dark:[--chart-line:var(--color-berry-light)]" ref={container} />;
 }

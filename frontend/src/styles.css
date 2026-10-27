@@ -1,16 +1,42 @@
 /* Tailwind CSS v4; the components carry their styles as utility classes. All local (UI-070). */
 @import "tailwindcss";
 
+/* The BrewberryPi brand (tinkerius/brewberrypi, brand/README.md; frontend/BRAND.md). Each colour has a
+   darker value for light backgrounds and a lighter one (-light) for dark backgrounds. */
+@theme {
+  --color-berry: #8a2a4a;
+  --color-berry-hover: #9e3557;
+  --color-berry-light: #e0789a;
+  --color-berry-light-hover: #e88fad;
+  --color-leaf: #3d7a3c;
+  --color-leaf-light: #8fc77f;
+  --color-brass: #c4821a;
+  --color-brass-light: #e9b04f;
+  --color-ink: #2a1d22;
+  --color-ink-light: #f1e8eb;
+  --color-paper: #fbf8f6;
+  --color-paper-dark: #1c1719;
+  --color-surface-dark: #262023;
+  --font-brand: "Zilla Slab", Rockwell, Georgia, serif;
+}
+
+@font-face {
+  font-family: "Zilla Slab";
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/zilla-slab-medium.woff2") format("woff2");
+}
+
 @layer base {
   html {
     color-scheme: light dark;
-    @apply bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+    @apply bg-paper text-ink antialiased dark:bg-paper-dark dark:text-ink-light;
   }
 
   /* The browser draws a select's option list itself; with the translucent dark-mode select background it
      falls back to white while the options inherit white text. Give the options explicit colours. */
   option {
-    @apply bg-white text-slate-900 dark:bg-slate-800 dark:text-white;
+    @apply bg-white text-ink dark:bg-surface-dark dark:text-ink-light;
   }
 
   /* uPlot's hover legend follows the page colours. */

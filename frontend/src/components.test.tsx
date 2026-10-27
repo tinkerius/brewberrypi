@@ -66,15 +66,17 @@ function processPanel(process: ProcessState | null, connected = true, recipes: R
 
 describe("page", () => {
   it("uses the title from the specification", () => {
-    expect(APP_TITLE).toBe("Brewberry Pi");
+    expect(APP_TITLE).toBe("BrewberryPi");
   });
 
   it("AC-092 the top bar shows the title, the host and the app version", () => {
     show(<PageHeader host="brewberrypi.local" version="0.1.0-alpha.4" />);
-    expect(root.querySelector("h1")?.textContent).toBe("Brewberry Pi");
-    expect(root.querySelector("header")?.textContent).toBe("Brewberry Pi" + "brewberrypi.local · 0.1.0-alpha.4");
+    expect(root.querySelector("h1")?.textContent).toBe("BrewberryPi");
+    expect(root.querySelector("h1 img")?.getAttribute("src")).toBe("logo.svg");
+    expect(root.querySelector("h1 source")?.getAttribute("srcset")).toBe("logo-dark.svg");
+    expect(root.querySelector("header")?.textContent).toBe("BrewberryPi" + "brewberrypi.local · 0.1.0-alpha.4");
     show(<PageHeader host="brewberrypi.local" version={null} />);
-    expect(root.querySelector("header")?.textContent).toBe("Brewberry Pi" + "brewberrypi.local");
+    expect(root.querySelector("header")?.textContent).toBe("BrewberryPi" + "brewberrypi.local");
   });
 
   it("AC-093 the top bar links to the device web interface when one is configured", () => {
@@ -121,9 +123,9 @@ describe("Brewing Process panel", () => {
     processPanel(RUNNING);
     const [done, active, waiting] = root.querySelectorAll<HTMLElement>("li[data-status]");
     expect(done.className).toContain(GOAL_STYLES.Done.item);
-    expect(done.className).toContain("green");
+    expect(done.className).toContain("leaf"); // the brand's green
     expect(active.className).toContain(GOAL_STYLES.Active.item);
-    expect(active.className).toContain("amber");
+    expect(active.className).toContain("brass"); // the brand's amber
     expect(waiting.className).toContain(GOAL_STYLES.Waiting.item);
     const bars = root.querySelectorAll<HTMLElement>('[role="progressbar"]');
     expect(bars).toHaveLength(1);
