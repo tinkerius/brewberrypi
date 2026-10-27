@@ -8,7 +8,7 @@ Responsive (usable on phone, tablet and desktop). Language of UI texts: English
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
-│ Brewberry Pi  <host> · <app version>    Device settings ↗    │
+│ BrewberryPi   <host> · <app version>    Device settings ↗    │
 ├──────────────────────────────────────────────────────────────┤
 │ [Hardware Status]                                             │
 │  Temperature: 62.5°C   Pump: on   Heating: 50%   Process: …   │
@@ -30,20 +30,25 @@ Responsive (usable on phone, tablet and desktop). Language of UI texts: English
           (modal "Information" with [Confirm] for replies)
 ```
 
-Page title: `Brewberry Pi`, also shown as the page heading. A visual refresh is
+Page title: `BrewberryPi`, also shown as the page heading (product-owner decision 2026-10-27;
+the legacy title was `Brewberry Pi`). A visual refresh is
 allowed as long as all elements and behaviours below are kept.
 
 Phase 2 uses such a refresh (product-owner decision 2026-10-11; styling technology in
 [ADR-0001, Amendments](../adr/0001-technology-stack.md#amendments)): a light/dark
 scheme following the operating system, cards instead of panels, and the status
-colours of `UI-031`. (Legacy look, for reference: Bootstrap 3 panels ("panel-primary")
+colours of `UI-031`. It uses the BrewberryPi brand (product-owner decision 2026-10-27): the
+colours, logo, favicons and the Zilla Slab typeface of
+[tinkerius/brewberrypi `brand/README.md`](https://github.com/tinkerius/brewberrypi/blob/main/brand/README.md),
+served locally (`UI-070`); `UI-031`'s green and amber are the brand's leaf and brass. (Legacy look, for reference: Bootstrap 3 panels ("panel-primary")
 with blue headers and a dark navbar titled **Brewberry Pi**.)
 
-- `UI-001` `[NEW]` The top bar shows the page heading `Brewberry Pi`, the host name the page was
+- `UI-001` `[NEW]` The top bar shows the page heading `BrewberryPi` as the BrewberryPi logo, the host name the page was
   opened with and the application version (`version` of `GET /healthz`,
   [runtime contract §5](../deployment/runtime-contract.md)), as `<host> · <version>`; the version
-  is read again after every reconnection. The top bar looks like the one of the BrewberryPi OS
-  device web interface (product-owner decision 2026-10-17).
+  is read again after every reconnection. The top bar follows the BrewberryPi brand
+  (product-owner decision 2026-10-27; it replaces the decision of 2026-10-17 that it looks like
+  the top bar of the BrewberryPi OS device web interface).
 - `UI-002` `[NEW]` The top bar ends with a link `Device settings` to the BrewberryPi OS device web
   interface, opened in a new tab (`Q-30`). Its address is `ui.deviceLink` (default
   `http://{host}:8081/`, `IF-080`) with `{host}` replaced by the host name the page was opened
