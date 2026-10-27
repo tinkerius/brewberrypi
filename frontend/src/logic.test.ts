@@ -4,6 +4,7 @@ import { isAccepted } from "./commands";
 import { EventStream, MISSED_HEARTBEATS, reconnectDelay, type SourceLike } from "./events";
 import { descriptionLines, formatDegrees, formatHeating, formatPump, formatTemperature, formatTime } from "./format";
 import { toPlotData } from "./Chart";
+import { fixLanguage, validLanguage } from "./locale";
 import { addReply, applyChartUpdate, dismissReply, initialState, receive, setConnected } from "./state";
 import type { ChartSeries, EngineState, EventName, Snapshot } from "./types";
 
@@ -363,5 +364,30 @@ describe("UI-002 device link", () => {
     expect(await fetchDeviceLink(() => Promise.reject(new TypeError("offline")))).toBeNull();
     expect(deviceUrl("http://{host}:8081/", "brewberrypi.local")).toBe("http://brewberrypi.local:8081/");
     expect(deviceUrl("http://{host}:8081/", "[fe80::1]")).toBe("http://[fe80::1]:8081/");
+  });
+});
+
+describe("UI-020 chart with a browser language Intl rejects", () => {
+  it("keeps a valid language and cleans up a POSIX one", () => {
+    expect(validLanguage("de-DE")).toBe("de-DE");
+    expect(validLanguage("en-US@posix")).toBe("en-US");
+    expect(validLanguage("de_DE.UTF-8")).toBe("de-DE");
+    expect(validLanguage("C")).toBe("en-US");
+    expect(validLanguage("")).toBe("en-US");
+    expect(validLanguage(undefined)).toBe("en-US");
+  });
+
+  it("makes navigator.language usable for Intl.NumberFormat, as uPlot uses it", () => {
+    const nav = { language: "en-US@posix" };
+    expect(() => new Intl.NumberFormat(nav.language)).toThrow(RangeError);
+    fixLanguage(nav);
+    expect(nav.language).toBe("en-US");
+    expect(new Intl.NumberFormat(nav.language).format(1234.5)).toBe("1,234.5");
+  });
+
+  it("leaves a valid navigator.language as it is", () => {
+    const nav = { language: "fr-CH" };
+    fixLanguage(nav);
+    expect(nav.language).toBe("fr-CH");
   });
 });
