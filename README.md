@@ -14,8 +14,8 @@ BrewberryPi is a Raspberry Pi controller for a home-brewing mash kettle. The pro
 
 | Path | Content |
 |---|---|
-| `site/` | The published site: plain HTML, CSS and images, no build step |
-| `brand/` | Logo, favicons, social preview and the brand guide (`brand/README.md`) |
+| `site/` | The published site: plain HTML, CSS and images, no build step. Logos, icons and the font are copied in by the brand build |
+| `brand/` | Logo, favicons, social preview and the brand guide (`brand/README.md`); `brand/tools/build_brand.py` regenerates them |
 | `.github/workflows/pages.yml` | Deploys `site/` to GitHub Pages on every push to `main` |
 
 ## Preview locally

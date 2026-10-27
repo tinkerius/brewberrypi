@@ -5,17 +5,21 @@ The mark is drawn here as SVG geometry on a 64-unit grid; the wordmark is
 Zilla Slab Bold, converted to outlines so no font is needed to show it.
 PNGs and the ICO are rasterised with headless Chromium (Playwright).
 
-Needs: Python packages fonttools, uharfbuzz and pillow; Node with playwright.
+The files the website uses are copied into site/ as well.
+
+Needs: Python packages fonttools, uharfbuzz, brotli and pillow; Node with playwright.
 Run from the repository root:  python3 brand/tools/build_brand.py
 """
 
 import base64
 import json
+import shutil
 import subprocess
 import urllib.request
 from pathlib import Path
 
 import uharfbuzz as hb
+from fontTools import subset
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
@@ -34,6 +38,10 @@ MONO = dict(b="#2a1d22", l="#2a1d22", m="#2a1d22", t="#2a1d22", p="#2a1d22")
 REVERSED = dict(b="#fbf8f6", l="#9fd18f", m="#f0bd5c", t="#fbf8f6", p="#f3c9d6")
 BERRY = "#8a2a4a"
 PAPER = "#fbf8f6"
+
+# Files the website in site/ uses; copied there on every build so they stay in sync.
+SITE_FILES = ("logo-stacked.svg", "logo-stacked-dark.svg", "favicon.svg", "favicon.ico",
+              "apple-touch-icon.png", "social-preview.png")
 
 TAGLINE = ("Raspberry Pi controller for a", "home-brewing mash kettle")
 
@@ -243,6 +251,28 @@ def main():
     icons = [Image.open(tmp / f"fav{s}.png") for s in (16, 32, 48)]
     icons[2].save(BRAND / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)], append_images=icons[:2])
     print(f"wrote {len(out)} SVG files and the PNG/ICO set to {BRAND}")
+
+    write_site()
+
+
+def write_site():
+    """Copy the files the website uses into site/, plus a self-hosted Latin subset of Zilla Slab Medium."""
+    site = BRAND.parent / "site"
+    for name in SITE_FILES:
+        shutil.copyfile(BRAND / name, site / name)
+    fonts = site / "fonts"
+    fonts.mkdir(exist_ok=True)
+    options = subset.Options()
+    options.flavor = "woff2"
+    options.layout_features = ["kern", "liga"]
+    font = subset.load_font(str(fetch_font("ZillaSlab-Medium.ttf")), options)
+    subsetter = subset.Subsetter(options)
+    subsetter.populate(unicodes=[*range(0x20, 0x7F), *range(0xA0, 0x100), 0x2013, 0x2014, 0x2018, 0x2019,
+                                 0x201C, 0x201D, 0x2026])
+    subsetter.subset(font)
+    subset.save_font(font, str(fonts / "zilla-slab-medium.woff2"), options)
+    shutil.copyfile(fetch_font("OFL.txt"), fonts / "OFL.txt")
+    print(f"copied {len(SITE_FILES)} files and the font to {site}")
 
 
 if __name__ == "__main__":
