@@ -9,7 +9,7 @@ behaviour is fully specified in `docs/specification/`.
 
 - Phase 1 (done): technology-neutral functional specification.
 - Phase 2 (current): technology stack decided (`docs/adr/0001-technology-stack.md`, *Accepted* 2026-10-09). Implement milestone by milestone (`docs/implementation-plan.md`), starting with `/implement-milestone M0`.
-- This repository is the **application** only. The application ships as a container image. The operating-system image, Podman/Quadlet unit, update service and safe mode live in the separate repository `tinkerius/brewberrypi-os`. The interface between the two is `docs/deployment/runtime-contract.md`.
+- This repository (`tinkerius/brewberrypi-app`, renamed from `brewberrypi` on 2026-10-27) is the **application** only. The application ships as a container image. The operating-system image, Podman/Quadlet unit, update service and safe mode live in the separate repository `tinkerius/brewberrypi-os`. The interface between the two is `docs/deployment/runtime-contract.md`.
 
 ## Layout
 

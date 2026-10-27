@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  IMAGE: ghcr.io/tinkerius/brewberrypi
+  IMAGE: ghcr.io/tinkerius/brewberrypi-app
 
 jobs:
   check:

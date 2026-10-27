@@ -13,7 +13,7 @@ open specification questions in [13-open-questions.md](../specification/13-open-
 
 | Item | Value |
 |---|---|
-| Name | `ghcr.io/tinkerius/brewberrypi` (private registry) |
+| Name | `ghcr.io/tinkerius/brewberrypi-app` (private registry) |
 | Release tags | Semantic versions `MAJOR.MINOR.PATCH`, or pre-releases `MAJOR.MINOR.PATCH-alpha.N`, `-beta.N`, `-rc.N`, ordered as in SemVer 2.0 (a pre-release sorts before its release: `0.1.0-alpha.2` < `0.1.0`). The tag equals the label `org.opencontainers.image.version` and the `version` of `/healthz`. Devices never use `latest`. |
 | Platforms | `linux/arm64` (device), `linux/amd64` (simulation on developer machines) |
 | Signature | cosign key-pair signature in the legacy tag format `sha256-<digest>.sig` (cosign v2.x); public key pinned in the host's `policy.json` |
@@ -75,4 +75,4 @@ If `NOTIFY_SOCKET` is set:
 
 ## 7. Changes
 
-- **Version 2** (2026-10-23, `Q-29`): `/config` is the app's own folder and read-write, made writable through a group with `GroupAdd=`; the image creates a missing `config.json` and a missing `recipes/` (with the shipped recipes) and reads `recipes/` again when it changes. Version 1 mounted `/config` read-only, and the image used its built-in recipes while `recipes/` was missing. A host implements exactly one version: BrewberryPi OS refuses images with another `org.brewberrypi.runtime-contract` label.
+- **Version 2** (2026-10-23, `Q-29`): `/config` is the app's own folder and read-write, made writable through a group with `GroupAdd=`; the image creates a missing `config.json` and a missing `recipes/` (with the shipped recipes) and reads `recipes/` again when it changes. Version 1 mounted `/config` read-only, and the image used its built-in recipes while `recipes/` was missing. A host implements exactly one version: BrewberryPi OS refuses images with another `org.brewberrypi.runtime-contract` label. The image is renamed from `ghcr.io/tinkerius/brewberrypi` to `ghcr.io/tinkerius/brewberrypi-app` (2026-10-27, with the repository).

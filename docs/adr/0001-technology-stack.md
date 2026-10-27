@@ -77,7 +77,7 @@ these facts:
 **Delivery:** the application is published as an **OCI container image**.
 - Built from a Dockerfile (`Containerfile`) on `debian:trixie-slim` + `python3-libgpiod`.
 - Built for `linux/arm64`, plus `linux/amd64` for simulation on developer machines.
-- Signed with a pinned **cosign v2.x** key and pushed to the **private** GitHub Container Registry `ghcr.io/tinkerius/brewberrypi`.
+- Signed with a pinned **cosign v2.x** key and pushed to the **private** GitHub Container Registry `ghcr.io/tinkerius/brewberrypi-app` (until 2026-10-27, with runtime contract 1: `ghcr.io/tinkerius/brewberrypi`).
 
 **Runtime:** on the Pi the image runs under **Podman + Quadlet** on a read-only **BrewberryPi OS** image. The OS image, Quadlet unit, update service and safe mode live in the separate repository **`tinkerius/brewberrypi-os`**, which has its own ADRs. What the image expects from the host is fixed in the [runtime contract](../deployment/runtime-contract.md).
 

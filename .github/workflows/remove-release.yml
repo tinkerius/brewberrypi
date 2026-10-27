@@ -1,6 +1,6 @@
 name: Remove release
 
-# Removes one release: its registry image ghcr.io/tinkerius/brewberrypi:<version>
+# Removes one release: its registry image ghcr.io/tinkerius/brewberrypi-app:<version>
 # (the multi-arch index, its platform manifests unless another tagged release
 # still uses them, and the cosign signature), its GitHub release and its git
 # tag v<version>. For retiring versions that devices must no longer install
@@ -27,7 +27,7 @@ permissions:
 env:
   OWNER: tinkerius
   PACKAGE: brewberrypi
-  IMAGE: ghcr.io/tinkerius/brewberrypi
+  IMAGE: ghcr.io/tinkerius/brewberrypi-app
 
 jobs:
   remove:

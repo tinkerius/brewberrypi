@@ -1,4 +1,4 @@
-# BrewberryPi application image (ADR-0001, runtime contract version 1).
+# BrewberryPi application image (ADR-0001, runtime contract version 2).
 # Build: make image   (multi-arch release builds run in CI: .github/workflows/ci.yml)
 
 # --- 1. Front end (architecture-independent output, built on the build host) -----------------
@@ -23,7 +23,7 @@ RUN uv build --wheel --out-dir /dist \
 FROM debian:trixie-slim
 ARG VERSION=0.0.0
 LABEL org.opencontainers.image.title="BrewberryPi" \
-      org.opencontainers.image.source="https://github.com/tinkerius/brewberrypi" \
+      org.opencontainers.image.source="https://github.com/tinkerius/brewberrypi-app" \
       org.opencontainers.image.version="${VERSION}" \
       org.brewberrypi.runtime-contract="2"
 

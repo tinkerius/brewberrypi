@@ -22,5 +22,5 @@ disable-model-invocation: true
    Then set it to *Done* and close its issue:
    `python3 .claude/skills/implement-milestone/board.py $ARGUMENTS Done --close`.
    If the work stops before that, leave it *In Progress* and add an issue comment
-   (`gh issue comment <n> -R tinkerius/brewberrypi`) saying what is done and what is open.
+   (`gh issue comment <n> -R tinkerius/brewberrypi-app`) saying what is done and what is open.
 7. Summarise what was built, which requirement and AC IDs are covered, and any open points.

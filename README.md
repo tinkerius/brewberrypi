@@ -68,7 +68,7 @@ make and Docker (or Podman: `make image CONTAINER=podman`).
 | `make lint` | ruff (lint + format check), mypy (strict), TypeScript type check |
 | `make test` | pytest and Vitest |
 | `make build` | Build the front end into the package and the Python wheel (`dist/`) |
-| `make image` | Build the container image `ghcr.io/tinkerius/brewberrypi:<version>` for the local platform |
+| `make image` | Build the container image `ghcr.io/tinkerius/brewberrypi-app:<version>` for the local platform |
 | `make run` | Run in simulation: `uv run brewberrypi --dummymode --config .run/config.json` (configuration and recipes are created in `.run/`) |
 | `make dev` | `make run` plus the Vite dev server with live reload on http://localhost:5173; Ctrl+C stops both |
 | `make format` | Auto-format and auto-fix lint findings |
