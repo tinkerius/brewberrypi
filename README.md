@@ -14,9 +14,39 @@ BrewberryPi is a Raspberry Pi controller for a home-brewing mash kettle. The pro
 
 | Path | Content |
 |---|---|
-| `site/` | The published site: plain HTML, CSS and images, no build step. Logos, icons and the font are copied in by the brand build |
+| `site/` | The published site: plain HTML, CSS and JavaScript, no build step (see below) |
 | `brand/` | Logo, favicons, social preview and the brand guide (`brand/README.md`); `brand/tools/build_brand.py` regenerates them |
+| `tools/` | Scripts that refresh the site's assets from the other repositories |
 | `.github/workflows/pages.yml` | Deploys `site/` to GitHub Pages on every push to `main` |
+
+### The site
+
+One page, dark first with a light variant (follows the system; the toggle in the nav overrides it).
+
+| Path | Content | Comes from |
+|---|---|---|
+| `site/index.html` | The page: hero, features, app, recipe, components, get started | written by hand |
+| `site/styles.css` | Colour tokens (from `brand/README.md`), layout, effects | written by hand |
+| `site/main.js` | Theme toggle, scroll effects, the animated hero card, the feature cards (`FEATURES`: add an entry to add a feature), the recipe timeline, the terminal | written by hand |
+| `site/case3d.js` | Interactive 3D view of the case (three.js), loaded when the section scrolls into view | written by hand |
+| `site/img/app-*.webp` | Screenshots of the app | `tools/capture_screens.mjs` |
+| `site/models/case-*.stl`, `site/img/case-assembly.png` | Case parts and the fallback render | `tools/sync_assets.sh` from `brewberrypi-case/04-stl` |
+| `site/data/recipe.json` | The example recipe (hero curve and recipe timeline) | `tools/sync_assets.sh` from `brewberrypi-app` |
+| `site/vendor/three/` | three.js 0.170.0 (`three.module.min.js`, `STLLoader.js`, `OrbitControls.js`, MIT licence) | npm package `three@0.170.0` |
+| logos, favicons, `site/fonts/` | Brand files and Zilla Slab subsets | `brand/tools/build_brand.py` |
+
+### Refreshing the assets
+
+The tools expect the other repositories next to this one (`../brewberrypi-app`, `../brewberrypi-case`).
+
+```sh
+tools/sync_assets.sh               # case STLs, case render, example recipe
+node tools/capture_screens.mjs     # app screenshots
+```
+
+`capture_screens.mjs` starts the app in simulation (`--dummymode`, 40× faster), runs the example recipe, answers
+its questions and takes the screenshots in dark and light, desktop and phone. It needs `make setup` and `make build`
+done in `brewberrypi-app`, Node with Playwright and Python with Pillow. It takes about two minutes.
 
 ## Preview locally
 
