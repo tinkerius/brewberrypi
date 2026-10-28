@@ -64,57 +64,24 @@
           </div>
         </div>
 
-        <figure class="live reveal" aria-label="Animated example: the kettle temperature during a step mash">
-          <div class="live__bar">
-            <span class="led led--on"></span>
-            <span>brewberrypi.local</span>
-            <span class="live__step">STEP <b id="live-step">01/11</b></span>
-            <span class="live__state" id="live-state">Running</span>
-          </div>
-          <div class="live__body">
-            <div class="live__readouts">
-              <div class="readout readout--temp is-on">
-                <span class="readout__label"><span class="led"></span>TEMP</span>
-                <span><b id="live-temp">20.0</b><small>°C</small></span>
-              </div>
-              <div class="readout">
-                <span class="readout__label">SET</span>
-                <span><b id="live-set">––.–</b><small>°C</small></span>
-              </div>
-              <div class="readout">
-                <span class="readout__label">TIME</span>
-                <span><b id="live-time">0:00</b><small>h</small></span>
-              </div>
-              <div class="readout readout--heat" id="live-heat">
-                <span class="readout__label"><span class="led"></span>HEAT</span>
-                <span><b>0</b><small>%</small></span>
-              </div>
-              <div class="readout readout--pump" id="live-pump">
-                <span class="readout__label"><span class="led"></span>PUMP</span>
-                <span><b>off</b></span>
-              </div>
-            </div>
-            <div class="live__goal">
-              <div><span class="live__goal-name" id="live-goal">Add Water</span><span class="live__goal-desc" id="live-desc">Pour in the brewing water.</span></div>
-              <div class="live__progress"><span id="live-progress"></span></div>
-            </div>
-            <div class="live__plot">
-              <svg class="live__chart" id="live-chart" viewBox="0 0 600 220" preserveAspectRatio="none" aria-hidden="true">
-                <defs><clipPath id="curve-clip"><rect id="curve-clip-rect" x="0" y="0" width="0" height="220"/></clipPath></defs>
-                <g class="live__grid"></g>
-                <path class="live__ghost" id="curve-ghost" fill="none"/>
-                <g clip-path="url(#curve-clip)">
-                  <path class="live__area" id="curve-area"/>
-                  <path class="live__line" id="curve-line" fill="none"/>
-                </g>
-              </svg>
-              <div class="live__axis live__axis--y" id="axis-y" aria-hidden="true"></div>
-              <div class="live__axis live__axis--x" id="axis-x" aria-hidden="true"></div>
-            </div>
-          </div>
-          <span class="live__dot" id="live-dot" aria-hidden="true"></span>
-          <figcaption class="live__caption">Example recipe BENIWEISS (step mash) as a time-lapse</figcaption>
-        </figure>
+        <div class="duo reveal">
+          <a class="duo__item" href="software.html">
+            <span class="duo__label"><span class="led led--on"></span>The software<span class="duo__go" aria-hidden="true">→</span></span>
+            <span class="duo__stage">
+              <span class="stack">
+                <span class="stack__browser"><span class="stack__bar"><i></i><i></i><i></i></span><img src="img/app-desktop-light.webp" width="1920" height="1200" decoding="async" alt=""></span>
+                <span class="stack__phone"><img src="img/app-phone-light-iodine.webp" width="780" height="1688" decoding="async" alt=""></span>
+              </span>
+            </span>
+            <span class="duo__note">App and OS for the Raspberry Pi, used from any browser</span>
+          </a>
+          <span class="duo__plus" aria-hidden="true">+</span>
+          <a class="duo__item" href="case.html">
+            <span class="duo__label"><span class="led led--on"></span>The case<span class="duo__go" aria-hidden="true">→</span></span>
+            <span class="duo__stage"><img class="duo__case" src="img/case-still.webp" width="900" height="675" decoding="async" alt=""></span>
+            <span class="duo__note">3D-printable enclosure for the Pi, relays and mains parts</span>
+          </a>
+        </div>
       </div>
     </section>
 
@@ -130,7 +97,10 @@
         <div class="parts">
           <article class="part card reveal">
             <a class="part__visual band-dark" href="software.html" tabindex="-1" aria-hidden="true">
-              <span class="part__phone"><img src="img/app-phone-light.webp" width="780" height="1688" loading="lazy" decoding="async" alt=""></span>
+              <span class="stack">
+                <span class="stack__browser"><span class="stack__bar"><i></i><i></i><i></i></span><img src="img/app-desktop-light.webp" width="1920" height="1200" loading="lazy" decoding="async" alt=""></span>
+                <span class="stack__phone"><img src="img/app-phone-light.webp" width="780" height="1688" loading="lazy" decoding="async" alt=""></span>
+              </span>
             </a>
             <div class="part__body">
               <p class="part__tag">Part 1</p>

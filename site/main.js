@@ -382,7 +382,7 @@ renderFeatures();
 startReveal();
 startCase();
 
-fetch("data/recipe.json")
+if ($("#live-chart") || $("#recipe-steps")) fetch("data/recipe.json")
   .then((response) => response.json())
   .then((recipe) => {
     const model = simulate(recipe.goals);
