@@ -81,6 +81,121 @@
       </div>
     </section>
 
+    <!-- How it works -->
+    <section class="section" id="how">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="eyebrow">How it works</p>
+          <h2>From the kettle<br><span class="hl">to your phone.</span></h2>
+          <p class="section__lead">The case stands next to the kettle. The Pi reads the temperature in the mash, the relays switch the
+            heater and the pump, and you follow the brew on your phone.</p>
+        </header>
+        <figure class="system reveal">
+          <div class="system__stage band-dark">
+            <svg class="system__svg" viewBox="0 0 1000 440" role="img"
+                 aria-label="Diagram: a phone connects over Wi-Fi to the Raspberry Pi in the BrewberryPi case. In the case, the Pi drives a relay board, which switches the kettle's heating element and the pump. A temperature probe in the mash is wired back to the Pi.">
+              <!-- 6 Phone and Wi-Fi -->
+              <g class="sys-phone">
+                <rect x="50" y="150" width="90" height="170" rx="14"/>
+                <rect class="sys-phone__screen" x="58" y="164" width="74" height="142" rx="7"/>
+                <path class="sys-phone__curve" d="M66 280l12-26 8 5 12-24 22 0"/>
+                <rect class="sys-phone__bar" x="66" y="176" width="40" height="6" rx="2"/>
+                <rect class="sys-phone__bar" x="66" y="190" width="58" height="22" rx="3"/>
+              </g>
+              <path class="sys-wifi" d="M150 220c30-34 70-34 98-4"/>
+              <path class="sys-wifi__icon" d="M184 178a22 22 0 0 1 30 0M190 185a13 13 0 0 1 18 0"/>
+              <circle class="sys-wifi__dot" cx="199" cy="192" r="2.6"/>
+
+              <!-- The case: low voltage on top, mains below the divider -->
+              <rect class="sys-case" x="250" y="80" width="300" height="290" rx="10"/>
+              <path class="sys-divider" d="M250 215h300"/>
+              <text class="sys-label" x="266" y="104">LOW VOLTAGE</text>
+              <text class="sys-label" x="266" y="240">MAINS</text>
+
+              <!-- 1 Raspberry Pi -->
+              <g class="pi" transform="translate(300 120) scale(1.3)">
+                <rect class="pi__pcb" width="85" height="56" rx="3"/>
+                <rect class="pi__black" x="7" y="1" width="51" height="5.1" rx=".3"/>
+                <path class="sys-pi__pins" d="M8.3 3.5h49"/>
+                <rect class="pi__silver" x="22" y="24" width="14" height="14" rx=".8"/>
+                <rect class="pi__chip" x="58" y="31" width="8" height="8" rx=".4"/>
+                <rect class="pi__silver" x="69" y="2" width="18" height="14" rx=".6"/>
+                <rect class="pi__silver" x="69" y="20" width="18" height="14" rx=".6"/>
+                <rect class="pi__silver" x="66" y="38" width="21" height="16" rx=".6"/>
+                <rect class="pi__silver" x="24.5" y="49" width="15" height="7.6" rx=".6"/>
+              </g>
+              <!-- Probe jack in the back wall -->
+              <circle class="sys-jack" cx="550" cy="150" r="7"/>
+              <path class="sys-lv" d="M413 150h130"/>
+
+              <!-- 2 Relay board, wired to the Pi through the divider -->
+              <path class="sys-ribbon" d="M335 196v58"/>
+              <g class="sys-relay">
+                <rect x="300" y="254" width="160" height="82" rx="4"/>
+                <rect class="sys-relay__cube" x="316" y="268" width="54" height="44" rx="3"/>
+                <rect class="sys-relay__cube" x="384" y="268" width="54" height="44" rx="3"/>
+                <rect class="sys-relay__term" x="316" y="320" width="122" height="9" rx="2"/>
+              </g>
+              <!-- Mains in -->
+              <path class="sys-mains" d="M250 345h-34"/>
+              <rect class="sys-plug" x="196" y="335" width="20" height="20" rx="3"/>
+
+              <!-- Mains out: pump (top) and heater (bottom) sockets in the back wall -->
+              <path class="sys-mains" d="M460 290h90M460 318h90"/>
+              <rect class="sys-socket" x="543" y="282" width="14" height="16" rx="2"/>
+              <rect class="sys-socket" x="543" y="310" width="14" height="16" rx="2"/>
+              <path class="sys-mains" d="M557 290H625V304"/>
+              <path class="sys-mains" d="M557 318H580V404H770V384"/>
+
+              <!-- 3 Kettle with the mash and the heating element -->
+              <g class="sys-kettle">
+                <path class="sys-kettle__mash" d="M722 232h196v128a14 14 0 0 1-14 14H736a14 14 0 0 1-14-14Z"/>
+                <path class="sys-kettle__body" d="M716 170h208v190a20 20 0 0 1-20 20H736a20 20 0 0 1-20-20Z"/>
+                <path class="sys-kettle__rim" d="M706 170h228"/>
+                <path class="sys-kettle__handle" d="M716 200h-14v40h14M924 200h14v40h-14"/>
+                <path class="sys-heater" d="M748 352l12-14 12 14 12-14 12 14 12-14 12 14 12-14 12 14 12-14 12 14 12-14 12 14"/>
+              </g>
+
+              <!-- 4 Pump, circulating the mash -->
+              <path class="sys-tube" d="M716 330h-36"/>
+              <path class="sys-tube" d="M645 304V206q0-14 14-14h107v66"/>
+              <path class="sys-flow" d="M704 330h-14M645 260v-16M720 192h16M766 222v14"/>
+              <g class="sys-pump">
+                <rect x="610" y="304" width="70" height="60" rx="10"/>
+                <circle cx="645" cy="334" r="16"/>
+                <path d="M645 322v24M633 334h24"/>
+              </g>
+
+              <!-- 5 Temperature probe in the mash, wired to the Pi -->
+              <path class="sys-lv" d="M840 122c-70-80-210-70-283 22"/>
+              <path class="sys-probe" d="M840 122v170"/>
+              <circle class="sys-probe__tip" cx="840" cy="292" r="5"/>
+
+              <!-- Numbers, explained in the legend below -->
+              <g class="sys-num">
+                <circle cx="95" cy="126" r="14"/><text x="95" y="131">6</text>
+                <circle cx="300" cy="120" r="14"/><text x="300" y="125">1</text>
+                <circle cx="300" cy="254" r="14"/><text x="300" y="259">2</text>
+                <circle cx="940" cy="300" r="14"/><text x="940" y="305">3</text>
+                <circle cx="610" cy="304" r="14"/><text x="610" y="309">4</text>
+                <circle cx="862" cy="122" r="14"/><text x="862" y="127">5</text>
+              </g>
+            </svg>
+          </div>
+          <figcaption>
+            <ol class="system__legend">
+              <li><b>Raspberry Pi</b><span>Runs the BrewberryPi software. Sits in the case's low-voltage part.</span></li>
+              <li><b>Relay board</b><span>Switches the heater and the pump on and off, in the case's mains part.</span></li>
+              <li><b>Kettle with heating element</b><span>Your electric mash kettle, plugged into the case's heater socket.</span></li>
+              <li><b>Pump or stirrer</b><span>Keeps the mash moving, plugged into the pump socket.</span></li>
+              <li><b>Temperature probe</b><span>A waterproof DS18B20 in the mash, wired to the Pi through the jack.</span></li>
+              <li><b>Your phone</b><span>Opens the app in the browser over Wi-Fi. Nothing to install.</span></li>
+            </ol>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
     <!-- Get started -->
     <section class="section" id="start">
       <div class="wrap">

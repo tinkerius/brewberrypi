@@ -398,6 +398,54 @@ main { counter-reset: section; }
 .case__specs dt { font: 600 .72rem/1.7 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--pink); }
 .case__specs dd { margin: 0; font-size: .95rem; }
 
+/* ---------- How it works: the system diagram ---------- */
+
+.system { margin: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+.system__stage { padding: clamp(.8rem, 3vw, 2rem); background: radial-gradient(ellipse at 50% 60%, rgba(224, 120, 154, .14), transparent 65%), var(--bg); }
+.system__svg { width: 100%; height: auto; overflow: visible; }
+.system__legend { display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; counter-reset: sys; background: var(--line); border-top: 1px solid var(--line); }
+@media (min-width: 640px) { .system__legend { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .system__legend { grid-template-columns: repeat(3, 1fr); } }
+.system__legend li { display: grid; grid-template-columns: auto 1fr; gap: .15rem .75rem; padding: 1rem 1.2rem; background: var(--surface); counter-increment: sys; }
+.system__legend li::before { content: counter(sys); grid-row: span 2; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--pink); color: var(--on-pink); font: 700 .8rem var(--font-mono); }
+.system__legend b { font-weight: 700; }
+.system__legend span { font-size: .9rem; color: var(--muted); }
+.sys-phone > rect:first-child { fill: #2a2226; stroke: var(--line-2); stroke-width: 1.5; }
+.sys-phone__screen { fill: #f6f5f3; }
+.sys-phone__bar { fill: #e3e0dc; }
+.sys-phone__curve { fill: none; stroke: var(--pink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.sys-wifi { fill: none; stroke: var(--pink); stroke-width: 2.5; stroke-dasharray: 6 7; animation: flow 1.4s linear infinite; }
+.sys-wifi__icon { fill: none; stroke: var(--pink); stroke-width: 2.5; stroke-linecap: round; }
+.sys-wifi__dot { fill: var(--pink); }
+.sys-case { fill: #231c1f; stroke: var(--line-2); stroke-width: 2; }
+.sys-divider { stroke: var(--brass); stroke-width: 2; stroke-dasharray: 8 6; }
+.sys-label { fill: var(--muted); font: 600 12px var(--font-mono); letter-spacing: .12em; }
+.sys-pi__pins { stroke: #d4a843; stroke-width: 1.6; stroke-dasharray: .1 2.54; stroke-linecap: round; }
+.sys-jack { fill: #1b1a1c; stroke: #c7cbcf; stroke-width: 2.5; }
+.sys-lv { fill: none; stroke: var(--pink); stroke-width: 2.5; stroke-linecap: round; }
+.sys-ribbon { stroke: #8e949a; stroke-width: 6; stroke-dasharray: 2 2; }
+.sys-relay > rect:first-child { fill: #1d4f8f; stroke: #163b6b; stroke-width: 1.5; }
+.sys-relay__cube { fill: #2f6fc4; stroke: #24589e; stroke-width: 1; }
+.sys-relay__term { fill: #2b8a5a; }
+.sys-mains { fill: none; stroke: var(--brass); stroke-width: 3.5; stroke-linecap: round; }
+.sys-plug, .sys-socket { fill: #1b1a1c; stroke: var(--brass); stroke-width: 2; }
+.sys-kettle__body { fill: rgba(241, 232, 235, .04); stroke: #c7cbcf; stroke-width: 3; }
+.sys-kettle__mash { fill: rgba(233, 176, 79, .28); }
+.sys-kettle__rim { stroke: #c7cbcf; stroke-width: 5; stroke-linecap: round; }
+.sys-kettle__handle { fill: none; stroke: #c7cbcf; stroke-width: 3; stroke-linejoin: round; }
+.sys-heater { fill: none; stroke: #ff9d4d; stroke-width: 3.5; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(255, 140, 60, .8)); }
+.sys-tube { fill: none; stroke: #8e949a; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.sys-flow { fill: none; stroke: #f1e8eb; stroke-width: 2; stroke-dasharray: 4 6; animation: flow 1s linear infinite; }
+.sys-pump rect { fill: #2a2226; stroke: #c7cbcf; stroke-width: 2; }
+.sys-pump circle { fill: none; stroke: #c7cbcf; stroke-width: 2; }
+.sys-pump path { stroke: #c7cbcf; stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: spin 3s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.sys-probe { stroke: #c7cbcf; stroke-width: 5; stroke-linecap: round; }
+.sys-probe__tip { fill: var(--pink); }
+.sys-num circle { fill: var(--pink); stroke: var(--bg); stroke-width: 3; }
+.sys-num text { fill: var(--on-pink); font: 700 15px var(--font-mono); text-anchor: middle; }
+@media (max-width: 640px) { .sys-label { display: none; } .sys-num circle { r: 22px; } .sys-num text { font-size: 24px; transform: translateY(3px); transform-box: fill-box; } }
+
 /* ---------- Get started ---------- */
 
 .steps { position: relative; display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
