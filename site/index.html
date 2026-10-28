@@ -61,6 +61,45 @@
         </div>
 
         <div class="duo reveal">
+          <a class="duo__item" href="#how">
+            <span class="duo__label"><span class="led led--on"></span>The components<span class="duo__go" aria-hidden="true">→</span></span>
+            <span class="duo__stage">
+              <svg class="duo__mini" viewBox="0 0 340 180" aria-hidden="true">
+                <!-- Pi, portrait: GPIO on the right, ports at the bottom -->
+                <rect class="pi__pcb" x="20" y="40" width="76" height="116" rx="4"/>
+                <rect class="pi__black" x="85" y="48" width="8" height="72" rx="1"/>
+                <path class="mini-pins" d="M89 51v66"/>
+                <rect class="pi__silver" x="44" y="74" width="20" height="20" rx="1.5"/>
+                <rect class="pi__chip" x="30" y="56" width="10" height="7" rx="1"/>
+                <rect class="pi__silver" x="24" y="144" width="18" height="18" rx="1"/>
+                <rect class="pi__silver" x="47" y="144" width="18" height="18" rx="1"/>
+                <rect class="pi__silver" x="70" y="144" width="20" height="18" rx="1"/>
+                <!-- Jumper wires to the relay board, centred on the Pi -->
+                <g class="sys-jumpers"><path class="j-red" d="M92 91H119"/><path class="j-black" d="M92 96H119"/><path class="j-yellow" d="M92 101H119"/><path class="j-orange" d="M92 106H119"/></g>
+                <rect class="sys-relay__pcb" x="116" y="59" width="50" height="78" rx="3"/>
+                <rect class="sys-relay__header" x="118" y="87" width="5" height="22" rx="1"/>
+                <rect class="sys-relay__cube" x="127" y="64" width="25" height="30" rx="2"/>
+                <rect class="sys-relay__cube" x="127" y="102" width="25" height="30" rx="2"/>
+                <rect class="sys-relay__term" x="154" y="70" width="10" height="18" rx="1.5"/>
+                <rect class="sys-relay__term" x="154" y="108" width="10" height="18" rx="1.5"/>
+                <!-- Switched mains: straight to the pump and to the heating element -->
+                <path class="sys-mains" d="M164 79H196"/>
+                <path class="sys-mains" d="M164 117H260"/>
+                <!-- Kettle, pump and probe -->
+                <path class="sys-kettle__mash" d="M253 75h74v72a6 6 0 0 1-6 6h-62a6 6 0 0 1-6-6Z"/>
+                <path class="sys-kettle__body" d="M250 50V148a10 10 0 0 0 10 10H320a10 10 0 0 0 10-10V50"/>
+                <path class="sys-heater" d="M260 123l6-10 6 10l6-10 6 10l6-10 6 10l6-10 6 10l6-10 6 10"/>
+                <path class="sys-tube" d="M250 106H210V36H272V92"/>
+                <path class="sys-flow" d="M244 106h-8M210 60v-8M236 36h8"/>
+                <g class="sys-pump"><rect x="196" y="66" width="28" height="26" rx="5"/><circle cx="210" cy="79" r="8"/><path d="M210 73v12M204 79h12"/></g>
+                <path class="sys-lv" d="M89 51V22Q89 16 95 16H300Q306 16 306 22V30"/>
+                <path class="sys-probe" d="M306 30v84"/>
+                <circle class="sys-probe__tip" cx="306" cy="114" r="3.5"/>
+              </svg>
+            </span>
+            <span class="duo__foot"><span class="duo__note">Raspberry Pi, relay board and probe at your kettle</span><span class="duo__more">More info <span aria-hidden="true">→</span></span></span>
+          </a>
+          <span class="duo__plus" aria-hidden="true">+</span>
           <a class="duo__item" href="software.html">
             <span class="duo__label"><span class="led led--on"></span>The software<span class="duo__go" aria-hidden="true">→</span></span>
             <span class="duo__stage">
