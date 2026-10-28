@@ -21,32 +21,22 @@ BrewberryPi is a Raspberry Pi controller for a home-brewing mash kettle. The pro
 
 ### The site
 
-One page, dark first with a light variant (follows the system; the toggle in the nav overrides it).
+One page, "Instrument": a light page with dark display bands (nav, hero, case, footer), Zilla Slab headlines, mono
+labels and the brand pink `#e0789a` as the signature colour. On light backgrounds pink is only a fill under ink text
+(highlighter, buttons, markers), never text itself; inside a dark band (`.band-dark`, which redefines the colour
+tokens) it may be text too.
 
 | Path | Content | Comes from |
 |---|---|---|
 | `site/index.html` | The page: hero, features, software (app and OS), recipe, case, get started | written by hand |
-| `site/styles.css` | Colour tokens (from `brand/README.md`), layout, effects | written by hand |
-| `site/main.js` | Theme toggle, scroll effects, the animated hero card, the feature cards (`FEATURES`: add an entry to add a feature), the recipe timeline, the terminal | written by hand |
-| `site/case3d.js` | Interactive 3D view of the case (three.js), loaded when the section scrolls into view | written by hand |
+| `site/styles.css` | Colour tokens (from `brand/README.md`, light and `.band-dark`), layout | written by hand |
+| `site/main.js` | Scroll effects, the animated hero panel (readouts, scales), the feature cards (`FEATURES`: add an entry to add a feature), the recipe timeline | written by hand |
+| `site/case3d.js` | Interactive 3D view of the case (three.js), loaded when the section scrolls into view; part colours from the section's CSS | written by hand |
 | `site/img/app-*.webp` | Screenshots of the app | `tools/capture_screens.mjs` |
 | `site/models/case-*.stl`, `site/img/case-assembly.png` | Case parts and the fallback render | `tools/sync_assets.sh` from `brewberrypi-case/04-stl` |
 | `site/data/recipe.json` | The example recipe (hero curve and recipe timeline) | `tools/sync_assets.sh` from `brewberrypi-app` |
 | `site/vendor/three/` | three.js 0.170.0 (`three.module.min.js`, `STLLoader.js`, `OrbitControls.js`, MIT licence) | npm package `three@0.170.0` |
 | logos, favicons, `site/fonts/` | Brand files and Zilla Slab subsets | `brand/tools/build_brand.py` |
-
-### Design proposals (temporary)
-
-Three looks with the same content, for choosing one; a switcher at the bottom of each page links them.
-Once one is chosen, the others, their stylesheets, the switcher and `tools/make_proposals.py` are removed.
-
-| Page | Look | Stylesheets |
-|---|---|---|
-| `site/index.html` | A · Night: dark first (light variant via the toggle), soft glow | `styles.css` |
-| `site/b.html` | B · Paper: warm paper, ink outlines, hard offset shadows, a round stamp | `styles.css` + `theme-b.css` |
-| `site/c.html` | C · Instrument: light and quiet, sans headlines, mono labels, numbered sections | `styles.css` + `theme-c.css` |
-
-`b.html` and `c.html` are generated from `index.html`: edit `index.html`, then run `python3 tools/make_proposals.py`.
 
 ### Refreshing the assets
 
@@ -58,7 +48,7 @@ node tools/capture_screens.mjs     # app screenshots
 ```
 
 `capture_screens.mjs` starts the app in simulation (`--dummymode`, 40× faster), runs the example recipe, answers
-its questions and takes the screenshots in dark and light, desktop and phone. It needs `make setup` and `make build`
+its questions and takes the screenshots in light mode, desktop and phone. It needs `make setup` and `make build`
 done in `brewberrypi-app`, Node with Playwright and Python with Pillow. It takes about two minutes.
 
 ## Preview locally

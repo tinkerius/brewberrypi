@@ -19,9 +19,9 @@ const PARTS = [
   { name: "bottom_lid", place: (m) => m.makeTranslation(0, 0, -LID_T), explode: -1 },
 ];
 
-/** Part colours from the page's CSS (--case-body, --case-lid, --case-divider, --case-bottom). */
-function palette() {
-  const style = getComputedStyle(document.documentElement);
+/** Part colours from the CSS of the viewer's section (--case-body, --case-lid, --case-divider, --case-bottom). */
+function palette(host) {
+  const style = getComputedStyle(host);
   const get = (name, fallback) => style.getPropertyValue(name).trim() || fallback;
   return {
     body: get("--case-body", "#e9e0dc"),
@@ -60,7 +60,7 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
   scene.add(pivot);
 
   const loader = new STLLoader();
-  const colours = palette();
+  const colours = palette(host);
   const meshes = await Promise.all(PARTS.map(async (part) => {
     const geometry = await loader.loadAsync(`models/case-${part.name}.stl`);
     geometry.applyMatrix4(part.place(new THREE.Matrix4()));
@@ -107,12 +107,6 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
     wake();
   });
   canvas.addEventListener("pointerdown", () => { controls.autoRotate = false; hint.hidden = true; wake(); });
-
-  document.addEventListener("themechange", () => {
-    const c = palette();
-    for (const mesh of meshes) mesh.material.color.set(c[mesh.userData.name]);
-    wake();
-  });
 
   const resize = () => {
     const { clientWidth: w, clientHeight: h } = host;

@@ -1,28 +1,10 @@
-// BrewberryPi website: theme, scroll effects, the live hero card, features, recipe and the 3D case.
+// BrewberryPi website: scroll effects, the live hero panel, features, recipe and the 3D case.
 
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (selector, root = document) => root.querySelector(selector);
 const svgNS = "http://www.w3.org/2000/svg";
 
-// ---------- Theme ----------
-
-function currentTheme() {
-  return document.documentElement.dataset.theme ?? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
-}
-
-$("#theme-toggle")?.addEventListener("click", () => {
-  const next = currentTheme() === "dark" ? "light" : "dark";
-  document.documentElement.dataset.theme = next;
-  try { localStorage.setItem("theme", next); } catch { /* storage blocked: the choice lasts for this page only */ }
-  document.dispatchEvent(new CustomEvent("themechange"));
-});
-
 // ---------- Nav ----------
-
-const nav = $(".nav");
-const onScroll = () => nav.classList.toggle("is-scrolled", scrollY > 8);
-addEventListener("scroll", onScroll, { passive: true });
-onScroll();
 
 const navLinks = [...document.querySelectorAll(".nav__links a")];
 const sectionObserver = new IntersectionObserver((entries) => {
@@ -36,16 +18,6 @@ for (const link of navLinks) {
   if (section) sectionObserver.observe(section);
 }
 sectionObserver.observe($(".hero")); // no link: clears the highlight at the top
-
-// ---------- Pointer glow on cards ----------
-
-addEventListener("pointermove", (event) => {
-  const card = event.target.closest?.(".glow");
-  if (!card) return;
-  const rect = card.getBoundingClientRect();
-  card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
-  card.style.setProperty("--my", `${event.clientY - rect.top}px`);
-}, { passive: true });
 
 // ---------- Recipe model ----------
 // A simplified kettle: enough to draw a believable curve for the hero and the recipe profile. The real
@@ -72,6 +44,16 @@ function describe(goal) {
     case "HeatUpForHopsCooking": return { name: "Heat Up", desc: "Heat up mash for cooking", kind: "heat", detail: "to 97 °C" };
     case "CookWater": return { name: goal.name ?? "Boil", desc: goal.description ?? "", kind: "rest", detail: `boil · ${goal.minutes} min` };
     default: return { name: goal.type, desc: "", kind: "rest", detail: "" };
+  }
+}
+
+/** The temperature a goal controls to, or null for operator steps. */
+function targetOf(goal) {
+  switch (goal.type) {
+    case "HeatUp": case "Rest": case "IodineTest": return goal.temperature;
+    case "HeatUpForHopsCooking": return 97;
+    case "CookWater": return 100;
+    default: return null;
   }
 }
 
@@ -124,7 +106,7 @@ function simulate(goals) {
       case "CookWater": hold(goal.minutes, 99.5, 0.9); break;
       default: wait(4);
     }
-    segments.push({ ...info, index, t0, t1: t });
+    segments.push({ ...info, index, t0, t1: t, target: targetOf(goal) });
   });
   return { samples, segments, total: t };
 }
@@ -161,6 +143,17 @@ function startHero(model) {
     line.setAttribute("y1", y); line.setAttribute("y2", y);
     grid.append(line);
   }
+  // Scale labels next to the stretched SVG: temperatures on the left, brew time (h:mm) below.
+  const hm = (minutes) => `${Math.floor(minutes / 60)}:${String(Math.floor(minutes % 60)).padStart(2, "0")}`;
+  const label = (axis, text, style) => {
+    const span = document.createElement("span");
+    span.textContent = text;
+    Object.assign(span.style, style);
+    $(axis).append(span);
+  };
+  for (const T of [20, 40, 60, 80]) label("#axis-y", `${T}°`, { top: `${((HI - T) / (HI - LO)) * 100}%` });
+  for (let m = 30; m < model.total - 10; m += 30) label("#axis-x", hm(m), { left: `${(m / model.total) * 100}%` });
+
   const d = pathOf(model.samples, model.total, W, H, LO, HI);
   $("#curve-line").setAttribute("d", d);
   $("#curve-ghost").setAttribute("d", d);
@@ -172,7 +165,9 @@ function startHero(model) {
   const el = {
     temp: $("#live-temp"), goal: $("#live-goal"), desc: $("#live-desc"), progress: $("#live-progress"),
     heat: $("#live-heat"), pump: $("#live-pump"), state: $("#live-state"),
+    set: $("#live-set"), time: $("#live-time"), step: $("#live-step"),
   };
+  const steps = String(model.segments.length).padStart(2, "0");
   let shownGoal = -1;
 
   function render(t) {
@@ -184,12 +179,15 @@ function startHero(model) {
       shownGoal = s.goal;
       el.goal.textContent = seg.name;
       el.desc.textContent = seg.desc;
+      el.set.textContent = seg.target == null ? "––.–" : seg.target.toFixed(1);
+      el.step.textContent = `${String(s.goal + 1).padStart(2, "0")}/${steps}`;
     }
+    el.time.textContent = hm(t);
     const progress = seg.kind === "you" ? 0 : Math.min(1, (t - seg.t0) / (seg.t1 - seg.t0));
     el.progress.style.width = `${(progress * 100).toFixed(1)}%`;
     const heat = Math.max(0, Math.min(1, s.heat));
     el.heat.classList.toggle("is-on", heat > 0.02);
-    el.heat.querySelector("b").textContent = `${Math.round(heat * 10) * 10}%`;
+    el.heat.querySelector("b").textContent = `${Math.round(heat * 10) * 10}`;
     el.pump.classList.toggle("is-on", s.pump);
     el.pump.querySelector("b").textContent = s.pump ? "on" : "off";
     el.state.textContent = t >= model.total ? "Finished" : seg.kind === "you" ? "Waiting for you" : "Running";
@@ -240,7 +238,7 @@ function renderRecipe(recipe, model) {
   base.setAttribute("class", "base");
   base.setAttribute("x1", 0); base.setAttribute("x2", W); base.setAttribute("y1", H); base.setAttribute("y2", H);
   svg.append(base);
-  const colour = { heat: "var(--brass)", rest: "var(--berry)", you: "var(--leaf)" };
+  const colour = { heat: "var(--brass)", rest: "var(--pink)", you: "var(--leaf)" };
   for (const seg of model.segments) {
     const samples = model.samples.filter((s) => s.goal === seg.index);
     if (!samples.length) continue;
@@ -274,7 +272,7 @@ function renderRecipe(recipe, model) {
 
 // ---------- Features ----------
 // To add a feature, add an entry. size: "wide" spans two columns on large screens. art: an optional
-// illustration (see ART).
+// illustration (see ART). soon: the muted "more to come" card.
 
 const ICONS = {
   list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
@@ -292,7 +290,7 @@ const ICONS = {
 
 const ART = {
   steps: '<div class="mini-steps"><span class="y">Add Water</span><span class="h">Heat Up 52°</span><span class="y">Mash In</span><span class="r">Rest 30 min</span><span class="h">Heat Up 65°</span><span class="r">Rest 30 min</span><span class="y">Iodine Test</span><span class="h">78°</span></div>',
-  curve: '<svg class="mini-curve" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true"><path class="target" d="M0 22H300"/><path d="M0 84C50 80 80 50 110 30S150 22 170 22H300" stroke="url(#mini-grad)"/><defs><linearGradient id="mini-grad"><stop offset="0" stop-color="var(--brass)"/><stop offset="1" stop-color="var(--berry)"/></linearGradient></defs></svg>',
+  curve: '<svg class="mini-curve" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true"><path class="target" d="M0 22H300"/><path d="M0 84C50 80 80 50 110 30S150 22 170 22H300"/></svg>',
   ask: '<div class="mini-ask">Iodine test successfull?<div><span>Yes</span><span>No</span></div></div>',
   devices: '<div class="mini-devices" aria-hidden="true"><i></i><i></i><i></i></div>',
 };
@@ -300,21 +298,21 @@ const ART = {
 const FEATURES = [
   { icon: "list", title: "Recipes as step lists", size: "wide", art: "steps",
     text: "Write your mash schedule once: heat up, rest, mash in, iodine test, lautering, boil. BrewberryPi works through it step by step." },
-  { icon: "thermo", title: "Temperature control", size: "wide", art: "curve", accent: "var(--brass)",
+  { icon: "thermo", title: "Temperature control", size: "wide", art: "curve",
     text: "Full power to heat up, half power close to the target, then it holds each rest while the pump keeps the mash moving." },
-  { icon: "bell", title: "It asks when it needs you", size: "wide", art: "ask", accent: "var(--leaf)",
+  { icon: "bell", title: "It asks when it needs you", size: "wide", art: "ask",
     text: "Water in? Malt in? Iodine test done? The question appears on screen, and a buzzer beeps until somebody answers." },
   { icon: "devices", title: "Live on every screen", art: "devices",
     text: "Every browser in your network sees the same live state, and any of them can control the brew." },
-  { icon: "flask", title: "Simulation mode", accent: "var(--brass)",
+  { icon: "flask", title: "Simulation mode",
     text: "No hardware yet? Run a whole recipe against a simulated kettle, sped up if you like." },
-  { icon: "shield", title: "Safe by design", size: "wide", accent: "var(--leaf)",
+  { icon: "shield", title: "Safe by design", size: "wide",
     text: "The heater is off whenever it isn't actively controlling temperature. All outputs go off at start-up and on every stop, crash or hang, backed by the systemd and hardware watchdogs." },
   { icon: "update", title: "Signed updates, rollback",
     text: "Install a new app version from the browser. Images are signature-checked, and the previous version stays for rollback." },
-  { icon: "wifi", title: "Wi-Fi without a keyboard", accent: "var(--brass)",
+  { icon: "wifi", title: "Wi-Fi without a keyboard",
     text: "No home network found? The Pi opens its own hotspot, and your phone lands on the Wi-Fi setup page." },
-  { icon: "chip", title: "Your wiring, your pins", accent: "var(--brass)",
+  { icon: "chip", title: "Your wiring, your pins",
     text: "Pins, relay polarity and the sensor are set in the config, so it fits the relay board you already have." },
   { icon: "sliders", title: "Settings in the browser",
     text: "Device settings on their own page, and the config folder as a network share you open from your computer." },
@@ -328,9 +326,8 @@ function renderFeatures() {
   grid.replaceChildren();
   FEATURES.forEach((f, i) => {
     const card = document.createElement("article");
-    card.className = `feature card glow reveal${f.size ? ` feature--${f.size}` : ""}${f.soon ? " feature--soon" : ""}`;
+    card.className = `feature card reveal${f.size ? ` feature--${f.size}` : ""}${f.soon ? " feature--soon" : ""}`;
     card.style.setProperty("--d", `${(i % 4) * 0.06}s`);
-    if (f.accent) card.style.setProperty("--accent", f.accent);
     card.innerHTML = `<span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[f.icon]}</svg></span>
       <h3></h3><p></p>${f.art ? `<div class="feature__art">${ART[f.art]}</div>` : ""}`;
     card.querySelector("h3").textContent = f.title;

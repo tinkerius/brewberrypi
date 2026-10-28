@@ -1,8 +1,8 @@
 // Captures the app screenshots for the website from a simulated brew.
 //
 // Starts brewberrypi-app in simulation (--dummymode, accelerated clock), loads a recipe, starts it,
-// confirms the operator requests and takes the screenshots at fixed points of the brew, in dark and
-// light, desktop and phone. Needs a sibling checkout of brewberrypi-app with `make setup` and
+// confirms the operator requests and takes the screenshots at fixed points of the brew, in light mode,
+// desktop and phone. Needs a sibling checkout of brewberrypi-app with `make setup` and
 // `make build` done, Node with Playwright, and Python with Pillow (for the WebP files).
 //
 //   node tools/capture_screens.mjs [path/to/brewberrypi-app]
@@ -32,7 +32,8 @@ const VIEWS = [
   { name: "desktop", viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1.5 },
   { name: "phone", viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
 ];
-const SCHEMES = ["dark", "light"];
+// The website is light with dark bands; it shows the app in light mode.
+const SCHEMES = ["light"];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
