@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Software – BrewberryPi</title>
+  <meta name="description" content="The BrewberryPi software: the brewing app and its operating system as one image for the Raspberry Pi.">
+  <meta name="theme-color" content="#161113">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="BrewberryPi">
+  <meta property="og:description" content="An open-source Raspberry Pi controller for a home-brewing mash kettle.">
+  <meta property="og:url" content="https://tinkerius.github.io/brewberrypi/">
+  <meta property="og:image" content="https://tinkerius.github.io/brewberrypi/social-preview.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="640">
+  <meta property="og:image:alt" content="BrewberryPi logo: a berry-coloured brewing kettle on three flames">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="fonts/zilla-slab-bold.woff2" as="font" type="font/woff2" crossorigin>
+  <script>
+    document.documentElement.classList.remove("no-js");
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js" } }</script>
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav band-dark" id="top">
+    <div class="wrap nav__inner">
+      <a class="nav__brand" href="index.html" aria-label="BrewberryPi home">
+        <img src="mark-dark.svg" alt="" width="32" height="32">
+        <span>Brewberry<b>Pi</b></span>
+      </a>
+      <nav class="nav__links" aria-label="Pages">
+        <a href="software.html" aria-current="page">Software</a>
+        <a href="case.html">Case</a>
+        <a href="index.html#start">Get started</a>
+      </nav>
+      <div class="nav__actions">
+        <a class="btn btn--ghost btn--sm" href="https://github.com/tinkerius/brewberrypi-app">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Page header -->
+    <section class="page-head band-dark">
+      <div class="wrap">
+        <p class="page-head__crumb"><a href="index.html">BrewberryPi</a> / Software</p>
+        <h1 class="page-head__title reveal">The software</h1>
+        <p class="page-head__lead reveal">The brewing app and the operating system it runs on, as one image for the Raspberry Pi. You flash it,
+          start the Pi and open the app in your browser.</p>
+        <nav class="page-head__toc" aria-label="On this page">
+          <a href="#app">The app</a><a href="#features">Features</a><a href="#recipe">Recipes</a><a href="#os">Under the hood</a>
+        </nav>
+      </div>
+    </section>
+
+    <!-- The app -->
+    <section class="section" id="app">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="eyebrow">The app</p>
+          <h2>Your brew day,<br><span class="hl">live in the browser.</span></h2>
+          <p class="section__lead">Temperature, heater, pump, the curve so far and every step of the recipe on one page. These are real
+            screenshots of the app running a recipe in simulation mode.</p>
+        </header>
+
+        <div class="showcase reveal">
+          <div class="browser">
+            <div class="browser__bar">
+              <span class="browser__dots"><i></i><i></i><i></i></span>
+              <span class="browser__url"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg>brewberrypi.local</span>
+            </div>
+            <img src="img/app-desktop-light.webp" width="1920" height="1200" loading="lazy" decoding="async"
+                 alt="The BrewberryPi web app in light mode: hardware status, temperature chart with a step mash, and the recipe's goals">
+          </div>
+          <div class="phones">
+            <div class="phone phone--back">
+              <img src="img/app-phone-light.webp" width="780" height="1688" loading="lazy" decoding="async" alt="The app on a phone: hardware status and chart">
+            </div>
+            <div class="phone phone--front">
+              <img src="img/app-phone-light-iodine.webp" width="780" height="1688" loading="lazy" decoding="async" alt="The app on a phone asking: Iodine test successful? with the answers Yes and No">
+            </div>
+          </div>
+        </div>
+
+        <ul class="callouts">
+          <li class="reveal"><span class="callout__num">01</span><h3>Live status</h3><p>Temperature, heater power and pump at a glance, pushed to every open screen the moment they change.</p></li>
+          <li class="reveal"><span class="callout__num">02</span><h3>The whole curve</h3><p>A chart of the kettle temperature since the start, so you see each ramp and rest as it happens.</p></li>
+          <li class="reveal"><span class="callout__num">03</span><h3>It asks, you answer</h3><p>Water in? Malt in? Iodine test done? Answer on any device. A buzzer reminds you until you do.</p></li>
+        </ul>
+
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="eyebrow">Features</p>
+          <h2>Everything a brew day needs.<br><span class="muted">Nothing it doesn't.</span></h2>
+        </header>
+        <!-- Rendered by main.js from FEATURES; the list below is the fallback without JavaScript. -->
+        <div class="bento" id="feature-grid">
+          <noscript>
+            <ul class="feature-list">
+              <li>Recipes as step lists</li><li>Temperature control</li><li>It asks when it needs you</li>
+              <li>Live on every screen</li><li>Simulation mode</li><li>Safe by design</li><li>Your wiring, your pins</li>
+            </ul>
+          </noscript>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recipe -->
+    <section class="section" id="recipe">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="eyebrow">Recipes</p>
+          <h2>A recipe is a list of steps.<br><span class="muted">BrewberryPi works through it.</span></h2>
+          <p class="section__lead">Heat up, rest, mash in, iodine test, lautering, boil. A recipe is a small JSON file, and each step
+            switches the heater and pump on its own or waits for you. Here is a real one: a step mash for a wheat beer.</p>
+        </header>
+        <div class="recipe reveal" id="recipe-view">
+          <div class="recipe__head">
+            <span class="recipe__name" id="recipe-name">München 12.6 – SUD2:BENIWEISS</span>
+            <span class="recipe__legend">
+              <span class="lg lg--heat">heat</span><span class="lg lg--rest">rest</span><span class="lg lg--you">your turn</span>
+            </span>
+          </div>
+          <svg class="recipe__profile" id="recipe-profile" viewBox="0 0 1000 160" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <ol class="recipe__steps" id="recipe-steps"></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Under the hood -->
+    <section class="section" id="os">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="eyebrow">Under the hood</p>
+          <h2>One image.<br><span class="hl">Everything on it.</span></h2>
+          <p class="section__lead">BrewberryPi OS is a ready-made Raspberry Pi image built for one job. It starts the app at boot, keeps
+            it up to date and keeps it safe.</p>
+        </header>
+        <div class="software-facts">
+          <div class="software-fact card reveal">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v11H4z"/><path d="M8 3.5v3M16 3.5v3M8 12h8"/></svg></span>
+            <div><h3>Flash and brew</h3><p>Write the image with Raspberry Pi Imager. The app starts on its own at every boot.</p></div>
+          </div>
+          <div class="software-fact card reveal">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9a14 14 0 0 1 19 0M5.8 12.6a9 9 0 0 1 12.4 0M9.2 16.1a4 4 0 0 1 5.6 0"/><circle cx="12" cy="19.3" r=".9"/></svg></span>
+            <div><h3>Wi-Fi without a keyboard</h3><p>No home network found? The Pi opens its own hotspot, and your phone lands on the Wi-Fi setup page.</p></div>
+          </div>
+          <div class="software-fact card reveal">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.6-4.5M4 13a8 8 0 0 0 14.6 4.5"/><path d="M5 3v4h4M19 21v-4h-4"/></svg></span>
+            <div><h3>Updates from the browser</h3><p>New versions install from the device page. They are signature-checked, and the previous one stays for rollback.</p></div>
+          </div>
+          <div class="software-fact card reveal">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
+            <div><h3>Settings in the browser</h3><p>Device settings on their own page, and the config folder as a network share you open from your computer.</p></div>
+          </div>
+          <div class="software-fact card reveal">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg></span>
+            <div><h3>Survives power cuts</h3><p>The system is read-only; settings and app versions live on their own data partition.</p></div>
+          </div>
+          <div class="software-fact card reveal">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span>
+            <div><h3>Source code</h3><p><a class="link" href="https://github.com/tinkerius/brewberrypi-app">App</a> and <a class="link" href="https://github.com/tinkerius/brewberrypi-os">operating system</a> on GitHub.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer band-dark">
+    <div class="wrap footer__inner">
+      <div class="footer__brand">
+        <img src="logo-stacked-dark.svg" alt="BrewberryPi" width="136" height="90">
+      </div>
+      <nav class="footer__links" aria-label="Repositories">
+        <a href="https://github.com/tinkerius/brewberrypi-app">App source</a>
+        <a href="https://github.com/tinkerius/brewberrypi-os">OS source</a>
+        <a href="https://github.com/tinkerius/brewberrypi-case">Case source</a>
+        <a href="https://github.com/tinkerius/brewberrypi">Website</a>
+      </nav>
+      <p class="footer__note">Raspberry Pi is a trademark of Raspberry Pi Ltd. BrewberryPi is not affiliated with Raspberry Pi Ltd.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -31,16 +31,14 @@
 
   <header class="nav band-dark" id="top">
     <div class="wrap nav__inner">
-      <a class="nav__brand" href="#top" aria-label="BrewberryPi home">
+      <a class="nav__brand" href="index.html" aria-label="BrewberryPi home">
         <img src="mark-dark.svg" alt="" width="32" height="32">
         <span>Brewberry<b>Pi</b></span>
       </a>
-      <nav class="nav__links" aria-label="Sections">
-        <a href="#features">Features</a>
-        <a href="#software">Software</a>
-        <a href="#recipe">Recipes</a>
-        <a href="#case">Case</a>
-        <a href="#start">Get started</a>
+      <nav class="nav__links" aria-label="Pages">
+        <a href="software.html">Software</a>
+        <a href="case.html">Case</a>
+        <a href="index.html#start">Get started</a>
       </nav>
       <div class="nav__actions">
         <a class="btn btn--ghost btn--sm" href="https://github.com/tinkerius/brewberrypi-app">
@@ -58,11 +56,11 @@
         <div class="hero__copy">
           <p class="pill reveal"><span class="led led--on"></span>In development · follow along on GitHub</p>
           <h1 class="hero__title reveal">Mash by recipe.<br><span class="hl">Not by guesswork.</span></h1>
-          <p class="hero__lead reveal">BrewberryPi turns a Raspberry Pi into the brain of your mash kettle. It heats, holds every rest to the
-            minute, runs the pump, and calls you when the malt goes in. You watch it all from your phone.</p>
+          <p class="hero__lead reveal">A Raspberry Pi controller for an electric mash kettle: software that runs your recipe, and a
+            3D-printable case that holds the electronics.</p>
           <div class="hero__cta reveal">
             <a class="btn btn--primary" href="#start">Get started <span aria-hidden="true">→</span></a>
-            <a class="btn btn--ghost" href="#software">See the app</a>
+            <a class="btn btn--ghost" href="#parts">See the parts</a>
           </div>
         </div>
 
@@ -120,140 +118,50 @@
       </div>
     </section>
 
-    <!-- Features -->
-    <section class="section" id="features">
+    <!-- The two parts -->
+    <section class="section" id="parts">
       <div class="wrap">
         <header class="section__head reveal">
-          <p class="eyebrow">Features</p>
-          <h2>Everything a brew day needs.<br><span class="muted">Nothing it doesn't.</span></h2>
+          <p class="eyebrow">The project</p>
+          <h2>Two parts.<br><span class="hl">One brewing controller.</span></h2>
+          <p class="section__lead">The software runs on the Raspberry Pi and you use it from your phone. The case holds the Pi, the relays
+            and the power parts next to the kettle. Use both, or just the one you need.</p>
         </header>
-        <!-- Rendered by main.js from FEATURES; the list below is the fallback without JavaScript. -->
-        <div class="bento" id="feature-grid">
-          <noscript>
-            <ul class="feature-list">
-              <li>Recipes as step lists</li><li>Automatic temperature control</li><li>Asks you when it needs you</li>
-              <li>Live on every screen</li><li>Simulation mode</li><li>Your wiring, your pins</li><li>Safe by design</li>
-              <li>Signed updates with rollback</li><li>Wi-Fi setup without a keyboard</li><li>Settings in the browser</li>
-            </ul>
-          </noscript>
-        </div>
-      </div>
-    </section>
-
-    <!-- Software -->
-    <section class="section" id="software">
-      <div class="wrap">
-        <header class="section__head reveal">
-          <p class="eyebrow">The software</p>
-          <h2>One image.<br><span class="hl">Everything on it.</span></h2>
-          <p class="section__lead">Flash BrewberryPi OS to an SD card and the brewing app comes with it. Open the page on your phone and
-            brew. These are real screenshots of the app running a recipe in simulation mode.</p>
-        </header>
-
-        <div class="showcase reveal">
-          <div class="browser">
-            <div class="browser__bar">
-              <span class="browser__dots"><i></i><i></i><i></i></span>
-              <span class="browser__url"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg>brewberrypi.local</span>
+        <div class="parts">
+          <article class="part card reveal">
+            <a class="part__visual band-dark" href="software.html" tabindex="-1" aria-hidden="true">
+              <span class="part__phone"><img src="img/app-phone-light.webp" width="780" height="1688" loading="lazy" decoding="async" alt=""></span>
+            </a>
+            <div class="part__body">
+              <p class="part__tag">Part 1</p>
+              <h3>The software</h3>
+              <ul class="ticks">
+                <li>Runs your recipe step by step: heats, holds each rest, switches the pump</li>
+                <li>Live in any browser: phone, tablet or PC</li>
+                <li>Asks you when it's your turn: water, malt, iodine test, with a buzzer</li>
+                <li>One image for Raspberry Pi 3, 4 and 5, with updates and rollback</li>
+              </ul>
+              <a class="link" href="software.html">Software details <span aria-hidden="true">→</span></a>
             </div>
-            <img src="img/app-desktop-light.webp" width="1920" height="1200" loading="lazy" decoding="async"
-                 alt="The BrewberryPi web app in light mode: hardware status, temperature chart with a step mash, and the recipe's goals">
-          </div>
-          <div class="phones">
-            <div class="phone phone--back">
-              <img src="img/app-phone-light.webp" width="780" height="1688" loading="lazy" decoding="async" alt="The app on a phone: hardware status and chart">
+          </article>
+          <span class="parts__plus" aria-hidden="true">+</span>
+          <article class="part card reveal">
+            <a class="part__visual band-dark" href="case.html" tabindex="-1" aria-hidden="true">
+              <img class="part__case" src="img/case-still.webp" width="900" height="675" loading="lazy" decoding="async" alt="">
+            </a>
+            <div class="part__body">
+              <p class="part__tag">Part 2</p>
+              <h3>The case</h3>
+              <ul class="ticks">
+                <li>3D-printable on any FDM printer, 4 parts</li>
+                <li>Holds the Pi, the relay board and the power supply; a divider keeps mains apart</li>
+                <li>Switches for main power, heater and pump; sockets for heater and pump</li>
+                <li>Designed from a written spec in OpenSCAD</li>
+              </ul>
+              <a class="link" href="case.html">Case details <span aria-hidden="true">→</span></a>
             </div>
-            <div class="phone phone--front">
-              <img src="img/app-phone-light-iodine.webp" width="780" height="1688" loading="lazy" decoding="async" alt="The app on a phone asking: Iodine test successful? with the answers Yes and No">
-            </div>
-          </div>
+          </article>
         </div>
-
-        <ul class="callouts">
-          <li class="reveal"><span class="callout__num">01</span><h3>Live status</h3><p>Temperature, heater power and pump at a glance, pushed to every open screen the moment they change.</p></li>
-          <li class="reveal"><span class="callout__num">02</span><h3>The whole curve</h3><p>A chart of the kettle temperature since the start, so you see each ramp and rest as it happens.</p></li>
-          <li class="reveal"><span class="callout__num">03</span><h3>It asks, you answer</h3><p>Water in? Malt in? Iodine test done? Answer on any device. A buzzer reminds you until you do.</p></li>
-        </ul>
-
-        <div class="software-facts">
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v11H4z"/><path d="M8 3.5v3M16 3.5v3M8 12h8"/></svg></span>
-            <div><h3>Flash and brew</h3><p>Write the image with Raspberry Pi Imager. The app starts on its own at every boot.</p></div>
-          </div>
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.6-4.5M4 13a8 8 0 0 0 14.6 4.5"/><path d="M5 3v4h4M19 21v-4h-4"/></svg></span>
-            <div><h3>Updates from the browser</h3><p>New versions install from the device page. They are signature-checked, and the previous one stays for rollback.</p></div>
-          </div>
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6Z"/><path d="m8.8 12 2.2 2.2 4.2-4.4"/></svg></span>
-            <div><h3>Built to fail safe</h3><p>A read-only system that survives power cuts, and outputs that go off on every stop, crash or hang.</p></div>
-          </div>
-        </div>
-        <p class="source-links reveal">Source code:
-          <a class="link" href="https://github.com/tinkerius/brewberrypi-app">app <span aria-hidden="true">→</span></a>
-          <a class="link" href="https://github.com/tinkerius/brewberrypi-os">operating system <span aria-hidden="true">→</span></a>
-        </p>
-      </div>
-    </section>
-
-    <!-- Recipe -->
-    <section class="section" id="recipe">
-      <div class="wrap">
-        <header class="section__head reveal">
-          <p class="eyebrow">Recipes</p>
-          <h2>A recipe is a list of steps.<br><span class="muted">BrewberryPi works through it.</span></h2>
-          <p class="section__lead">Heat up, rest, mash in, iodine test, lautering, boil. A recipe is a small JSON file, and each step
-            switches the heater and pump on its own or waits for you. Here is a real one: a step mash for a wheat beer.</p>
-        </header>
-        <div class="recipe reveal" id="recipe-view">
-          <div class="recipe__head">
-            <span class="recipe__name" id="recipe-name">München 12.6 – SUD2:BENIWEISS</span>
-            <span class="recipe__legend">
-              <span class="lg lg--heat">heat</span><span class="lg lg--rest">rest</span><span class="lg lg--you">your turn</span>
-            </span>
-          </div>
-          <svg class="recipe__profile" id="recipe-profile" viewBox="0 0 1000 160" preserveAspectRatio="none" aria-hidden="true"></svg>
-          <ol class="recipe__steps" id="recipe-steps"></ol>
-        </div>
-      </div>
-    </section>
-
-    <!-- Case -->
-    <section class="section band-dark" id="case">
-      <div class="wrap">
-        <header class="section__head reveal">
-          <p class="eyebrow">The case</p>
-          <h2>Print the box.<br><span class="hl">Plug in the kettle.</span></h2>
-          <p class="section__lead">A 3D-printable enclosure for the Pi, the relay board and the power parts, with switches at the front
-            and sockets for heater and pump at the back.</p>
-        </header>
-        <article class="case card reveal">
-          <div class="case-view" id="case-viewer">
-            <span class="case-tag"><span class="led led--on"></span>brewberrypi-case · 4 parts</span>
-            <img class="case-fallback" src="img/case-assembly.png" width="1200" height="900" loading="lazy" decoding="async"
-                 alt="Render of the BrewberryPi case: a box with BrewberryPi on the lid and switches labelled MAIN, HEATER and PUMP">
-            <div class="case-ui">
-              <button class="btn btn--ghost btn--sm" id="case-explode" type="button" aria-pressed="false" hidden>Explode</button>
-              <span class="case-hint" hidden>Drag to turn</span>
-            </div>
-          </div>
-          <div class="case__body">
-            <dl class="case__specs">
-              <div><dt>Front</dt><dd>Switches for main power, heater and pump</dd></div>
-              <div><dt>Back</dt><dd>Mains inlet with fuse, sockets for heater and pump, jack for the temperature probe</dd></div>
-              <div><dt>Inside</dt><dd>Raspberry Pi 3, 4 or 5, relay board and USB-C power supply; a divider keeps mains and low voltage apart</dd></div>
-              <div><dt>Print</dt><dd>4 parts, each within 200 mm, on any FDM printer; brass heat-set inserts</dd></div>
-            </dl>
-            <p class="warning">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 10v5M12 18v.01"/></svg>
-              <span>Mains voltage inside. A printed case is not mains insulation on its own: have the wiring done or checked by a qualified electrician.</span>
-            </p>
-            <p class="step__links">
-              <a class="link" href="https://github.com/tinkerius/brewberrypi-case/tree/main/04-stl">STL files <span aria-hidden="true">→</span></a>
-              <a class="link" href="https://github.com/tinkerius/brewberrypi-case">Source and spec <span aria-hidden="true">→</span></a>
-            </p>
-          </div>
-        </article>
       </div>
     </section>
 
@@ -270,7 +178,7 @@
             <h3>Print and wire</h3>
             <p>Print the case and fit the Pi, the relay board, the DS18B20 probe and the buzzer. The wiring guide shows every pin.</p>
             <p class="step__links">
-              <a class="link" href="https://github.com/tinkerius/brewberrypi-case/tree/main/04-stl">STL files <span aria-hidden="true">→</span></a>
+              <a class="link" href="case.html">The case <span aria-hidden="true">→</span></a>
               <a class="link" href="https://github.com/tinkerius/brewberrypi-app/blob/main/docs/hardware/wiring.md">Wiring guide <span aria-hidden="true">→</span></a>
             </p>
           </li>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Case – BrewberryPi</title>
+  <meta name="description" content="The BrewberryPi case: a 3D-printable enclosure for the Raspberry Pi, the relay board and the mains parts.">
+  <meta name="theme-color" content="#161113">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="BrewberryPi">
+  <meta property="og:description" content="An open-source Raspberry Pi controller for a home-brewing mash kettle.">
+  <meta property="og:url" content="https://tinkerius.github.io/brewberrypi/">
+  <meta property="og:image" content="https://tinkerius.github.io/brewberrypi/social-preview.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="640">
+  <meta property="og:image:alt" content="BrewberryPi logo: a berry-coloured brewing kettle on three flames">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="fonts/zilla-slab-bold.woff2" as="font" type="font/woff2" crossorigin>
+  <script>
+    document.documentElement.classList.remove("no-js");
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js" } }</script>
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav band-dark" id="top">
+    <div class="wrap nav__inner">
+      <a class="nav__brand" href="index.html" aria-label="BrewberryPi home">
+        <img src="mark-dark.svg" alt="" width="32" height="32">
+        <span>Brewberry<b>Pi</b></span>
+      </a>
+      <nav class="nav__links" aria-label="Pages">
+        <a href="software.html">Software</a>
+        <a href="case.html" aria-current="page">Case</a>
+        <a href="index.html#start">Get started</a>
+      </nav>
+      <div class="nav__actions">
+        <a class="btn btn--ghost btn--sm" href="https://github.com/tinkerius/brewberrypi-app">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Page header -->
+    <section class="page-head band-dark">
+      <div class="wrap">
+        <p class="page-head__crumb"><a href="index.html">BrewberryPi</a> / Case</p>
+        <h1 class="page-head__title reveal">The case</h1>
+        <p class="page-head__lead reveal">A 3D-printable enclosure for the Pi, the relay board and the power parts: switches at the front,
+          sockets for heater and pump at the back, and a divider between mains and low voltage.</p>
+        <article class="case card reveal">
+          <div class="case-view" id="case-viewer">
+            <span class="case-tag"><span class="led led--on"></span>brewberrypi-case · 4 parts</span>
+            <img class="case-fallback" src="img/case-assembly.png" width="1200" height="900" loading="lazy" decoding="async"
+                 alt="Render of the BrewberryPi case: a box with BrewberryPi on the lid and switches labelled MAIN, HEATER and PUMP">
+            <div class="case-ui">
+              <button class="btn btn--ghost btn--sm" id="case-explode" type="button" aria-pressed="false" hidden>Explode</button>
+              <span class="case-hint" hidden>Drag to turn</span>
+            </div>
+          </div>
+          <div class="case__body">
+            <dl class="case__specs">
+              <div><dt>Front</dt><dd>Switches for main power, heater and pump</dd></div>
+              <div><dt>Back</dt><dd>Mains inlet with fuse, sockets for heater and pump, jack for the temperature probe</dd></div>
+              <div><dt>Inside</dt><dd>Raspberry Pi 3, 4 or 5, relay board and USB-C power supply; a divider keeps mains and low voltage apart</dd></div>
+              <div><dt>Print</dt><dd>4 parts, each within 200 mm, on any FDM printer; brass heat-set inserts</dd></div>
+            </dl>
+            <p class="warning">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 10v5M12 18v.01"/></svg>
+              <span>Mains voltage inside. A printed case is not mains insulation on its own: have the wiring done or checked by a qualified electrician.</span>
+            </p>
+            <p class="step__links">
+              <a class="link" href="https://github.com/tinkerius/brewberrypi-case/tree/main/04-stl">STL files <span aria-hidden="true">→</span></a>
+              <a class="link" href="https://github.com/tinkerius/brewberrypi-case">Source and spec <span aria-hidden="true">→</span></a>
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- What goes inside -->
+    <section class="section" id="inside">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="eyebrow">What goes inside</p>
+          <h2>The parts it is made for.</h2>
+          <p class="section__lead">Cutouts and mounting holes are parameters in the model, so other parts can be swapped in with a change to
+            the spec.</p>
+        </header>
+        <div class="parts-list reveal">
+          <table>
+            <thead><tr><th scope="col">Part</th><th scope="col">Where</th><th scope="col">Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Raspberry Pi 3</td><td>On the divider, low-voltage part</td><td>A Pi 4 or 5 fits the same holes; it may need a reprinted divider</td></tr>
+              <tr><td>4-channel relay board, 5 V</td><td>Under the divider, below the Pi</td><td>Switches heater and pump</td></tr>
+              <tr><td>USB-C power adapter</td><td>Under the divider, next to the relays</td><td>Powers the Pi</td></tr>
+              <tr><td>3.5 mm panel jack</td><td>Back, low-voltage part</td><td>For the DS18B20 temperature probe</td></tr>
+              <tr><td>IEC C14 inlet with fuse</td><td>Back, mains part</td><td>Mains in</td></tr>
+              <tr><td>2 earthed panel sockets</td><td>Back, mains part</td><td>Heater and pump</td></tr>
+              <tr><td>Rocker switch I/0</td><td>Front</td><td>Main power</td></tr>
+              <tr><td>2 rocker switches I/0/II</td><td>Front</td><td>Heater and pump</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Printing -->
+    <section class="section" id="printing">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="eyebrow">Printing</p>
+          <h2>Four parts.<br><span class="hl">One colour.</span></h2>
+          <p class="section__lead">Printable on any FDM printer. The model holds no printer or slicer settings: choose those in your slicer.</p>
+        </header>
+        <div class="software-facts">
+          <div class="software-fact card reveal">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 21 8v8l-9 5-9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span>
+            <div><h3>4 parts</h3><p>Body, divider, top lid and bottom lid. Each fits within 200 × 200 × 200 mm.</p></div>
+          </div>
+          <div class="software-fact card reveal">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></span>
+            <div><h3>Heat-set inserts</h3><p>Brass inserts and screws: M2.5 for the boards, M3 for everything else.</p></div>
+          </div>
+          <div class="software-fact card reveal">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16Z"/><path d="m13 7 4 4"/></svg></span>
+            <div><h3>Raised labels</h3><p>MAIN, HEATER, PUMP and the logo stand out from the walls; colour them with a paint pen.</p></div>
+          </div>
+        </div>
+        <p class="status reveal"><span class="led led--on"></span>Status: the model is done and checked; the first test print is still open.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer band-dark">
+    <div class="wrap footer__inner">
+      <div class="footer__brand">
+        <img src="logo-stacked-dark.svg" alt="BrewberryPi" width="136" height="90">
+      </div>
+      <nav class="footer__links" aria-label="Repositories">
+        <a href="https://github.com/tinkerius/brewberrypi-app">App source</a>
+        <a href="https://github.com/tinkerius/brewberrypi-os">OS source</a>
+        <a href="https://github.com/tinkerius/brewberrypi-case">Case source</a>
+        <a href="https://github.com/tinkerius/brewberrypi">Website</a>
+      </nav>
+      <p class="footer__note">Raspberry Pi is a trademark of Raspberry Pi Ltd. BrewberryPi is not affiliated with Raspberry Pi Ltd.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

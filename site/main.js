@@ -13,11 +13,15 @@ const sectionObserver = new IntersectionObserver((entries) => {
     for (const link of navLinks) link.classList.toggle("is-active", link.hash === `#${entry.target.id}`);
   }
 }, { rootMargin: "-45% 0px -50% 0px" });
+// Links to sections of this page (index.html#start) light up while their section is in view.
+const pagePath = (path) => path.replace(/index\.html$/, "");
 for (const link of navLinks) {
+  if (!link.hash || pagePath(link.pathname) !== pagePath(location.pathname)) continue;
   const section = $(link.hash);
   if (section) sectionObserver.observe(section);
 }
-sectionObserver.observe($(".hero")); // no link: clears the highlight at the top
+const hero = $(".hero");
+if (hero) sectionObserver.observe(hero); // no link: clears the highlight at the top
 
 // ---------- Recipe model ----------
 // A simplified kettle: enough to draw a believable curve for the hero and the recipe profile. The real
@@ -282,9 +286,6 @@ const ICONS = {
   flask: '<path d="M9.5 3h5M10.5 3v6l-5.2 9.1A2 2 0 0 0 7 21h10a2 2 0 0 0 1.7-2.9L13.5 9V3"/><path d="M7.5 15h9"/>',
   chip: '<rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/>',
   shield: '<path d="M12 3 20 6v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6Z"/><path d="m8.8 12 2.2 2.2 4.2-4.4"/>',
-  update: '<path d="M20 11a8 8 0 0 0-14.6-4.5M4 13a8 8 0 0 0 14.6 4.5"/><path d="M5 3v4h4M19 21v-4h-4"/>',
-  wifi: '<path d="M2.5 9a14 14 0 0 1 19 0M5.8 12.6a9 9 0 0 1 12.4 0M9.2 16.1a4 4 0 0 1 5.6 0"/><circle cx="12" cy="19.3" r=".9"/>',
-  sliders: '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',
   spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>',
 };
 
@@ -308,15 +309,9 @@ const FEATURES = [
     text: "No hardware yet? Run a whole recipe against a simulated kettle, sped up if you like." },
   { icon: "shield", title: "Safe by design", size: "wide",
     text: "The heater is off whenever it isn't actively controlling temperature. All outputs go off at start-up and on every stop, crash or hang, backed by the systemd and hardware watchdogs." },
-  { icon: "update", title: "Signed updates, rollback",
-    text: "Install a new app version from the browser. Images are signature-checked, and the previous version stays for rollback." },
-  { icon: "wifi", title: "Wi-Fi without a keyboard",
-    text: "No home network found? The Pi opens its own hotspot, and your phone lands on the Wi-Fi setup page." },
   { icon: "chip", title: "Your wiring, your pins",
     text: "Pins, relay polarity and the sensor are set in the config, so it fits the relay board you already have." },
-  { icon: "sliders", title: "Settings in the browser",
-    text: "Device settings on their own page, and the config folder as a network share you open from your computer." },
-  { icon: "spark", title: "More to come", size: "wide", soon: true,
+  { icon: "spark", title: "More to come", soon: true,
     text: "The feature list grows with the project. Have an idea? Open an issue on GitHub." },
 ];
 
