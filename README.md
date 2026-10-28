@@ -28,7 +28,8 @@ tokens) it may be text too.
 
 | Path | Content | Comes from |
 |---|---|---|
-| `site/index.html` | Main page: the overview, the two parts (software and case) with a few points each, get started | written by hand |
+| `site/index.html` | Main page: the overview, the three parts (components, software, case) as linked panels, get started | written by hand |
+| `site/components.html` | Components: how the Pi, relay board, probe, kettle and pump connect (diagram and legend) | written by hand |
 | `site/software.html` | Software details: the app (screenshots), features, recipes, under the hood (the OS) | written by hand |
 | `site/case.html` | Case details: the 3D view, front/back/inside, the parts it holds, printing | written by hand |
 | `site/styles.css` | Colour tokens (from `brand/README.md`, light and `.band-dark`), layout | written by hand |

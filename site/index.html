@@ -36,6 +36,7 @@
         <span>Brewberry<b>Pi</b></span>
       </a>
       <nav class="nav__links" aria-label="Pages">
+        <a href="components.html">Components</a>
         <a href="software.html">Software</a>
         <a href="case.html">Case</a>
         <a href="index.html#start">Get started</a>
@@ -61,7 +62,7 @@
         </div>
 
         <div class="duo reveal">
-          <a class="duo__item" href="#how">
+          <a class="duo__item" href="components.html">
             <span class="duo__label"><span class="led led--on"></span>The components<span class="duo__go" aria-hidden="true">→</span></span>
             <span class="duo__stage">
               <svg class="duo__mini" viewBox="0 0 340 180" aria-hidden="true">
@@ -117,129 +118,6 @@
             <span class="duo__foot"><span class="duo__note">3D-printable enclosure for the Pi, relays and mains parts</span><span class="duo__more">More info <span aria-hidden="true">→</span></span></span>
           </a>
         </div>
-      </div>
-    </section>
-
-    <!-- How it works -->
-    <section class="section" id="how">
-      <div class="wrap">
-        <header class="section__head reveal">
-          <p class="eyebrow">How it works</p>
-          <h2>From the kettle<br><span class="hl">to your phone.</span></h2>
-          <p class="section__lead">The Pi reads the temperature in the mash and switches the electric heater and the pump/stirrer
-            through a relay board. You follow the brew on your computer or phone.</p>
-        </header>
-        <figure class="system reveal">
-          <div class="system__stage band-dark">
-            <svg class="system__svg" viewBox="10 46 920 330" role="img"
-                 aria-label="Diagram: a phone connects over Wi-Fi to a Raspberry Pi. Jumper wires run from the Pi's GPIO pins to a relay board next to it. The relay board gets mains from a power plug and switches the pump and the kettle's heating element. A temperature probe in the mash is wired to the Pi's GPIO pins.">
-              <!-- 6 Phone, on Wi-Fi to the Pi -->
-              <g class="sys-phone">
-                <rect x="30" y="130" width="80" height="170" rx="14"/>
-                <rect class="sys-phone__screen" x="37" y="144" width="66" height="142" rx="7"/>
-                <path class="sys-phone__curve" d="M45 262l11-26 7 5 11-24 20 0"/>
-                <rect class="sys-phone__bar" x="45" y="156" width="36" height="6" rx="2"/>
-                <rect class="sys-phone__bar" x="45" y="170" width="50" height="22" rx="3"/>
-              </g>
-              <path class="sys-wifi" d="M118 222c14-16 34-16 48 0"/>
-              <path class="sys-wifi__icon" d="M127 188a22 22 0 0 1 30 0M133 195a13 13 0 0 1 18 0"/>
-              <circle class="sys-wifi__dot" cx="142" cy="202" r="2.6"/>
-
-              <!-- 1 Raspberry Pi 3, portrait: ports facing down, GPIO header along the right edge -->
-              <g class="pi" transform="translate(315.6 110) rotate(90) scale(2.6)">
-                <rect class="pi__pcb" width="85" height="56" rx="3"/>
-                <g class="pi__holes"><circle cx="3.5" cy="3.5" r="1.5"/><circle cx="61.5" cy="3.5" r="1.5"/><circle cx="3.5" cy="52.5" r="1.5"/><circle cx="61.5" cy="52.5" r="1.5"/></g>
-                <rect class="pi__black" x="7" y="1" width="51" height="5.1" rx=".3"/>
-                <g class="pi__pins"><circle cx="8.27" cy="2.27" r=".55"/><circle cx="8.27" cy="4.81" r=".55"/><circle cx="10.81" cy="2.27" r=".55"/><circle cx="10.81" cy="4.81" r=".55"/><circle cx="13.35" cy="2.27" r=".55"/><circle cx="13.35" cy="4.81" r=".55"/><circle cx="15.89" cy="2.27" r=".55"/><circle cx="15.89" cy="4.81" r=".55"/><circle cx="18.43" cy="2.27" r=".55"/><circle cx="18.43" cy="4.81" r=".55"/><circle cx="20.97" cy="2.27" r=".55"/><circle cx="20.97" cy="4.81" r=".55"/><circle cx="23.51" cy="2.27" r=".55"/><circle cx="23.51" cy="4.81" r=".55"/><circle cx="26.05" cy="2.27" r=".55"/><circle cx="26.05" cy="4.81" r=".55"/><circle cx="28.59" cy="2.27" r=".55"/><circle cx="28.59" cy="4.81" r=".55"/><circle cx="31.13" cy="2.27" r=".55"/><circle cx="31.13" cy="4.81" r=".55"/><circle cx="33.67" cy="2.27" r=".55"/><circle cx="33.67" cy="4.81" r=".55"/><circle cx="36.21" cy="2.27" r=".55"/><circle cx="36.21" cy="4.81" r=".55"/><circle cx="38.75" cy="2.27" r=".55"/><circle cx="38.75" cy="4.81" r=".55"/><circle cx="41.29" cy="2.27" r=".55"/><circle cx="41.29" cy="4.81" r=".55"/><circle cx="43.83" cy="2.27" r=".55"/><circle cx="43.83" cy="4.81" r=".55"/><circle cx="46.37" cy="2.27" r=".55"/><circle cx="46.37" cy="4.81" r=".55"/><circle cx="48.91" cy="2.27" r=".55"/><circle cx="48.91" cy="4.81" r=".55"/><circle cx="51.45" cy="2.27" r=".55"/><circle cx="51.45" cy="4.81" r=".55"/><circle cx="53.99" cy="2.27" r=".55"/><circle cx="53.99" cy="4.81" r=".55"/><circle cx="56.53" cy="2.27" r=".55"/><circle cx="56.53" cy="4.81" r=".55"/></g>
-                <rect class="pi__black" x="1.2" y="16" width="3.4" height="22" rx=".3"/>
-                <rect class="pi__black" x="43.5" y="37" width="3.4" height="15" rx=".3"/>
-                <rect class="pi__silver" x="22" y="24" width="14" height="14" rx=".8"/>
-                <rect class="pi__chip" x="58" y="31" width="8" height="8" rx=".4"/>
-                <g class="pi__port"><rect x="69" y="2" width="18" height="14" rx=".6"/><path d="M71 6.5h13M71 11.5h13"/></g>
-                <g class="pi__port"><rect x="69" y="20" width="18" height="14" rx=".6"/><path d="M71 24.5h13M71 29.5h13"/></g>
-                <g class="pi__port"><rect x="66" y="38" width="21" height="16" rx=".6"/><rect class="pi__jack" x="70" y="41.5" width="12" height="9" rx=".4"/></g>
-                <rect class="pi__silver" x="7" y="51" width="8" height="5.6" rx=".6"/>
-                <rect class="pi__silver" x="24.5" y="49" width="15" height="7.6" rx=".6"/>
-                <rect class="pi__black" x="50" y="50" width="7" height="6.4" rx=".6"/>
-              </g>
-
-              <!-- Jumper wires: GPIO header straight across to the relay board's header (VCC, GND, IN1, IN2) -->
-              <g class="sys-jumpers">
-                <path class="j-red" d="M310 210.8H368"/><path class="j-black" d="M310 217.4H368"/><path class="j-yellow" d="M310 224.0H368"/><path class="j-orange" d="M310 230.6H368"/>
-              </g>
-
-              <!-- 2 Relay board, portrait and centred on the Pi: control header in the middle of the left long edge, screw terminals on the right -->
-              <g class="sys-relay">
-                <rect class="sys-relay__pcb" x="360" y="133" width="110" height="180" rx="5"/>
-                <g class="sys-relay__holes"><circle cx="370" cy="143" r="3.2"/><circle cx="460" cy="143" r="3.2"/><circle cx="370" cy="303" r="3.2"/><circle cx="460" cy="303" r="3.2"/></g>
-                <rect class="sys-relay__header" x="363" y="204.8" width="9" height="31.8" rx="1.5"/>
-                <g class="sys-relay__pins"><circle cx="367.5" cy="210.8" r="1.8"/><circle cx="367.5" cy="217.4" r="1.8"/><circle cx="367.5" cy="224.0" r="1.8"/><circle cx="367.5" cy="230.6" r="1.8"/></g>
-                <rect class="sys-relay__opto" x="378" y="160" width="14" height="12" rx="1"/>
-                <rect class="sys-relay__opto" x="378" y="270" width="14" height="12" rx="1"/>
-                <circle class="sys-relay__led" cx="385" cy="184" r="2.4"/><circle class="sys-relay__led" cx="385" cy="292" r="2.4"/>
-                <rect class="sys-relay__cube" x="398" y="146" width="44" height="70" rx="2.5"/>
-                <rect class="sys-relay__cube" x="398" y="230" width="44" height="70" rx="2.5"/>
-                <path class="sys-relay__print" d="M407 156v36M414 156v24M407 240v36M414 240v24"/>
-                <rect class="sys-relay__term" x="446" y="160" width="22" height="42" rx="2"/>
-                <rect class="sys-relay__term" x="446" y="244" width="22" height="42" rx="2"/>
-                <g class="sys-relay__screws"><circle cx="457" cy="169" r="3"/><circle cx="457" cy="181" r="3"/><circle cx="457" cy="193" r="3"/><circle cx="457" cy="253" r="3"/><circle cx="457" cy="265" r="3"/><circle cx="457" cy="277" r="3"/></g>
-              </g>
-
-              <!-- Mains: power plug under the relay board -->
-              <path class="sys-mains" d="M415 313V331"/>
-              <g class="sys-plug">
-                <rect x="400" y="331" width="30" height="26" rx="7"/>
-                <path d="M408 357v12M422 357v12"/>
-              </g>
-              <text class="sys-text" x="470" y="351">MAINS</text>
-
-              <!-- Switched mains, straight: relay 2 to the pump, relay 1 to the heating element -->
-              <path class="sys-mains" d="M468 181H618"/>
-              <path class="sys-mains" d="M468 265H740"/>
-
-              <!-- 3 Kettle: an open pot with the mash and the heating element -->
-              <g class="sys-kettle">
-                <path class="sys-kettle__mash" d="M722 150h154v120a14 14 0 0 1-14 14H736a14 14 0 0 1-14-14Z"/>
-                <path class="sys-kettle__body" d="M716 110V270a20 20 0 0 0 20 20H862a20 20 0 0 0 20-20V110"/>
-                <path class="sys-heater" d="M740 272l12-14 12 14l12-14 12 14l12-14 12 14l12-14 12 14l12-14 12 14"/>
-              </g>
-
-              <!-- 4 Pump in the middle of a U-shaped pipe: out of the kettle low, back in over the top -->
-              <path class="sys-tube" d="M716 236H650V86H760V200"/>
-              <path class="sys-flow" d="M706 236h-14M650 226v-14M650 136v-14M690 86h16M760 160v14"/>
-              <g class="sys-pump">
-                <rect x="618" y="155" width="64" height="52" rx="10"/>
-                <circle cx="650" cy="181" r="15"/>
-                <path d="M650 170v22M639 181h22"/>
-              </g>
-
-              <!-- 5 Temperature probe in the mash: its wire goes straight up from the top GPIO pin, then over everything else -->
-              <path class="sys-lv" d="M309.7 131.5V68Q309.7 60 318 60H830Q840 60 840 70V76"/>
-              <path class="sys-probe" d="M840 76v154"/>
-              <circle class="sys-probe__tip" cx="840" cy="230" r="5"/>
-
-              <!-- Numbers, explained in the legend below -->
-              <g class="sys-num">
-                <circle cx="70" cy="108" r="14"/><text x="70" y="113">6</text>
-                <circle cx="170" cy="110" r="14"/><text x="170" y="115">1</text>
-                <circle cx="470" cy="133" r="14"/><text x="470" y="138">2</text>
-                <circle cx="898" cy="250" r="14"/><text x="898" y="255">3</text>
-                <circle cx="618" cy="155" r="14"/><text x="618" y="160">4</text>
-                <circle cx="864" cy="80" r="14"/><text x="864" y="85">5</text>
-              </g>
-            </svg>
-          </div>
-          <figcaption>
-            <ol class="system__legend">
-              <li><b>Raspberry Pi</b><span>Runs the BrewberryPi software. The relay board and the probe connect to its GPIO pins.</span></li>
-              <li><b>Relay board</b><span>Gets mains from the power plug and switches the heater and the pump.</span></li>
-              <li><b>Kettle with heating element</b><span>Your electric mash kettle. Its heating element is switched by the first relay.</span></li>
-              <li><b>Pump or stirrer</b><span>Keeps the mash moving. Switched by the second relay.</span></li>
-              <li><b>Temperature probe</b><span>A waterproof DS18B20 in the mash, wired to the GPIO pins.</span></li>
-              <li><b>Your computer or phone</b><span>Talks to the Pi over Wi-Fi and opens the app in the browser. Nothing to install.</span></li>
-            </ol>
-          </figcaption>
-        </figure>
       </div>
     </section>
 
