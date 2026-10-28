@@ -437,8 +437,6 @@ main { counter-reset: section; }
 .sys-mains { fill: none; stroke: var(--brass); stroke-width: 3.5; stroke-linecap: round; }
 .sys-kettle__body { fill: rgba(241, 232, 235, .04); stroke: #c7cbcf; stroke-width: 3; }
 .sys-kettle__mash { fill: rgba(233, 176, 79, .28); }
-.sys-kettle__rim { stroke: #c7cbcf; stroke-width: 5; stroke-linecap: round; }
-.sys-kettle__handle { fill: none; stroke: #c7cbcf; stroke-width: 3; stroke-linejoin: round; }
 .sys-heater { fill: none; stroke: #ff9d4d; stroke-width: 3.5; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(255, 140, 60, .8)); }
 .sys-tube { fill: none; stroke: #8e949a; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
 .sys-flow { fill: none; stroke: #f1e8eb; stroke-width: 2; stroke-dasharray: 4 6; animation: flow 1s linear infinite; }
