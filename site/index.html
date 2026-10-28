@@ -92,7 +92,7 @@
         </header>
         <figure class="system reveal">
           <div class="system__stage band-dark">
-            <svg class="system__svg" viewBox="0 0 1000 440" role="img"
+            <svg class="system__svg" viewBox="0 40 1000 350" role="img"
                  aria-label="Diagram: a phone connects over Wi-Fi to a Raspberry Pi. Jumper wires run from the Pi's GPIO pins to a relay board next to it. The relay board gets mains from a power plug and switches the pump and the kettle's heating element. A temperature probe in the mash is wired to the Pi's GPIO pins.">
               <!-- 6 Phone, on Wi-Fi to the Pi -->
               <g class="sys-phone">
@@ -126,67 +126,67 @@
 
               <!-- Jumper wires: GPIO header straight across to the relay board's header (VCC, GND, IN1, IN2) -->
               <g class="sys-jumpers">
-                <path class="j-red" d="M310 204.1H368"/><path class="j-black" d="M310 210.8H368"/><path class="j-yellow" d="M310 217.4H368"/><path class="j-orange" d="M310 224.0H368"/>
+                <path class="j-red" d="M310 210.8H368"/><path class="j-black" d="M310 217.4H368"/><path class="j-yellow" d="M310 224.0H368"/><path class="j-orange" d="M310 230.6H368"/>
               </g>
 
-              <!-- 2 Relay board, portrait: control header on the left long edge, screw terminals on the right -->
+              <!-- 2 Relay board, portrait and centred on the Pi: control header in the middle of the left long edge, screw terminals on the right -->
               <g class="sys-relay">
-                <rect class="sys-relay__pcb" x="360" y="190" width="110" height="180" rx="5"/>
-                <g class="sys-relay__holes"><circle cx="370" cy="200" r="3.2"/><circle cx="460" cy="200" r="3.2"/><circle cx="370" cy="360" r="3.2"/><circle cx="460" cy="360" r="3.2"/></g>
-                <rect class="sys-relay__header" x="363" y="198.1" width="9" height="31.9" rx="1.5"/>
-                <g class="sys-relay__pins"><circle cx="367.5" cy="204.1" r="1.8"/><circle cx="367.5" cy="210.8" r="1.8"/><circle cx="367.5" cy="217.4" r="1.8"/><circle cx="367.5" cy="224.0" r="1.8"/></g>
-                <rect class="sys-relay__opto" x="378" y="234" width="14" height="12" rx="1"/>
-                <rect class="sys-relay__opto" x="378" y="300" width="14" height="12" rx="1"/>
-                <circle class="sys-relay__led" cx="385" cy="256" r="2.4"/><circle class="sys-relay__led" cx="385" cy="322" r="2.4"/>
-                <rect class="sys-relay__cube" x="398" y="206" width="44" height="70" rx="2.5"/>
-                <rect class="sys-relay__cube" x="398" y="288" width="44" height="70" rx="2.5"/>
-                <path class="sys-relay__print" d="M407 216v36M414 216v24M407 298v36M414 298v24"/>
-                <rect class="sys-relay__term" x="446" y="219" width="22" height="42" rx="2"/>
-                <rect class="sys-relay__term" x="446" y="303" width="22" height="42" rx="2"/>
-                <g class="sys-relay__screws"><circle cx="457" cy="228" r="3"/><circle cx="457" cy="240" r="3"/><circle cx="457" cy="252" r="3"/><circle cx="457" cy="312" r="3"/><circle cx="457" cy="324" r="3"/><circle cx="457" cy="336" r="3"/></g>
+                <rect class="sys-relay__pcb" x="360" y="133" width="110" height="180" rx="5"/>
+                <g class="sys-relay__holes"><circle cx="370" cy="143" r="3.2"/><circle cx="460" cy="143" r="3.2"/><circle cx="370" cy="303" r="3.2"/><circle cx="460" cy="303" r="3.2"/></g>
+                <rect class="sys-relay__header" x="363" y="204.8" width="9" height="31.8" rx="1.5"/>
+                <g class="sys-relay__pins"><circle cx="367.5" cy="210.8" r="1.8"/><circle cx="367.5" cy="217.4" r="1.8"/><circle cx="367.5" cy="224.0" r="1.8"/><circle cx="367.5" cy="230.6" r="1.8"/></g>
+                <rect class="sys-relay__opto" x="378" y="160" width="14" height="12" rx="1"/>
+                <rect class="sys-relay__opto" x="378" y="270" width="14" height="12" rx="1"/>
+                <circle class="sys-relay__led" cx="385" cy="184" r="2.4"/><circle class="sys-relay__led" cx="385" cy="292" r="2.4"/>
+                <rect class="sys-relay__cube" x="398" y="146" width="44" height="70" rx="2.5"/>
+                <rect class="sys-relay__cube" x="398" y="230" width="44" height="70" rx="2.5"/>
+                <path class="sys-relay__print" d="M407 156v36M414 156v24M407 240v36M414 240v24"/>
+                <rect class="sys-relay__term" x="446" y="160" width="22" height="42" rx="2"/>
+                <rect class="sys-relay__term" x="446" y="244" width="22" height="42" rx="2"/>
+                <g class="sys-relay__screws"><circle cx="457" cy="169" r="3"/><circle cx="457" cy="181" r="3"/><circle cx="457" cy="193" r="3"/><circle cx="457" cy="253" r="3"/><circle cx="457" cy="265" r="3"/><circle cx="457" cy="277" r="3"/></g>
               </g>
 
               <!-- Mains: power plug under the relay board -->
-              <path class="sys-mains" d="M415 370V388"/>
+              <path class="sys-mains" d="M415 313V331"/>
               <g class="sys-plug">
-                <rect x="400" y="388" width="30" height="26" rx="7"/>
-                <path d="M408 414v12M422 414v12"/>
+                <rect x="400" y="331" width="30" height="26" rx="7"/>
+                <path d="M408 357v12M422 357v12"/>
               </g>
-              <text class="sys-text" x="470" y="408">MAINS</text>
+              <text class="sys-text" x="470" y="351">MAINS</text>
 
               <!-- Switched mains, straight: relay 2 to the pump, relay 1 to the heating element -->
-              <path class="sys-mains" d="M468 240H578"/>
-              <path class="sys-mains" d="M468 324H748"/>
+              <path class="sys-mains" d="M468 181H578"/>
+              <path class="sys-mains" d="M468 265H748"/>
 
               <!-- 3 Kettle: an open pot with the mash and the heating element -->
               <g class="sys-kettle">
-                <path class="sys-kettle__mash" d="M722 210h196v150a14 14 0 0 1-14 14H736a14 14 0 0 1-14-14Z"/>
-                <path class="sys-kettle__body" d="M716 160V360a20 20 0 0 0 20 20H904a20 20 0 0 0 20-20V160"/>
-                <path class="sys-heater" d="M748 331l12-14 12 14 12-14 12 14 12-14 12 14 12-14 12 14 12-14 12 14 12-14 12 14"/>
+                <path class="sys-kettle__mash" d="M722 150h196v120a14 14 0 0 1-14 14H736a14 14 0 0 1-14-14Z"/>
+                <path class="sys-kettle__body" d="M716 110V270a20 20 0 0 0 20 20H904a20 20 0 0 0 20-20V110"/>
+                <path class="sys-heater" d="M748 272l12-14 12 14 12-14 12 14 12-14 12 14 12-14 12 14 12-14 12 14 12-14 12 14"/>
               </g>
 
               <!-- 4 Pump in the middle of a U-shaped pipe: out of the kettle low, back in over the top -->
-              <path class="sys-tube" d="M716 290H610V130H770V250"/>
-              <path class="sys-flow" d="M700 290h-14M610 284v-14M610 170v-14M660 130h16M770 200v14"/>
+              <path class="sys-tube" d="M716 236H610V86H770V200"/>
+              <path class="sys-flow" d="M700 236h-14M610 226v-14M610 136v-14M660 86h16M770 160v14"/>
               <g class="sys-pump">
-                <rect x="578" y="214" width="64" height="52" rx="10"/>
-                <circle cx="610" cy="240" r="15"/>
-                <path d="M610 229v22M599 240h22"/>
+                <rect x="578" y="155" width="64" height="52" rx="10"/>
+                <circle cx="610" cy="181" r="15"/>
+                <path d="M610 170v22M599 181h22"/>
               </g>
 
-              <!-- 5 Temperature probe in the mash, wired to the top of the GPIO header, over everything else -->
-              <path class="sys-lv" d="M310 131.5H336V88Q336 80 344 80H850Q860 80 860 90V100"/>
-              <path class="sys-probe" d="M860 100v190"/>
-              <circle class="sys-probe__tip" cx="860" cy="290" r="5"/>
+              <!-- 5 Temperature probe in the mash: its wire goes straight up from the top GPIO pin, then over everything else -->
+              <path class="sys-lv" d="M309.7 131.5V68Q309.7 60 318 60H850Q860 60 860 70V76"/>
+              <path class="sys-probe" d="M860 76v154"/>
+              <circle class="sys-probe__tip" cx="860" cy="230" r="5"/>
 
               <!-- Numbers, explained in the legend below -->
               <g class="sys-num">
                 <circle cx="70" cy="108" r="14"/><text x="70" y="113">6</text>
                 <circle cx="170" cy="110" r="14"/><text x="170" y="115">1</text>
-                <circle cx="470" cy="190" r="14"/><text x="470" y="195">2</text>
-                <circle cx="940" cy="300" r="14"/><text x="940" y="305">3</text>
-                <circle cx="578" cy="214" r="14"/><text x="578" y="219">4</text>
-                <circle cx="884" cy="104" r="14"/><text x="884" y="109">5</text>
+                <circle cx="470" cy="133" r="14"/><text x="470" y="138">2</text>
+                <circle cx="940" cy="250" r="14"/><text x="940" y="255">3</text>
+                <circle cx="578" cy="155" r="14"/><text x="578" y="160">4</text>
+                <circle cx="884" cy="80" r="14"/><text x="884" y="85">5</text>
               </g>
             </svg>
           </div>
