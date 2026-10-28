@@ -101,20 +101,33 @@
           </li>
           <li class="step card reveal">
             <span class="step__visual band-dark">
-              <svg class="step__flash" viewBox="0 0 320 150" role="img" aria-label="An SD card with BrewberryPi OS goes into the Raspberry Pi">
+              <svg class="step__flash" viewBox="0 0 360 150" role="img" aria-label="An SD card with BrewberryPi OS goes into the microSD slot of a Raspberry Pi 3">
                 <g class="sd">
-                  <path d="M34 28h44l14 14v80a6 6 0 0 1-6 6H34a6 6 0 0 1-6-6V34a6 6 0 0 1 6-6Z"/>
-                  <path class="sd__pins" d="M42 36v12M50 36v12M58 36v12M66 36v12"/>
-                  <image href="mark-dark.svg" x="38" y="66" width="44" height="44"/>
+                  <path class="sd__body" d="M30 28h40l14 14v80a6 6 0 0 1-6 6H30a6 6 0 0 1-6-6V34a6 6 0 0 1 6-6Z"/>
+                  <path class="sd__pins" d="M36 36v12M44 36v12M52 36v12M60 36v12"/>
+                  <image href="mark-dark.svg" x="32" y="66" width="44" height="44"/>
                 </g>
-                <path class="arrow" d="M112 78h76"/>
-                <path class="arrow-head" d="m180 70 9 8-9 8"/>
-                <g class="board">
-                  <rect x="210" y="34" width="92" height="88" rx="6"/>
-                  <path class="board__pins" d="M220 42h72"/>
-                  <rect class="board__chip" x="236" y="62" width="28" height="28" rx="2"/>
-                  <path class="board__ports" d="M302 52h8v16h-8M302 80h8v16h-8M302 104h8v12h-8"/>
-                  <rect class="board__slot" x="203" y="70" width="7" height="18" rx="1.5"/>
+                <path class="arrow" d="M100 78h52"/>
+                <path class="arrow-head" d="m150 70 9 8-9 8"/>
+                <!-- Raspberry Pi 3 Model B, top view, drawn in millimetres (85 × 56) -->
+                <g class="pi" transform="translate(170 18.6) scale(2.12)">
+                  <rect class="pi__sd" x="-1.6" y="22" width="2" height="12" rx=".4"/>
+                  <rect class="pi__pcb" width="85" height="56" rx="3"/>
+                  <g class="pi__holes"><circle cx="3.5" cy="3.5" r="1.5"/><circle cx="61.5" cy="3.5" r="1.5"/><circle cx="3.5" cy="52.5" r="1.5"/><circle cx="61.5" cy="52.5" r="1.5"/></g>
+                  <rect class="pi__black" x="7" y="1" width="51" height="5.1" rx=".3"/>
+                  <g class="pi__pins"><circle cx="8.27" cy="2.27" r=".55"/><circle cx="8.27" cy="4.81" r=".55"/><circle cx="10.81" cy="2.27" r=".55"/><circle cx="10.81" cy="4.81" r=".55"/><circle cx="13.35" cy="2.27" r=".55"/><circle cx="13.35" cy="4.81" r=".55"/><circle cx="15.89" cy="2.27" r=".55"/><circle cx="15.89" cy="4.81" r=".55"/><circle cx="18.43" cy="2.27" r=".55"/><circle cx="18.43" cy="4.81" r=".55"/><circle cx="20.97" cy="2.27" r=".55"/><circle cx="20.97" cy="4.81" r=".55"/><circle cx="23.51" cy="2.27" r=".55"/><circle cx="23.51" cy="4.81" r=".55"/><circle cx="26.05" cy="2.27" r=".55"/><circle cx="26.05" cy="4.81" r=".55"/><circle cx="28.59" cy="2.27" r=".55"/><circle cx="28.59" cy="4.81" r=".55"/><circle cx="31.13" cy="2.27" r=".55"/><circle cx="31.13" cy="4.81" r=".55"/><circle cx="33.67" cy="2.27" r=".55"/><circle cx="33.67" cy="4.81" r=".55"/><circle cx="36.21" cy="2.27" r=".55"/><circle cx="36.21" cy="4.81" r=".55"/><circle cx="38.75" cy="2.27" r=".55"/><circle cx="38.75" cy="4.81" r=".55"/><circle cx="41.29" cy="2.27" r=".55"/><circle cx="41.29" cy="4.81" r=".55"/><circle cx="43.83" cy="2.27" r=".55"/><circle cx="43.83" cy="4.81" r=".55"/><circle cx="46.37" cy="2.27" r=".55"/><circle cx="46.37" cy="4.81" r=".55"/><circle cx="48.91" cy="2.27" r=".55"/><circle cx="48.91" cy="4.81" r=".55"/><circle cx="51.45" cy="2.27" r=".55"/><circle cx="51.45" cy="4.81" r=".55"/><circle cx="53.99" cy="2.27" r=".55"/><circle cx="53.99" cy="4.81" r=".55"/><circle cx="56.53" cy="2.27" r=".55"/><circle cx="56.53" cy="4.81" r=".55"/></g>
+                  <rect class="pi__black" x="1.2" y="16" width="3.4" height="22" rx=".3"/>
+                  <rect class="pi__black" x="43.5" y="37" width="3.4" height="15" rx=".3"/>
+                  <rect class="pi__silver" x="22" y="24" width="14" height="14" rx=".8"/>
+                  <rect class="pi__chip" x="58" y="31" width="8" height="8" rx=".4"/>
+                  <rect class="pi__chip" x="6" y="10" width="7" height="4" rx=".4"/>
+                  <g class="pi__port"><rect x="69" y="2" width="18" height="14" rx=".6"/><path d="M71 6.5h13M71 11.5h13"/></g>
+                  <g class="pi__port"><rect x="69" y="20" width="18" height="14" rx=".6"/><path d="M71 24.5h13M71 29.5h13"/></g>
+                  <g class="pi__port"><rect x="66" y="38" width="21" height="16" rx=".6"/><rect class="pi__jack" x="70" y="41.5" width="12" height="9" rx=".4"/></g>
+                  <rect class="pi__silver" x="7" y="51" width="8" height="5.6" rx=".6"/>
+                  <rect class="pi__silver" x="24.5" y="49" width="15" height="7.6" rx=".6"/>
+                  <rect class="pi__black" x="50" y="50" width="7" height="6.4" rx=".6"/><circle class="pi__hole" cx="53.5" cy="56.4" r="1.4"/>
+                  <g class="pi__leds"><circle cx="1.6" cy="42" r=".55"/><circle class="pi__led--g" cx="1.6" cy="44.6" r=".55"/></g>
                 </g>
               </svg>
             </span>
@@ -127,7 +140,7 @@
           </li>
           <li class="step card reveal">
             <span class="step__visual band-dark">
-              <span class="step__url">brewberrypi.local</span>
+              <span class="step__url">http://brewberrypi.local</span>
               <span class="step__phone"><img src="img/app-phone-light.webp" width="780" height="1688" loading="lazy" decoding="async" alt="The app on a phone"></span>
             </span>
             <span class="step__num">3</span>
@@ -145,66 +158,6 @@
         </p>
       </div>
     </section>
-    <!-- The software -->
-    <section class="section" id="software">
-      <div class="wrap">
-        <header class="section__head reveal">
-          <p class="eyebrow">The software</p>
-          <h2>Flash it.<br><span class="hl">Brew with it.</span></h2>
-          <p class="section__lead">The brewing app and its operating system as one image for the Raspberry Pi. You use it from the browser on your phone.</p>
-        </header>
-        <div class="software-facts software-facts--4">
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg></span>
-            <div><h3>Runs your recipe</h3><p>Heats, holds each rest to the minute and switches the pump, step by step.</p></div>
-          </div>
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4.5" width="13" height="9" rx="1.5"/><path d="M6 17.5h6M9 13.5v4"/><rect x="17.5" y="8.5" width="4" height="11" rx="1"/></svg></span>
-            <div><h3>Live in any browser</h3><p>Phone, tablet or PC, several at once, all showing the same brew.</p></div>
-          </div>
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span>
-            <div><h3>Asks when it's your turn</h3><p>Water in, malt in, iodine test: it asks on screen and a buzzer reminds you.</p></div>
-          </div>
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v11H4z"/><path d="M8 3.5v3M16 3.5v3M8 12h8"/></svg></span>
-            <div><h3>One image for Pi 3, 4, 5</h3><p>Flash it with Raspberry Pi Imager. Updates come from the browser, with rollback.</p></div>
-          </div>
-        </div>
-        <p class="section__more reveal"><a class="btn btn--primary" href="software.html">Software details <span aria-hidden="true">→</span></a></p>
-      </div>
-    </section>
-
-    <!-- The case -->
-    <section class="section" id="case">
-      <div class="wrap">
-        <header class="section__head reveal">
-          <p class="eyebrow">The case</p>
-          <h2>Print the box.<br><span class="hl">Plug in the kettle.</span></h2>
-          <p class="section__lead">A 3D-printable enclosure for the Pi, the relay board and the power parts, made to stand next to the kettle.</p>
-        </header>
-        <div class="software-facts software-facts--4">
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 21 8v8l-9 5-9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span>
-            <div><h3>4 printed parts</h3><p>Body, divider and two lids, on any FDM printer; each fits within 200 mm.</p></div>
-          </div>
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></svg></span>
-            <div><h3>Everything inside</h3><p>The Pi, the relay board and the power supply; a divider keeps mains apart.</p></div>
-          </div>
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 9v6M12 9v6M16 9v6"/></svg></span>
-            <div><h3>Switches and sockets</h3><p>Main power, heater and pump switches at the front; sockets at the back.</p></div>
-          </div>
-          <div class="software-fact card reveal">
-            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span>
-            <div><h3>Made from a spec</h3><p>Designed in OpenSCAD from a written specification, every dimension a parameter.</p></div>
-          </div>
-        </div>
-        <p class="section__more reveal"><a class="btn btn--primary" href="case.html">Case details <span aria-hidden="true">→</span></a></p>
-      </div>
-    </section>
-
   </main>
 
   <footer class="footer band-dark">
