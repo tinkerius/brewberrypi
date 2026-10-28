@@ -25,7 +25,7 @@ One page, dark first with a light variant (follows the system; the toggle in the
 
 | Path | Content | Comes from |
 |---|---|---|
-| `site/index.html` | The page: hero, features, app, recipe, components, get started | written by hand |
+| `site/index.html` | The page: hero, features, software (app and OS), recipe, case, get started | written by hand |
 | `site/styles.css` | Colour tokens (from `brand/README.md`), layout, effects | written by hand |
 | `site/main.js` | Theme toggle, scroll effects, the animated hero card, the feature cards (`FEATURES`: add an entry to add a feature), the recipe timeline, the terminal | written by hand |
 | `site/case3d.js` | Interactive 3D view of the case (three.js), loaded when the section scrolls into view | written by hand |
@@ -34,6 +34,19 @@ One page, dark first with a light variant (follows the system; the toggle in the
 | `site/data/recipe.json` | The example recipe (hero curve and recipe timeline) | `tools/sync_assets.sh` from `brewberrypi-app` |
 | `site/vendor/three/` | three.js 0.170.0 (`three.module.min.js`, `STLLoader.js`, `OrbitControls.js`, MIT licence) | npm package `three@0.170.0` |
 | logos, favicons, `site/fonts/` | Brand files and Zilla Slab subsets | `brand/tools/build_brand.py` |
+
+### Design proposals (temporary)
+
+Three looks with the same content, for choosing one; a switcher at the bottom of each page links them.
+Once one is chosen, the others, their stylesheets, the switcher and `tools/make_proposals.py` are removed.
+
+| Page | Look | Stylesheets |
+|---|---|---|
+| `site/index.html` | A · Night: dark first (light variant via the toggle), soft glow | `styles.css` |
+| `site/b.html` | B · Paper: warm paper, ink outlines, hard offset shadows, a round stamp | `styles.css` + `theme-b.css` |
+| `site/c.html` | C · Instrument: light and quiet, sans headlines, mono labels, numbered sections | `styles.css` + `theme-c.css` |
+
+`b.html` and `c.html` are generated from `index.html`: edit `index.html`, then run `python3 tools/make_proposals.py`.
 
 ### Refreshing the assets
 

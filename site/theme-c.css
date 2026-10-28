@@ -1,0 +1,120 @@
+/* Proposal C, "Instrument": light, precise and quiet, like a lab instrument's spec sheet. Sans-serif headlines,
+   mono labels, hairlines, numbered sections, berry as the only accent. Loaded after styles.css; light only. */
+
+:root.theme-c {
+  color-scheme: light;
+  --bg: #f5f5f3;
+  --bg-2: #ecebe8;
+  --surface: #ffffff;
+  --surface-2: #ffffff;
+  --line: #e0deda;
+  --line-2: #c4c1bc;
+  --fg: #18161a;
+  --muted: #67636a;
+  --berry: #8a2a4a;
+  --brass: #a0712a;
+  --leaf: #3d7a3c;
+  --on-accent: #ffffff;
+  --shadow: 0 1px 2px rgba(24, 22, 26, .06), 0 0 0 1px var(--line);
+  --glow-a: transparent;
+  --glow-c: transparent;
+  --grain: 0;
+  --radius: 6px;
+  --case-body: #f2f1ee;
+  --case-lid: #8a2a4a;
+  --case-divider: #9d9a95;
+  --case-bottom: #4a4648;
+}
+
+.theme-c h1, .theme-c h2, .theme-c h3 { font-family: var(--font-sans); font-weight: 650; letter-spacing: -.035em; }
+.theme-c h3 { letter-spacing: -.015em; }
+.theme-c .hero__title { font-size: clamp(2.6rem, 6.6vw, 5rem); font-weight: 650; max-width: 14ch; }
+.theme-c .section__head h2 { font-weight: 600; }
+.theme-c .muted { color: #9a969c; }
+
+/* Numbered sections: "01 / Features". */
+.theme-c main { counter-reset: section; }
+.theme-c .eyebrow { font: 500 .78rem/1 var(--font-mono); letter-spacing: .04em; text-transform: none; color: var(--muted); }
+.theme-c .section__head .eyebrow::before { counter-increment: section; content: counter(section, decimal-leading-zero) " / "; color: var(--berry); }
+.theme-c .section__head { border-top: 1px solid var(--fg); padding-top: 1.1rem; max-width: none; display: grid; gap: 0 2rem; }
+@media (min-width: 900px) {
+  .theme-c .section__head { grid-template-columns: 14rem 1fr; }
+  .theme-c .section__head > :not(.eyebrow) { grid-column: 2; }
+  .theme-c .section__head .eyebrow { grid-row: 1 / span 3; }
+}
+
+/* Quiet surfaces: hairlines, no glass, no glow. */
+.theme-c .glow-bg span, .theme-c .section--app::before, .theme-c .glow::before, .theme-c .glow::after, .theme-c .live::before { display: none; }
+.theme-c .glow-bg::after { opacity: .8; }
+.theme-c .card, .theme-c .live, .theme-c .recipe { border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.theme-c .card { transition: border-color .2s; }
+.theme-c .card:hover { border-color: var(--line-2); }
+.theme-c .btn { border-radius: 6px; font-weight: 550; }
+.theme-c .btn--primary { box-shadow: none; }
+.theme-c .btn--primary:hover { transform: none; background: #6f2039; box-shadow: none; }
+.theme-c .btn--ghost { background: var(--surface); border-color: var(--line-2); backdrop-filter: none; }
+.theme-c .btn--ghost:hover { transform: none; border-color: var(--fg); }
+.theme-c .pill { justify-self: start; border-radius: 6px; background: var(--surface); font-family: var(--font-mono); font-size: .76rem; }
+.theme-c .nav__brand span { font-weight: 700; }
+.theme-c .nav.is-scrolled { background: color-mix(in srgb, var(--bg) 88%, transparent); }
+.theme-c .nav__links a { border-radius: 6px; }
+.theme-c .browser { box-shadow: 0 30px 60px -30px rgba(24, 22, 26, .25), 0 0 0 1px var(--line-2); border-radius: 10px; }
+.theme-c .phone { box-shadow: 0 30px 60px -30px rgba(24, 22, 26, .35); }
+.theme-c .browser__dots i { background: var(--line-2) !important; }
+
+/* Hero: headline on top, the live card below as a wide instrument panel. */
+.theme-c .hero__grid { grid-template-columns: 1fr; }
+.theme-c .hero__copy { display: grid; gap: 0 3rem; }
+@media (min-width: 980px) {
+  .theme-c .hero__copy { grid-template-columns: 1.2fr 1fr; align-items: end; }
+  .theme-c .hero__copy .pill, .theme-c .hero__title { grid-column: 1 / -1; }
+  .theme-c .hero__lead { grid-column: 1; }
+  .theme-c .hero__cta { grid-column: 2; justify-content: flex-end; margin-top: 0; }
+  .theme-c .hero__facts { display: none; }
+}
+.theme-c .live { padding: 0; border-color: var(--line-2); }
+.theme-c .live__bar { padding: .7rem 1rem; border-bottom: 1px solid var(--line); font-family: var(--font-mono); }
+.theme-c .live__led { box-shadow: none; }
+.theme-c .live__state { border-radius: 4px; color: var(--berry); background: none; border-color: var(--line-2); font-family: var(--font-mono); font-weight: 500; }
+.theme-c .live__temp { font-family: var(--font-sans); font-weight: 600; letter-spacing: -.05em; }
+.theme-c .chip { border-radius: 4px; font-family: var(--font-mono); font-size: .74rem; }
+.theme-c .chip.is-on i { box-shadow: none !important; }
+.theme-c .live__goal { border-radius: 4px; background: var(--bg); }
+.theme-c .live__area { display: none; }
+.theme-c .live__line { filter: none; stroke-width: 2.25; }
+.theme-c .live__dot { width: 10px; height: 10px; margin: -5px 0 0 -5px; background: var(--berry); box-shadow: 0 0 0 3px var(--surface), 0 0 0 4px var(--berry); }
+.theme-c .live__caption { padding: 0 1rem .8rem; font-family: var(--font-mono); }
+@media (min-width: 980px) {
+  .theme-c .live { display: grid; grid-template-columns: 22rem 1fr; grid-template-rows: auto auto 1fr auto; }
+  .theme-c .live__bar { grid-column: 1 / -1; }
+  .theme-c .live__stats { grid-column: 1; margin: 1.4rem 1.2rem .8rem; flex-direction: column; align-items: flex-start; }
+  .theme-c .live__goal { grid-column: 1; margin: 0 1.2rem 1.2rem; align-self: start; }
+  .theme-c .live__chart { grid-column: 2; grid-row: 2 / span 2; margin: 1.4rem 1.4rem 1rem 0; height: 250px; }
+  .theme-c .live__caption { grid-column: 1 / -1; }
+  .theme-c .live__temp { font-size: 5.5rem; }
+}
+@media (max-width: 979px) { .theme-c .live__stats, .theme-c .live__goal, .theme-c .live__chart { margin-inline: 1rem; } }
+
+/* Features as a spec sheet: one grid with hairline gaps. */
+.theme-c .bento { gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.theme-c .feature { border: 0; border-radius: 0; min-height: 0; }
+.theme-c .feature__icon { width: 36px; height: 36px; border-radius: 6px; color: var(--fg); background: var(--bg); border-color: var(--line); }
+.theme-c .feature__icon svg { width: 20px; height: 20px; }
+.theme-c .feature h3 { font-size: 1.12rem; }
+.theme-c .feature--soon { background: var(--bg); }
+.theme-c .mini-steps span { border-radius: 4px; font-family: var(--font-mono); font-weight: 500; }
+.theme-c .mini-ask, .theme-c .mini-ask span { border-radius: 4px; }
+
+.theme-c .callouts li { border-top-color: var(--line-2); }
+.theme-c .callout__num { color: var(--berry); }
+.theme-c .software-fact .feature__icon { color: var(--berry); }
+.theme-c .recipe__step { border-radius: 4px; border-top-width: 2px; }
+.theme-c .recipe__name { font-family: var(--font-sans); font-weight: 600; }
+.theme-c .step__num { border-radius: 6px; font: 600 1rem var(--font-mono); box-shadow: none; width: 40px; height: 40px; }
+.theme-c .steps::before { top: 2.85rem; }
+.theme-c .warning { border-radius: 6px; border-color: var(--line-2); background: var(--surface); }
+.theme-c .warning svg { stroke: var(--berry); }
+.theme-c .case__specs dt { color: var(--muted); }
+.theme-c .comp__tag, .theme-c .eyebrow { color: var(--muted); }
+.theme-c .comp__visual--case { background: var(--bg); }
+.theme-c .footer { background: var(--surface); }

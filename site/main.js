@@ -10,7 +10,7 @@ function currentTheme() {
   return document.documentElement.dataset.theme ?? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
 }
 
-$("#theme-toggle").addEventListener("click", () => {
+$("#theme-toggle")?.addEventListener("click", () => {
   const next = currentTheme() === "dark" ? "light" : "dark";
   document.documentElement.dataset.theme = next;
   try { localStorage.setItem("theme", next); } catch { /* storage blocked: the choice lasts for this page only */ }
@@ -63,7 +63,7 @@ function describe(goal) {
     case "HeatUp": return { name: "Heat Up", desc: `Heat up mash to ${fmt(goal.temperature)} degrees (C).`, kind: "heat", detail: `to ${goal.temperature} °C` };
     case "MashIn": return { name: "Mash In", desc: "Now it's your job to mash in the malt.", kind: "you", detail: "your turn" };
     case "Rest": return {
-      name: goal.name ?? "Rest",
+      name: goal.name ?? "Rest", custom: Boolean(goal.name),
       desc: goal.description ?? `Rest at ${fmt(goal.temperature)} degrees (C) for ${goal.minutes}min.`,
       kind: "rest", detail: `${goal.temperature} °C · ${goal.minutes} min`,
     };
@@ -150,6 +150,7 @@ function pathOf(samples, total, w, h, lo, hi, fromStart = true) {
 // ---------- Live hero card ----------
 
 function startHero(model) {
+  if (!$("#live-chart")) return;
   const W = 600, H = 220, LO = 10, HI = 85;
   const chart = $("#live-chart");
   const grid = $(".live__grid", chart);
@@ -231,6 +232,7 @@ function startHero(model) {
 // ---------- Recipe section ----------
 
 function renderRecipe(recipe, model) {
+  if (!$("#recipe-steps")) return;
   $("#recipe-name").textContent = recipe.name.replace(" - ", " – ");
   const W = 1000, H = 160, LO = 10, HI = 85;
   const svg = $("#recipe-profile");
@@ -263,6 +265,8 @@ function renderRecipe(recipe, model) {
     li.className = `recipe__step recipe__step--${seg.kind}`;
     li.innerHTML = `<small>${String(i + 1).padStart(2, "0")}</small><b></b><span></span>`;
     li.querySelector("b").textContent = seg.name;
+    // Custom step names come from the recipe file; the example's are German, which lets the browser hyphenate them.
+    if (seg.custom) li.querySelector("b").lang = "de";
     li.querySelector("span").textContent = seg.detail;
     list.append(li);
   });
@@ -320,6 +324,7 @@ const FEATURES = [
 
 function renderFeatures() {
   const grid = $("#feature-grid");
+  if (!grid) return;
   grid.replaceChildren();
   FEATURES.forEach((f, i) => {
     const card = document.createElement("article");
@@ -332,50 +337,6 @@ function renderFeatures() {
     card.querySelector("p").textContent = f.text;
     grid.append(card);
   });
-}
-
-// ---------- Terminal (OS card) ----------
-
-const TERMINAL = [
-  ["cmd", "brewberry-update list"],
-  ["dim", "# versions on the Pi and in the registry"],
-  ["cmd", "brewberry-update download 0.2.0"],
-  ["dim", "# pulls the image, checks its signature"],
-  ["cmd", "brewberry-update install 0.2.0 --yes"],
-  ["ok", "# switched; the old version is kept"],
-  ["cmd", "brewberry-update rollback --yes"],
-];
-
-function startTerminal() {
-  const term = $("#term");
-  const html = (lines) => lines.map(([kind, text]) => kind === "cmd"
-    ? `<span class="p">$</span> ${text}` : `<span class="${kind}">${text}</span>`).join("\n");
-  if (reducedMotion) { term.innerHTML = html(TERMINAL); return; }
-
-  let timer;
-  const run = () => {
-    let line = 0, char = 0;
-    const done = [];
-    const tick = () => {
-      if (line >= TERMINAL.length) { timer = setTimeout(run, 3500); return; }
-      const [kind, text] = TERMINAL[line];
-      if (kind === "cmd" && char < text.length) {
-        char += 1;
-        term.innerHTML = html([...done, [kind, text.slice(0, char)]]) + '<span class="cursor"></span>';
-        timer = setTimeout(tick, 38 + Math.random() * 50);
-        return;
-      }
-      done.push(TERMINAL[line]);
-      line += 1; char = 0;
-      term.innerHTML = html(done) + '\n<span class="cursor"></span>';
-      timer = setTimeout(tick, kind === "cmd" ? 450 : 700);
-    };
-    tick();
-  };
-  new IntersectionObserver(([entry]) => {
-    clearTimeout(timer);
-    if (entry.isIntersecting) run();
-  }).observe(term);
 }
 
 // ---------- Reveal on scroll, browser tilt ----------
@@ -409,6 +370,7 @@ function startReveal() {
 
 function startCase() {
   const host = $("#case-viewer");
+  if (!host) return;
   const observer = new IntersectionObserver(async ([entry]) => {
     if (!entry.isIntersecting) return;
     observer.disconnect();
@@ -426,7 +388,6 @@ function startCase() {
 
 renderFeatures();
 startReveal();
-startTerminal();
 startCase();
 
 fetch("data/recipe.json")

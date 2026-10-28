@@ -19,14 +19,15 @@ const PARTS = [
   { name: "bottom_lid", place: (m) => m.makeTranslation(0, 0, -LID_T), explode: -1 },
 ];
 
+/** Part colours from the page's CSS (--case-body, --case-lid, --case-divider, --case-bottom). */
 function palette() {
-  const theme = document.documentElement.dataset.theme ?? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
-  const light = theme === "light";
+  const style = getComputedStyle(document.documentElement);
+  const get = (name, fallback) => style.getPropertyValue(name).trim() || fallback;
   return {
-    body: light ? "#f4eeea" : "#e9e0dc",
-    divider: light ? "#c4821a" : "#e9b04f",
-    top_lid: light ? "#8a2a4a" : "#93304f",
-    bottom_lid: light ? "#6d2039" : "#8a2a4a",
+    body: get("--case-body", "#e9e0dc"),
+    divider: get("--case-divider", "#e9b04f"),
+    top_lid: get("--case-lid", "#93304f"),
+    bottom_lid: get("--case-bottom", "#8a2a4a"),
   };
 }
 
@@ -36,6 +37,7 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.8;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 1, 5000);

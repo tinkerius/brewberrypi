@@ -40,8 +40,8 @@ BERRY = "#8a2a4a"
 PAPER = "#fbf8f6"
 
 # Files the website in site/ uses; copied there on every build so they stay in sync.
-SITE_FILES = ("logo-stacked.svg", "logo-stacked-dark.svg", "mark.svg", "mark-dark.svg", "favicon.svg", "favicon.ico",
-              "apple-touch-icon.png", "social-preview.png")
+SITE_FILES = ("logo-stacked.svg", "logo-stacked-dark.svg", "mark.svg", "mark-dark.svg", "mark-reversed.svg",
+              "favicon.svg", "favicon.ico", "apple-touch-icon.png", "social-preview.png")
 
 TAGLINE = ("Raspberry Pi controller for a", "home-brewing mash kettle")
 
