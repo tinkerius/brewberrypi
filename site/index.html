@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BrewberryPi – mash by recipe</title>
+  <title>BrewberryPi – The DIY Homebrewing Controller for Raspberry Pi</title>
   <meta name="description" content="BrewberryPi: an open-source Raspberry Pi controller for a home-brewing mash kettle. Recipes, automatic temperature control and a live web UI.">
   <meta name="theme-color" content="#161113">
   <link rel="icon" href="favicon.ico" sizes="48x48">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="BrewberryPi">
+  <meta property="og:title" content="BrewberryPi – The DIY Homebrewing Controller for Raspberry Pi">
   <meta property="og:description" content="An open-source Raspberry Pi controller for a home-brewing mash kettle.">
   <meta property="og:url" content="https://tinkerius.github.io/brewberrypi/">
   <meta property="og:image" content="https://tinkerius.github.io/brewberrypi/social-preview.png">
@@ -55,13 +55,9 @@
       <div class="wrap">
         <div class="hero__copy">
           <p class="pill reveal"><span class="led led--on"></span>In development · follow along on GitHub</p>
-          <h1 class="hero__title reveal">Mash by recipe.<br><span class="hl">Not by guesswork.</span></h1>
+          <h1 class="hero__title reveal">Brewberry<span class="hero__pi">Pi</span><span class="hero__sub"><span class="hl">The DIY Homebrewing Controller for Raspberry Pi</span></span></h1>
           <p class="hero__lead reveal">A Raspberry Pi controller for an electric mash kettle: software that runs your recipe, and a
             3D-printable case that holds the electronics.</p>
-          <div class="hero__cta reveal">
-            <a class="btn btn--primary" href="#start">Get started <span aria-hidden="true">→</span></a>
-            <a class="btn btn--ghost" href="#software">See the parts</a>
-          </div>
         </div>
 
         <div class="duo reveal">
@@ -73,13 +69,13 @@
                 <span class="stack__phone"><img src="img/app-phone-light-iodine.webp" width="780" height="1688" decoding="async" alt=""></span>
               </span>
             </span>
-            <span class="duo__note">App and OS for the Raspberry Pi, used from any browser</span>
+            <span class="duo__foot"><span class="duo__note">App and OS for the Raspberry Pi, used from any browser</span><span class="duo__more">More info <span aria-hidden="true">→</span></span></span>
           </a>
           <span class="duo__plus" aria-hidden="true">+</span>
           <a class="duo__item" href="case.html">
             <span class="duo__label"><span class="led led--on"></span>The case<span class="duo__go" aria-hidden="true">→</span></span>
             <span class="duo__stage"><img class="duo__case" src="img/case-still.webp" width="900" height="675" decoding="async" alt=""></span>
-            <span class="duo__note">3D-printable enclosure for the Pi, relays and mains parts</span>
+            <span class="duo__foot"><span class="duo__note">3D-printable enclosure for the Pi, relays and mains parts</span><span class="duo__more">More info <span aria-hidden="true">→</span></span></span>
           </a>
         </div>
       </div>
@@ -94,15 +90,34 @@
         </header>
         <ol class="steps">
           <li class="step card reveal">
+            <span class="step__visual band-dark"><img class="step__case" src="img/case-exploded.webp" width="900" height="675" loading="lazy" decoding="async" alt="The case with its lids and divider pulled apart"></span>
             <span class="step__num">1</span>
-            <h3>Print and wire</h3>
-            <p>Print the case and fit the Pi, the relay board, the DS18B20 probe and the buzzer. The wiring guide shows every pin.</p>
+            <h3>Print, assemble and wire</h3>
+            <p>Print the case, assemble the Pi, the relay board and the power parts in it, and wire the probe and the buzzer. The wiring guide shows every pin.</p>
             <p class="step__links">
               <a class="link" href="case.html">The case <span aria-hidden="true">→</span></a>
               <a class="link" href="https://github.com/tinkerius/brewberrypi-app/blob/main/docs/hardware/wiring.md">Wiring guide <span aria-hidden="true">→</span></a>
             </p>
           </li>
           <li class="step card reveal">
+            <span class="step__visual band-dark">
+              <svg class="step__flash" viewBox="0 0 320 150" role="img" aria-label="An SD card with BrewberryPi OS goes into the Raspberry Pi">
+                <g class="sd">
+                  <path d="M34 28h44l14 14v80a6 6 0 0 1-6 6H34a6 6 0 0 1-6-6V34a6 6 0 0 1 6-6Z"/>
+                  <path class="sd__pins" d="M42 36v12M50 36v12M58 36v12M66 36v12"/>
+                  <image href="mark-dark.svg" x="38" y="66" width="44" height="44"/>
+                </g>
+                <path class="arrow" d="M112 78h76"/>
+                <path class="arrow-head" d="m180 70 9 8-9 8"/>
+                <g class="board">
+                  <rect x="210" y="34" width="92" height="88" rx="6"/>
+                  <path class="board__pins" d="M220 42h72"/>
+                  <rect class="board__chip" x="236" y="62" width="28" height="28" rx="2"/>
+                  <path class="board__ports" d="M302 52h8v16h-8M302 80h8v16h-8M302 104h8v12h-8"/>
+                  <rect class="board__slot" x="203" y="70" width="7" height="18" rx="1.5"/>
+                </g>
+              </svg>
+            </span>
             <span class="step__num">2</span>
             <h3>Flash the image</h3>
             <p>Write BrewberryPi OS to an SD card with Raspberry Pi Imager; the app is included. Set a host name and your Wi-Fi, or set Wi-Fi up later through its own hotspot.</p>
@@ -111,6 +126,10 @@
             </p>
           </li>
           <li class="step card reveal">
+            <span class="step__visual band-dark">
+              <span class="step__url">brewberrypi.local</span>
+              <span class="step__phone"><img src="img/app-phone-light.webp" width="780" height="1688" loading="lazy" decoding="async" alt="The app on a phone"></span>
+            </span>
             <span class="step__num">3</span>
             <h3>Open it and brew</h3>
             <p>Open <code>http://brewberrypi.local/</code> on your phone (use the host name you chose), load a recipe and press start.</p>

@@ -1,7 +1,8 @@
-// Renders a still of the 3D case for the main page tile (site/img/case-still.webp).
+// Renders stills of the 3D case for the main page: assembled (site/img/case-still.webp, hero) and exploded
+// (site/img/case-exploded.webp, get-started step 1).
 //
 // Serves site/ locally, opens case.html with reduced motion (no spin), waits for the 3D view and saves it
-// with a transparent background. Needs Node with Playwright and Python with Pillow (for the WebP file).
+// with a transparent background, then presses "Explode" and saves it again. Needs Node with Playwright and Python with Pillow (for the WebP file).
 //
 //   node tools/render_case.mjs
 
@@ -18,7 +19,6 @@ const { chromium } = createRequire(import.meta.url)("playwright");
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = join(ROOT, "site");
-const OUT = join(SITE, "img", "case-still.webp");
 const TYPES = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json",
   ".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp", ".woff2": "font/woff2", ".stl": "model/stl" };
 
@@ -48,14 +48,21 @@ try {
     #case-viewer { width: 900px !important; height: 675px !important; min-height: 0 !important; border: 0 !important; }` });
   await page.locator("#case-viewer canvas").waitFor({ timeout: 30_000 });
   await page.waitForTimeout(1500);
-  const png = join(tmp, "case.png");
-  await page.locator("#case-viewer").screenshot({ path: png, omitBackground: true });
-  execFileSync("python3", ["-I", "-c", `
+  const save = async (name) => {
+    const png = join(tmp, `${name}.png`);
+    await page.locator("#case-viewer").screenshot({ path: png, omitBackground: true });
+    execFileSync("python3", ["-I", "-c", `
 import sys
 from PIL import Image
 Image.open(sys.argv[1]).save(sys.argv[2], "WEBP", quality=88, method=6)
-`, png, OUT]);
-  console.log("wrote site/img/case-still.webp");
+`, png, join(SITE, "img", `${name}.webp`)]);
+    console.log(`wrote site/img/${name}.webp`);
+  };
+  await save("case-still");
+  // The button is hidden by the style above; with reduced motion the parts move apart at once.
+  await page.evaluate(() => document.querySelector("#case-explode").click());
+  await page.waitForTimeout(800);
+  await save("case-exploded");
 } finally {
   await browser.close();
   server.close();

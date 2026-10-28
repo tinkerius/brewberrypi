@@ -108,13 +108,18 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
   });
   canvas.addEventListener("pointerdown", () => { controls.autoRotate = false; hint.hidden = true; wake(); });
 
+  // Fit the case on narrow screens, and zoom out while exploded so the lids stay in view.
+  let baseZoom = 1;
+  const applyZoom = () => {
+    camera.zoom = baseZoom * (1 - 0.3 * exploded);
+    camera.updateProjectionMatrix();
+  };
   const resize = () => {
     const { clientWidth: w, clientHeight: h } = host;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    // Fit the case on narrow screens.
-    camera.zoom = Math.min(1, w / h / 1.1) * 1.05;
-    camera.updateProjectionMatrix();
+    baseZoom = Math.min(1, w / h / 1.1) * 1.05;
+    applyZoom();
     wake();
   };
   new ResizeObserver(resize).observe(host);
@@ -128,6 +133,7 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
     frameId = 0;
     const step = reducedMotion ? 1 : 0.08;
     exploded += (explodeTarget - exploded) * step;
+    applyZoom();
     if (Math.abs(explodeTarget - exploded) < 0.001) exploded = explodeTarget;
     for (const mesh of meshes) mesh.position.z = mesh.userData.explode * EXPLODE * exploded;
     const moving = controls.update() || controls.autoRotate || exploded !== explodeTarget;

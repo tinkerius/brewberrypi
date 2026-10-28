@@ -35,7 +35,7 @@ tokens) it may be text too.
 | `site/main.js` | Scroll effects, the animated hero panel (readouts, scales), the feature cards (`FEATURES`: add an entry to add a feature), the recipe timeline | written by hand |
 | `site/case3d.js` | Interactive 3D view of the case (three.js), loaded when the section scrolls into view; part colours from the section's CSS | written by hand |
 | `site/img/app-*.webp` | Screenshots of the app | `tools/capture_screens.mjs` |
-| `site/img/case-still.webp` | Still of the 3D case for the main page | `tools/render_case.mjs` |
+| `site/img/case-still.webp`, `site/img/case-exploded.webp` | Stills of the 3D case for the main page (assembled, exploded) | `tools/render_case.mjs` |
 | `site/models/case-*.stl`, `site/img/case-assembly.png` | Case parts and the fallback render | `tools/sync_assets.sh` from `brewberrypi-case/04-stl` |
 | `site/data/recipe.json` | The example recipe (hero curve and recipe timeline) | `tools/sync_assets.sh` from `brewberrypi-app` |
 | `site/vendor/three/` | three.js 0.170.0 (`three.module.min.js`, `STLLoader.js`, `OrbitControls.js`, MIT licence) | npm package `three@0.170.0` |
@@ -48,7 +48,7 @@ The tools expect the other repositories next to this one (`../brewberrypi-app`, 
 ```sh
 tools/sync_assets.sh               # case STLs, case render, example recipe
 node tools/capture_screens.mjs     # app screenshots
-node tools/render_case.mjs         # still of the 3D case (after sync_assets.sh)
+node tools/render_case.mjs         # stills of the 3D case (after sync_assets.sh)
 ```
 
 `capture_screens.mjs` starts the app in simulation (`--dummymode`, 40× faster), runs the example recipe, answers
