@@ -416,15 +416,26 @@ main { counter-reset: section; }
 .system__svg { width: 100%; height: auto; overflow: visible; }
 .system__legend { display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; counter-reset: sys; background: var(--line); border-top: 1px solid var(--line); }
 @media (min-width: 640px) { .system__legend { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1000px) { .system__legend { grid-template-columns: repeat(3, 1fr); } }
+/* Three columns, filled down first: row 1 holds 1, 3, 5 and row 2 holds 2, 4, 6. */
+@media (min-width: 1000px) { .system__legend { grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto; grid-auto-flow: column; } }
 .system__legend li { display: grid; grid-template-columns: auto 1fr; align-content: start; gap: .3rem .75rem; padding: 1.1rem 1.2rem; background: var(--surface); counter-increment: sys; }
 .system__legend li > * { grid-column: 2; }
-.system__legend li::before { content: counter(sys); grid-column: 1; grid-row: 1 / span 3; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--pink); color: var(--on-pink); font: 700 .8rem var(--font-mono); }
+.system__legend li::before { content: counter(sys); grid-column: 1; grid-row: 1 / span 4; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--pink); color: var(--on-pink); font: 700 .8rem var(--font-mono); }
 .system__legend b { font-weight: 700; }
 .system__legend span { font-size: .9rem; color: var(--muted); }
 .system__legend code { font-size: .82em; }
 .system__spec { margin-top: .2rem; font: 500 .74rem/1.5 var(--font-mono); letter-spacing: .02em; color: var(--fg); }
 .system__more { margin-top: 1.4rem; font-size: .95rem; color: var(--muted); }
+.system__pic { display: block; width: auto; height: 64px; max-width: 100%; margin: .35rem 0 .3rem; overflow: visible; }
+.system__pic .hole { fill: var(--surface); stroke: #8e949a; stroke-width: 1; }
+.system__pic .pin { fill: #d4a843; }
+.system__pic .screw { fill: #c7cbcf; stroke: #6d7176; stroke-width: .8; }
+.system__pic .cable { fill: none; stroke: #2a2628; stroke-width: 5; stroke-linecap: round; }
+.system__pic .wire-r, .system__pic .wire-k, .system__pic .wire-y { fill: none; stroke-width: 3; stroke-linecap: round; }
+.system__pic .wire-r { stroke: #e2453c; } .system__pic .wire-k { stroke: #6d6a6c; } .system__pic .wire-y { stroke: #e9c13b; }
+.system__pic .shrink { fill: #1b1a1c; }
+.system__pic .steel { fill: #c7cbcf; stroke: #8e949a; stroke-width: 1; }
+.system__pic .steel-shine { stroke: #fff; stroke-width: 1.6; stroke-linecap: round; opacity: .7; }
 .sys-phone > rect:first-child { fill: #2a2226; stroke: var(--line-2); stroke-width: 1.5; }
 .sys-phone__screen { fill: #f6f5f3; }
 .sys-phone__bar { fill: #e3e0dc; }
