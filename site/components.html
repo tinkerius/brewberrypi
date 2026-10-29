@@ -159,26 +159,44 @@
 
               <!-- Numbers, explained in the legend below -->
               <g class="sys-num">
-                <circle cx="70" cy="108" r="14"/><text x="70" y="113">6</text>
-                <circle cx="170" cy="110" r="14"/><text x="170" y="115">1</text>
-                <circle cx="470" cy="133" r="14"/><text x="470" y="138">2</text>
-                <circle cx="898" cy="250" r="14"/><text x="898" y="255">3</text>
-                <circle cx="618" cy="155" r="14"/><text x="618" y="160">4</text>
-                <circle cx="864" cy="80" r="14"/><text x="864" y="85">5</text>
+                <circle cx="70" cy="108" r="14"/><text x="70" y="113">1</text>
+                <circle cx="170" cy="110" r="14"/><text x="170" y="115">2</text>
+                <circle cx="470" cy="133" r="14"/><text x="470" y="138">3</text>
+                <circle cx="864" cy="80" r="14"/><text x="864" y="85">4</text>
+                <circle cx="898" cy="250" r="14"/><text x="898" y="255">5</text>
+                <circle cx="618" cy="155" r="14"/><text x="618" y="160">6</text>
               </g>
             </svg>
           </div>
           <figcaption>
             <ol class="system__legend">
-              <li><b>Raspberry Pi</b><span>Runs the BrewberryPi software. The relay board and the probe connect to its GPIO pins.</span></li>
-              <li><b>Relay board</b><span>Gets mains from the power plug and switches the heater and the pump.</span></li>
-              <li><b>Kettle with heating element</b><span>Your electric mash kettle. Its heating element is switched by the first relay.</span></li>
-              <li><b>Pump or stirrer</b><span>Keeps the mash moving. Switched by the second relay.</span></li>
-              <li><b>Temperature probe</b><span>A waterproof DS18B20 in the mash, wired to the GPIO pins.</span></li>
-              <li><b>Your computer or phone</b><span>Talks to the Pi over Wi-Fi and opens the app in the browser. Nothing to install.</span></li>
+              <li><b>Your computer or phone</b><span>Any device with a current web browser on the same network opens the app at
+                <code>http://brewberrypi.local/</code>, with nothing to install. Several screens can follow the brew at once. No home
+                Wi-Fi? The Pi opens its own hotspot for setup.</span><small class="system__spec">any browser · Wi-Fi · ≥ 5 at once</small></li>
+              <li><b>Raspberry Pi</b><span>A Raspberry Pi 3, 4 or 5 with its own power supply, running BrewberryPi OS from a microSD
+                card. All three have the same 40-pin GPIO header, so the wiring is the same on each.</span><small class="system__spec">Pi 3 · 4 · 5 · BrewberryPi OS</small></li>
+              <li><b>Relay board</b><span>A 2-channel relay module with low-level trigger: relay 1 switches the heater (GPIO 23), relay 2
+                the pump (GPIO 22). It must switch reliably with the Pi's 3.3 V signals (on modules with a JD-VCC jumper: VCC from
+                3.3 V, JD-VCC from 5 V), and its contacts must be rated above the load current.</span><small class="system__spec">2 channels · active-low · GPIO 23 / 22</small></li>
+              <li><b>Temperature probe</b><span>A waterproof DS18B20 probe with three wires (normal power, not parasite power) on the
+                1-Wire pin GPIO 4, with a 4.7 kΩ pull-up to 3.3 V. Never connect it to 5 V.</span><small class="system__spec">DS18B20 · waterproof · 3-wire · GPIO 4</small></li>
+              <li><b>Kettle with heating element</b><span>An electric mash kettle whose element heats whenever it gets power, so the relay
+                is in control. BrewberryPi heats at full power, eases off to 50 % close to the target and then holds each rest. Above
+                the relay's rating (a 3 kW heater on 230 V draws about 13 A), the relay switches a contactor or a solid-state relay
+                instead.</span><small class="system__spec">full power · 50 % near target · ≥ 10 s phases</small></li>
+              <li><b>Pump or stirrer</b><span>A circulation pump or a stirrer motor, switched on and off by relay 2. It keeps the mash
+                moving so the temperature stays even.</span><small class="system__spec">on / off · relay 2</small></li>
             </ol>
           </figcaption>
         </figure>
+        <p class="system__more reveal">Pins, wiring and the full parts list:
+          <a class="link" href="https://github.com/tinkerius/brewberrypi-app/blob/main/docs/hardware/wiring.md">Wiring guide <span aria-hidden="true">→</span></a>
+        </p>
+        <p class="warning reveal">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 10v5M12 18v.01"/></svg>
+          <span>The heater and the pump run on <b>mains power</b>. Have the mains wiring done or checked by a qualified electrician,
+            with a residual-current device (RCD) in the circuit.</span>
+        </p>
       </div>
     </section>
 
