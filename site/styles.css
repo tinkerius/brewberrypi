@@ -186,7 +186,6 @@ main { counter-reset: section; }
 .duo__mini .sys-tube { stroke-width: 4.5; }
 .duo__mini .sys-mains { stroke-width: 2.5; }
 .duo__mini .sys-lv { stroke-width: 2; }
-.duo__mini .sys-probe { stroke-width: 3.5; }
 .duo__mini .sys-kettle__body { stroke-width: 2.5; }
 .duo__mini .sys-heater { stroke-width: 2.5; }
 .duo__mini .sys-jumpers path { stroke-width: 2; }
@@ -481,8 +480,11 @@ main { counter-reset: section; }
 .sys-pump circle { fill: none; stroke: #c7cbcf; stroke-width: 2; }
 .sys-pump path { stroke: #c7cbcf; stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: spin 3s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.sys-probe { stroke: #c7cbcf; stroke-width: 5; stroke-linecap: round; }
-.sys-probe__tip { fill: var(--pink); }
+/* The probe as in the legend picture: black heat-shrink, a thin steel tube, a flat end. */
+.sys-probe__shrink { fill: #1b1a1c; stroke: #3a3537; stroke-width: 1; }
+.sys-probe__steel { fill: #c7cbcf; stroke: #8e949a; stroke-width: .8; }
+.sys-probe__end { fill: #8e949a; }
+.sys-probe__shine { stroke: #fff; stroke-width: 1; opacity: .7; }
 .sys-num circle { fill: var(--pink); stroke: var(--bg); stroke-width: 3; }
 .sys-num text { fill: var(--on-pink); font: 700 15px var(--font-mono); text-anchor: middle; }
 @media (max-width: 640px) { .sys-text { display: none; } .sys-num circle { r: 22px; } .sys-num text { font-size: 24px; transform: translateY(3px); transform-box: fill-box; } }

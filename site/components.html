@@ -153,9 +153,13 @@
               </g>
 
               <!-- 5 Temperature probe in the mash: its wire goes straight up from the top GPIO pin, then over everything else -->
-              <path class="sys-lv" d="M309.7 131.5V68Q309.7 60 318 60H830Q840 60 840 70V76"/>
-              <path class="sys-probe" d="M840 76v154"/>
-              <circle class="sys-probe__tip" cx="840" cy="230" r="5"/>
+              <path class="sys-lv" d="M309.7 131.5V68Q309.7 60 318 60H830Q840 60 840 70V108"/>
+              <g class="sys-probe">
+                <rect class="sys-probe__shrink" x="835.5" y="106" width="9" height="22" rx="1.5"/>
+                <rect class="sys-probe__steel" x="837.5" y="128" width="5" height="100"/>
+                <rect class="sys-probe__end" x="837" y="227" width="6" height="3.5" rx=".6"/>
+                <path class="sys-probe__shine" d="M839 131v94"/>
+              </g>
 
               <!-- Numbers, explained in the legend below -->
               <g class="sys-num">
