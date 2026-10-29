@@ -1,4 +1,4 @@
-// BrewberryPi website: scroll effects, the live hero panel, features, recipe and the 3D case.
+// BrewberryPi website: scroll effects, features, recipe and the 3D case.
 
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -24,7 +24,7 @@ const hero = $(".hero");
 if (hero) sectionObserver.observe(hero); // no link: clears the highlight at the top
 
 // ---------- Recipe model ----------
-// A simplified kettle: enough to draw a believable curve for the hero and the recipe profile. The real
+// A simplified kettle: enough to draw a believable curve for the recipe profile. The real
 // controller and its physics live in brewberrypi-app.
 
 const START_TEMPERATURE = 18;
@@ -115,13 +115,6 @@ function simulate(goals) {
   return { samples, segments, total: t };
 }
 
-function sampleAt(model, t) {
-  const { samples } = model;
-  if (t <= 0) return { t: 0, T: START_TEMPERATURE, heat: 0, pump: false, goal: 0 };
-  const i = Math.min(samples.length - 1, Math.max(0, Math.round(t / 0.5) - 1));
-  return samples[i];
-}
-
 /** SVG path of the samples in a box of width w and height h, for temperatures lo..hi; from the start of
  *  the brew (fromStart) or from the first sample. */
 function pathOf(samples, total, w, h, lo, hi, fromStart = true) {
@@ -131,104 +124,6 @@ function pathOf(samples, total, w, h, lo, hi, fromStart = true) {
   let d = `M${x(first.t).toFixed(1)} ${y(first.T).toFixed(1)}`;
   for (const s of samples) d += `L${x(s.t).toFixed(1)} ${y(s.T).toFixed(1)}`;
   return d;
-}
-
-// ---------- Live hero card ----------
-
-function startHero(model) {
-  if (!$("#live-chart")) return;
-  const W = 600, H = 220, LO = 10, HI = 85;
-  const chart = $("#live-chart");
-  const grid = $(".live__grid", chart);
-  for (const T of [20, 40, 60, 80]) {
-    const y = H - ((T - LO) / (HI - LO)) * H;
-    const line = document.createElementNS(svgNS, "line");
-    line.setAttribute("x1", 0); line.setAttribute("x2", W);
-    line.setAttribute("y1", y); line.setAttribute("y2", y);
-    grid.append(line);
-  }
-  // Scale labels next to the stretched SVG: temperatures on the left, brew time (h:mm) below.
-  const hm = (minutes) => `${Math.floor(minutes / 60)}:${String(Math.floor(minutes % 60)).padStart(2, "0")}`;
-  const label = (axis, text, style) => {
-    const span = document.createElement("span");
-    span.textContent = text;
-    Object.assign(span.style, style);
-    $(axis).append(span);
-  };
-  for (const T of [20, 40, 60, 80]) label("#axis-y", `${T}°`, { top: `${((HI - T) / (HI - LO)) * 100}%` });
-  for (let m = 30; m < model.total - 10; m += 30) label("#axis-x", hm(m), { left: `${(m / model.total) * 100}%` });
-
-  const d = pathOf(model.samples, model.total, W, H, LO, HI);
-  $("#curve-line").setAttribute("d", d);
-  $("#curve-ghost").setAttribute("d", d);
-  $("#curve-area").setAttribute("d", `${d}L${W} ${H}L0 ${H}Z`);
-
-  const clip = $("#curve-clip-rect");
-  const dot = $("#live-dot");
-  const live = $(".live");
-  const el = {
-    temp: $("#live-temp"), goal: $("#live-goal"), desc: $("#live-desc"), progress: $("#live-progress"),
-    heat: $("#live-heat"), pump: $("#live-pump"), state: $("#live-state"),
-    set: $("#live-set"), time: $("#live-time"), step: $("#live-step"),
-  };
-  const steps = String(model.segments.length).padStart(2, "0");
-  let shownGoal = -1;
-
-  function render(t) {
-    const s = sampleAt(model, t);
-    const seg = model.segments[s.goal];
-    clip.setAttribute("width", (t / model.total) * W);
-    el.temp.textContent = s.T.toFixed(1);
-    if (shownGoal !== s.goal) {
-      shownGoal = s.goal;
-      el.goal.textContent = seg.name;
-      el.desc.textContent = seg.desc;
-      el.set.textContent = seg.target == null ? "––.–" : seg.target.toFixed(1);
-      el.step.textContent = `${String(s.goal + 1).padStart(2, "0")}/${steps}`;
-    }
-    el.time.textContent = hm(t);
-    const progress = seg.kind === "you" ? 0 : Math.min(1, (t - seg.t0) / (seg.t1 - seg.t0));
-    el.progress.style.width = `${(progress * 100).toFixed(1)}%`;
-    const heat = Math.max(0, Math.min(1, s.heat));
-    el.heat.classList.toggle("is-on", heat > 0.02);
-    el.heat.querySelector("b").textContent = `${Math.round(heat * 10) * 10}`;
-    el.pump.classList.toggle("is-on", s.pump);
-    el.pump.querySelector("b").textContent = s.pump ? "on" : "off";
-    el.state.textContent = t >= model.total ? "Finished" : seg.kind === "you" ? "Waiting for you" : "Running";
-
-    // The dot sits on the end of the curve, in the card's coordinates.
-    const box = chart.getBoundingClientRect();
-    const card = live.getBoundingClientRect();
-    const x = box.left - card.left + (t / model.total) * box.width;
-    const y = box.top - card.top + (1 - (s.T - LO) / (HI - LO)) * box.height;
-    dot.style.transform = `translate(${x}px, ${y}px)`;
-    dot.style.opacity = t > 0 && t < model.total ? 1 : 0;
-  }
-
-  if (reducedMotion) {
-    render(model.segments[Math.min(6, model.segments.length - 1)].t0 + 10);
-    return;
-  }
-
-  const DURATION = 16000; // ms for the whole recipe
-  const PAUSE = 2600;
-  let start = performance.now() + 600;
-  let running = true;
-  new IntersectionObserver(([entry]) => {
-    running = entry.isIntersecting;
-    if (running) requestAnimationFrame(frame);
-  }).observe(live);
-  addEventListener("resize", () => render(Math.max(0, Math.min(model.total, ((performance.now() - start) / DURATION) * model.total))));
-
-  function frame(now) {
-    if (!running) return;
-    const elapsed = now - start;
-    if (elapsed > DURATION + PAUSE) start = now;
-    const p = Math.max(0, Math.min(1, elapsed / DURATION));
-    render(p * model.total);
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
 }
 
 // ---------- Recipe section ----------
@@ -382,11 +277,7 @@ renderFeatures();
 startReveal();
 startCase();
 
-if ($("#live-chart") || $("#recipe-steps")) fetch("data/recipe.json")
+if ($("#recipe-steps")) fetch("data/recipe.json")
   .then((response) => response.json())
-  .then((recipe) => {
-    const model = simulate(recipe.goals);
-    startHero(model);
-    renderRecipe(recipe, model);
-  })
+  .then((recipe) => renderRecipe(recipe, simulate(recipe.goals)))
   .catch((error) => console.warn("Recipe not loaded.", error));

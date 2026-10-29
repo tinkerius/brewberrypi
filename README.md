@@ -33,12 +33,12 @@ tokens) it may be text too.
 | `site/software.html` | Software details: the app (screenshots), features, recipes, under the hood (the OS) | written by hand |
 | `site/case.html` | Case details: the 3D view, front/back/inside, the parts it holds, printing | written by hand |
 | `site/styles.css` | Colour tokens (from `brand/README.md`, light and `.band-dark`), layout | written by hand |
-| `site/main.js` | Scroll effects, the animated hero panel (readouts, scales), the feature cards (`FEATURES`: add an entry to add a feature), the recipe timeline | written by hand |
+| `site/main.js` | Scroll effects, the feature cards (`FEATURES`: add an entry to add a feature), the recipe timeline | written by hand |
 | `site/case3d.js` | Interactive 3D view of the case (three.js), loaded when the section scrolls into view; part colours from the section's CSS | written by hand |
 | `site/img/app-*.webp` | Screenshots of the app | `tools/capture_screens.mjs` |
 | `site/img/case-still.webp`, `site/img/case-exploded.webp` | Stills of the 3D case for the main page (assembled, exploded) | `tools/render_case.mjs` |
 | `site/models/case-*.stl`, `site/img/case-assembly.png` | Case parts and the fallback render | `tools/sync_assets.sh` from `brewberrypi-case/04-stl` |
-| `site/data/recipe.json` | The example recipe (hero curve and recipe timeline) | `tools/sync_assets.sh` from `brewberrypi-app` |
+| `site/data/recipe.json` | The example recipe (recipe timeline on the software page) | `tools/sync_assets.sh` from `brewberrypi-app` |
 | `site/vendor/three/` | three.js 0.170.0 (`three.module.min.js`, `STLLoader.js`, `OrbitControls.js`, MIT licence) | npm package `three@0.170.0` |
 | logos, favicons, `site/fonts/` | Brand files and Zilla Slab subsets | `brand/tools/build_brand.py` |
 
