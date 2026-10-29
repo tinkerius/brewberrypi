@@ -424,7 +424,6 @@ main { counter-reset: section; }
 .system__legend b { font-weight: 700; }
 .system__legend span { font-size: .9rem; color: var(--muted); }
 .system__legend code { font-size: .82em; }
-.system__spec { margin-top: .2rem; font: 500 .74rem/1.5 var(--font-mono); letter-spacing: .02em; color: var(--fg); }
 .system__more { margin-top: 1.4rem; font-size: .95rem; color: var(--muted); }
 .system__pic { display: block; width: auto; height: 64px; max-width: 100%; margin: .35rem 0 .3rem; overflow: visible; }
 .system__pic .hole { fill: var(--surface); stroke: #8e949a; stroke-width: 1; }
@@ -435,7 +434,19 @@ main { counter-reset: section; }
 .system__pic .wire-r { stroke: #e2453c; } .system__pic .wire-k { stroke: #6d6a6c; } .system__pic .wire-y { stroke: #e9c13b; }
 .system__pic .shrink { fill: #1b1a1c; }
 .system__pic .steel { fill: #c7cbcf; stroke: #8e949a; stroke-width: 1; }
-.system__pic .steel-shine { stroke: #fff; stroke-width: 1.6; stroke-linecap: round; opacity: .7; }
+.system__pic .steel-shine { stroke: #fff; stroke-width: .9; stroke-linecap: round; opacity: .8; }
+.system__pic .steel-end { fill: #8e949a; }
+.system__pics { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .4rem 1rem; margin: .35rem 0 .3rem; }
+.system__fig { display: grid; gap: .2rem; justify-items: start; }
+.system__fig .system__pic { margin: 0; }
+.system__fig small { font: 500 .7rem var(--font-mono); color: var(--muted); }
+.system__pic .dev-bezel { fill: #2a2226; }
+.system__pic .dev-screen { fill: #f6f5f3; stroke: #e3e0dc; stroke-width: .6; }
+.system__pic .dev-bar { fill: #e3e0dc; }
+.system__pic .dev-curve { fill: none; stroke: var(--pink); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.system__pic .dev-base { fill: #c7cbcf; stroke: #8e949a; stroke-width: .8; }
+.system__pic .dev-wifi { fill: none; stroke: var(--pink); stroke-width: 2; stroke-linecap: round; }
+.system__pic .dev-wifi-dot { fill: var(--pink); }
 .sys-phone > rect:first-child { fill: #2a2226; stroke: var(--line-2); stroke-width: 1.5; }
 .sys-phone__screen { fill: #f6f5f3; }
 .sys-phone__bar { fill: #e3e0dc; }
