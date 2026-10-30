@@ -59,7 +59,7 @@
         <p class="page-head__lead reveal">The brewing app and the operating system it runs on, as one image for the Raspberry Pi. You flash it,
           start the Pi and open the app in your browser.</p>
         <nav class="page-head__toc" aria-label="On this page">
-          <a href="#features">Features</a><a href="#recipe">Recipes</a><a href="#os">Under the hood</a>
+          <a href="#mash">Mash controlling</a><a href="#recipe">Recipe definition</a><a href="#os">Operating system</a>
         </nav>
         <div class="showcase reveal">
           <div class="browser">
@@ -83,52 +83,47 @@
       </div>
     </section>
 
-    <!-- Features -->
-    <section class="section" id="features">
+    <!-- Mash controlling -->
+    <section class="section" id="mash">
       <div class="wrap">
         <header class="section__head reveal">
-          <p class="eyebrow">Features</p>
+          <p class="eyebrow">Mash controlling</p>
           <h2>Everything a brew day needs.<br><span class="muted">Nothing it doesn't.</span></h2>
         </header>
-        <!-- Rendered by main.js from FEATURES; the list below is the fallback without JavaScript. -->
-        <div class="bento" id="feature-grid">
+        <!-- Rendered by main.js from FEATURES (group "mash"); the list below is the fallback without JavaScript. -->
+        <div class="bento" id="features-mash">
           <noscript>
             <ul class="feature-list">
-              <li>Recipes as step lists</li><li>Easy mash process creation</li><li>It guides you through the brew</li>
-              <li>Temperature control</li><li>Live on every screen</li><li>The whole curve</li><li>Safe by design</li>
+              <li>It guides you through the brew</li><li>Temperature control</li><li>The whole curve</li><li>Safe by design</li>
             </ul>
           </noscript>
         </div>
       </div>
     </section>
 
-    <!-- Recipe -->
+    <!-- Recipe definition -->
     <section class="section" id="recipe">
       <div class="wrap">
         <header class="section__head reveal">
-          <p class="eyebrow">Recipes</p>
+          <p class="eyebrow">Recipe definition</p>
           <h2>A recipe is a list of steps.<br><span class="muted">BrewberryPi works through it.</span></h2>
           <p class="section__lead">Heat up, rest, mash in, iodine test, lautering, boil. A recipe is a small JSON file, and each step
-            switches the heater and pump on its own or waits for you. Here is a real one: a step mash for a wheat beer.</p>
+            switches the heater and pump on its own or waits for you.</p>
         </header>
-        <div class="recipe reveal" id="recipe-view">
-          <div class="recipe__head">
-            <span class="recipe__name" id="recipe-name">München 12.6 – SUD2:BENIWEISS</span>
-            <span class="recipe__legend">
-              <span class="lg lg--heat">heat</span><span class="lg lg--rest">rest</span><span class="lg lg--you">your turn</span>
-            </span>
-          </div>
-          <svg class="recipe__profile" id="recipe-profile" viewBox="0 0 1000 160" preserveAspectRatio="none" aria-hidden="true"></svg>
-          <ol class="recipe__steps" id="recipe-steps"></ol>
+        <!-- Rendered by main.js from FEATURES (group "recipe"). -->
+        <div class="bento" id="features-recipe">
+          <noscript>
+            <ul class="feature-list"><li>Recipes as step lists</li><li>Easy mash process creation</li></ul>
+          </noscript>
         </div>
       </div>
     </section>
 
-    <!-- Under the hood -->
+    <!-- Operating system -->
     <section class="section" id="os">
       <div class="wrap">
         <header class="section__head reveal">
-          <p class="eyebrow">Under the hood</p>
+          <p class="eyebrow">Operating system</p>
           <h2>One image.<br><span class="hl">Everything on it.</span></h2>
           <p class="section__lead">BrewberryPi OS is a ready-made Raspberry Pi image built for one job. It starts the app at boot, keeps
             it up to date and keeps it safe.</p>
@@ -140,7 +135,11 @@
           </div>
           <div class="software-fact card reveal">
             <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9a14 14 0 0 1 19 0M5.8 12.6a9 9 0 0 1 12.4 0M9.2 16.1a4 4 0 0 1 5.6 0"/><circle cx="12" cy="19.3" r=".9"/></svg></span>
-            <div><h3>Wi-Fi without a keyboard</h3><p>No home network found? The Pi opens its own hotspot, and your phone lands on the Wi-Fi setup page.</p></div>
+            <div><h3>Wi-Fi hotspot</h3><p>No home network found? The Pi opens its own hotspot, and your phone lands on the Wi-Fi setup page.</p></div>
+          </div>
+          <div class="software-fact card reveal">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4.5" width="13" height="9" rx="1.5"/><path d="M6 17.5h6M9 13.5v4"/><rect x="17.5" y="8.5" width="4" height="11" rx="1"/></svg></span>
+            <div><h3>Live on every screen</h3><p>Temperature, heater power and pump at a glance, pushed to every browser in your network the moment they change. Any of them can control the brew.</p></div>
           </div>
           <div class="software-fact card reveal">
             <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.6-4.5M4 13a8 8 0 0 0 14.6 4.5"/><path d="M5 3v4h4M19 21v-4h-4"/></svg></span>
@@ -154,7 +153,7 @@
             <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg></span>
             <div><h3>Survives power cuts</h3><p>The system is read-only; settings and app versions live on their own data partition.</p></div>
           </div>
-          <div class="software-fact card reveal">
+          <div class="software-fact software-fact--full card reveal">
             <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span>
             <div><h3>Source code</h3><p><a class="link" href="https://github.com/tinkerius/brewberrypi-app">App</a> and <a class="link" href="https://github.com/tinkerius/brewberrypi-os">operating system</a> on GitHub.</p></div>
           </div>

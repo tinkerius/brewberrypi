@@ -30,15 +30,14 @@ tokens) it may be text too.
 |---|---|---|
 | `site/index.html` | Main page: the overview, the three parts (components, software, case) as linked panels, get started | written by hand |
 | `site/components.html` | Components: how the Pi, relay board, probe, kettle and pump connect (diagram and legend) | written by hand |
-| `site/software.html` | Software details: the app (screenshots), features, recipes, under the hood (the OS) | written by hand |
+| `site/software.html` | Software details: screenshots, mash controlling, recipe definition, operating system | written by hand |
 | `site/case.html` | Case details: the 3D view, front/back/inside, the parts it holds, printing | written by hand |
 | `site/styles.css` | Colour tokens (from `brand/README.md`, light and `.band-dark`), layout | written by hand |
-| `site/main.js` | Scroll effects, the feature cards (`FEATURES`: add an entry to add a feature), the recipe timeline | written by hand |
+| `site/main.js` | Scroll effects, the feature cards (`FEATURES`: add an entry to add a feature) | written by hand |
 | `site/case3d.js` | Interactive 3D view of the case (three.js), loaded when the section scrolls into view; part colours from the section's CSS | written by hand |
 | `site/img/app-*.webp` | Screenshots of the app | `tools/capture_screens.mjs` |
 | `site/img/case-still.webp`, `site/img/case-exploded.webp` | Stills of the 3D case for the main page (assembled, exploded) | `tools/render_case.mjs` |
 | `site/models/case-*.stl`, `site/img/case-assembly.png` | Case parts and the fallback render | `tools/sync_assets.sh` from `brewberrypi-case/04-stl` |
-| `site/data/recipe.json` | The example recipe (recipe timeline on the software page) | `tools/sync_assets.sh` from `brewberrypi-app` |
 | `site/vendor/three/` | three.js 0.170.0 (`three.module.min.js`, `STLLoader.js`, `OrbitControls.js`, MIT licence) | npm package `three@0.170.0` |
 | logos, favicons, `site/fonts/` | Brand files and Zilla Slab subsets | `brand/tools/build_brand.py` |
 
@@ -47,7 +46,7 @@ tokens) it may be text too.
 The tools expect the other repositories next to this one (`../brewberrypi-app`, `../brewberrypi-case`).
 
 ```sh
-tools/sync_assets.sh               # case STLs, case render, example recipe
+tools/sync_assets.sh               # case STLs, case render
 node tools/capture_screens.mjs     # app screenshots
 node tools/render_case.mjs         # stills of the 3D case (after sync_assets.sh)
 ```
