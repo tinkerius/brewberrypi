@@ -354,7 +354,7 @@ main { counter-reset: section; }
 .case-view canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; cursor: grab; touch-action: pan-y; }
 .case-view canvas:active { cursor: grabbing; }
 .case-fallback { width: 100%; height: 100%; object-fit: contain; opacity: .85; }
-.case-ui { position: absolute; left: 1rem; right: 1rem; bottom: 1rem; z-index: 1; display: flex; align-items: center; gap: .8rem; pointer-events: none; }
+.case-ui { position: absolute; left: 1rem; right: 1rem; bottom: 1rem; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: .6rem .8rem; pointer-events: none; }
 .case-ui > * { pointer-events: auto; }
 .case-hint { font: .74rem var(--font-mono); color: var(--muted); }
 .case-tag { position: absolute; left: 1rem; top: 1rem; z-index: 1; display: flex; align-items: center; gap: .5rem; font: .74rem var(--font-mono); color: var(--muted); }

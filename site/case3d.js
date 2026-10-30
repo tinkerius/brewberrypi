@@ -3,6 +3,7 @@
 import * as THREE from "three";
 import { STLLoader } from "./vendor/three/STLLoader.js";
 import { OrbitControls } from "./vendor/three/OrbitControls.js";
+import { buildComponents } from "./components3d.js";
 
 // The STLs are in print orientation; these put each part back in its place in the case
 // (inverse of the print transforms in brewberrypi-case/03-openscad/brewberrypi-case.scad).
@@ -10,13 +11,14 @@ const CASE_D = 160;      // case_d
 const Z_DIV_TOP = 73;    // z_div_top
 const H = 120;           // H, the lid seat
 const LID_T = 3;         // lid_t
-const EXPLODE = 55;      // mm per step when exploded (divider 1×, top lid 2×, bottom lid −1×)
 
+// Exploded offsets (mm). With the components shown, the divider goes higher so the relay board and the
+// adapter hanging under it clear the body, and the top lid clears the Pi.
 const PARTS = [
-  { name: "body", place: (m) => m, explode: 0 },
-  { name: "divider", place: (m) => m.makeTranslation(0, CASE_D, Z_DIV_TOP).multiply(new THREE.Matrix4().makeRotationX(Math.PI)), explode: 1 },
-  { name: "top_lid", place: (m) => m.makeTranslation(0, 0, H), explode: 2 },
-  { name: "bottom_lid", place: (m) => m.makeTranslation(0, 0, -LID_T), explode: -1 },
+  { name: "body", place: (m) => m, explode: [0, 0] },
+  { name: "divider", place: (m) => m.makeTranslation(0, CASE_D, Z_DIV_TOP).multiply(new THREE.Matrix4().makeRotationX(Math.PI)), explode: [55, 105] },
+  { name: "top_lid", place: (m) => m.makeTranslation(0, 0, H), explode: [110, 165] },
+  { name: "bottom_lid", place: (m) => m.makeTranslation(0, 0, -LID_T), explode: [-55, -45] },
 ];
 
 /** Part colours from the CSS of the viewer's section (--case-body, --case-lid, --case-divider, --case-bottom). */
@@ -76,7 +78,21 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
   const box = new THREE.Box3().setFromObject(model);
   const centre = box.getCenter(new THREE.Vector3());
   model.position.sub(centre);
+  const centreY = model.position.y;
   const size = box.getSize(new THREE.Vector3()).length();
+
+  // The bought components, hidden until the button shows them.
+  const components = buildComponents();
+  model.add(components.divider, components.body);
+  const setOpacity = (opacity) => {
+    for (const material of components.materials) {
+      const transparent = opacity < 1;
+      if (material.transparent !== transparent) { material.transparent = transparent; material.needsUpdate = true; }
+      material.opacity = opacity;
+    }
+    components.divider.visible = components.body.visible = opacity > 0;
+  };
+  setOpacity(0);
 
   camera.position.set(size * 1.25, size * 0.85, size * 1.7);
   camera.lookAt(0, 0, 0);
@@ -94,8 +110,10 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
   host.querySelector(".case-fallback")?.remove();
   host.prepend(canvas);
   const button = host.querySelector("#case-explode");
+  const partsButton = host.querySelector("#case-parts");
   const hint = host.querySelector(".case-hint");
   button.hidden = false;
+  partsButton.hidden = false;
   hint.hidden = false;
 
   let exploded = 0;
@@ -106,12 +124,20 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
     button.textContent = explodeTarget ? "Assemble" : "Explode";
     wake();
   });
+  let shown = 0;
+  let shownTarget = 0;
+  partsButton.addEventListener("click", () => {
+    shownTarget = shownTarget ? 0 : 1;
+    partsButton.setAttribute("aria-pressed", String(Boolean(shownTarget)));
+    partsButton.textContent = shownTarget ? "Hide components" : "Show components";
+    wake();
+  });
   canvas.addEventListener("pointerdown", () => { controls.autoRotate = false; hint.hidden = true; wake(); });
 
   // Fit the case on narrow screens, and zoom out while exploded so the lids stay in view.
   let baseZoom = 1;
   const applyZoom = () => {
-    camera.zoom = baseZoom * (1 - 0.3 * exploded);
+    camera.zoom = baseZoom * (1 - (0.3 + 0.12 * shown) * exploded);
     camera.updateProjectionMatrix();
   };
   const resize = () => {
@@ -133,10 +159,16 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
     frameId = 0;
     const step = reducedMotion ? 1 : 0.08;
     exploded += (explodeTarget - exploded) * step;
-    applyZoom();
+    shown += (shownTarget - shown) * step;
     if (Math.abs(explodeTarget - exploded) < 0.001) exploded = explodeTarget;
-    for (const mesh of meshes) mesh.position.z = mesh.userData.explode * EXPLODE * exploded;
-    const moving = controls.update() || controls.autoRotate || exploded !== explodeTarget;
+    if (Math.abs(shownTarget - shown) < 0.001) shown = shownTarget;
+    applyZoom();
+    const offset = ([plain, withComponents]) => (plain + (withComponents - plain) * shown) * exploded;
+    for (const mesh of meshes) mesh.position.z = offset(mesh.userData.explode);
+    components.divider.position.z = offset(PARTS[1].explode);
+    model.position.y = centreY - 40 * shown * exploded;   // keep the taller exploded stack centred
+    setOpacity(shown);
+    const moving = controls.update() || controls.autoRotate || exploded !== explodeTarget || shown !== shownTarget;
     renderer.render(scene, camera);
     if (moving) wake();
   }
