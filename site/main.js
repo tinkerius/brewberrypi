@@ -32,7 +32,6 @@ const ICONS = {
   bell: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
   shield: '<path d="M12 3 20 6v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6Z"/><path d="m8.8 12 2.2 2.2 4.2-4.4"/>',
   file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
-  curve: '<path d="M3 20h18"/><path d="M4 17l4-6 3 2 4-7h5"/>',
   spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>',
 };
 
@@ -44,18 +43,16 @@ const ART = {
 };
 
 const FEATURES = [
+  { group: "mash", icon: "thermo", title: "Temperature control", size: "wide", art: "curve",
+    text: "Full power to heat up, half power close to the target, then it holds each rest while the pump keeps the mash moving. A chart shows the kettle temperature since the start, so you see each ramp and rest as it happens." },
   { group: "mash", icon: "bell", title: "It guides you through the brew", size: "wide", art: "ask",
     text: "BrewberryPi heats, holds the rests and runs the pump on its own, and tells you when it's your turn: pour in the water, mash in, do the iodine test. Confirm on any device, and it carries on. A buzzer reminds you until you do." },
-  { group: "mash", icon: "thermo", title: "Temperature control", size: "wide", art: "curve",
-    text: "Full power to heat up, half power close to the target, then it holds each rest while the pump keeps the mash moving." },
-  { group: "mash", icon: "curve", title: "The whole curve",
-    text: "A chart of the kettle temperature since the start, so you see each ramp and rest as it happens." },
   { group: "mash", icon: "shield", title: "Safe by design", size: "wide",
     text: "The heater is off whenever it isn't actively controlling temperature. All outputs go off at start-up and on every stop, crash or hang, backed by the systemd and hardware watchdogs." },
-  { group: "mash", icon: "spark", title: "More to come", soon: true,
+  { group: "mash", icon: "spark", title: "More to come", size: "wide", soon: true,
     text: "The feature list grows with the project. Have an idea? Open an issue on GitHub." },
-  { group: "recipe", icon: "list", title: "Recipes as step lists", size: "wide", art: "process",
-    text: "Write your mash schedule once: heat up, rest, mash in, iodine test, lautering, boil. BrewberryPi works through it step by step, like this step mash for a wheat beer." },
+  { group: "recipe", icon: "list", title: "Mashing process as step lists", size: "wide", art: "process",
+    text: "Write your mash schedule once as a list of steps: the target temperature of each heat-up, the temperature and minutes of each rest, the extra minutes after an iodine test that isn't done yet, and the boil time. Give your rests their own names. BrewberryPi works through it step by step, like this step mash for a wheat beer." },
   { group: "recipe", icon: "file", title: "Easy mash process creation", size: "wide", art: "json",
     text: "A recipe is a small JSON file: list the steps with their temperatures and minutes. Drop it into the recipes folder on the Pi's network share, and it shows up in the app within seconds." },
 ];
