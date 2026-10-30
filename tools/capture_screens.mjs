@@ -119,6 +119,10 @@ try {
     return active === MAIN_GOAL && process.goals[active].statuspercent >= 40;
   }, "the main goal");
   await shoot("", { top: true });
+  // The recipe's goal list on its own, for the "Recipes as step lists" feature.
+  const desktopLight = pages.find(({ file }) => file === "app-desktop-light").page;
+  await desktopLight.locator("section").filter({ has: desktopLight.locator("h2", { hasText: "Brewing Process" }) })
+    .screenshot({ path: join(pngDir, "app-process-light.png") });
 
   // The iodine test asks a yes/no question.
   await waitFor(async () => {

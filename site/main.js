@@ -171,42 +171,43 @@ function renderRecipe(recipe, model) {
 
 // ---------- Features ----------
 // To add a feature, add an entry. size: "wide" spans two columns on large screens. art: an optional
-// illustration (see ART). soon: the muted "more to come" card.
+// illustration (see ART). size "full" spans the whole row. soon: the muted "more to come" card.
 
 const ICONS = {
   list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
   thermo: '<path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0Z"/><path d="M12 10v7"/>',
   bell: '<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
   devices: '<rect x="2.5" y="4.5" width="13" height="9" rx="1.5"/><path d="M6 17.5h6M9 13.5v4"/><rect x="17.5" y="8.5" width="4" height="11" rx="1"/>',
-  flask: '<path d="M9.5 3h5M10.5 3v6l-5.2 9.1A2 2 0 0 0 7 21h10a2 2 0 0 0 1.7-2.9L13.5 9V3"/><path d="M7.5 15h9"/>',
-  chip: '<rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/>',
   shield: '<path d="M12 3 20 6v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6Z"/><path d="m8.8 12 2.2 2.2 4.2-4.4"/>',
+  file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+  curve: '<path d="M3 20h18"/><path d="M4 17l4-6 3 2 4-7h5"/>',
   spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>',
 };
 
 const ART = {
-  steps: '<div class="mini-steps"><span class="y">Add Water</span><span class="h">Heat Up 52°</span><span class="y">Mash In</span><span class="r">Rest 30 min</span><span class="h">Heat Up 65°</span><span class="r">Rest 30 min</span><span class="y">Iodine Test</span><span class="h">78°</span></div>',
+  process: '<div class="mini-shot"><img src="img/app-process-light.webp" width="1464" height="1850" loading="lazy" decoding="async" alt="The app working through the step mash BENIWEISS: the done steps, the active rest with its time left, and the steps still to come"></div>',
+  json: '<figure class="mini-file"><figcaption>recipes/BENIWEISS.json</figcaption><pre>{\n  <b>"name"</b>: <i>"München 12.6 - SUD2:BENIWEISS"</i>,\n  <b>"goals"</b>: [\n    { <b>"type"</b>: <i>"PourInBrewingWater"</i> },\n    { <b>"type"</b>: <i>"HeatUp"</i>, <b>"temperature"</b>: <u>40</u> },\n    { <b>"type"</b>: <i>"MashIn"</i> },\n    { <b>"type"</b>: <i>"HeatUp"</i>, <b>"temperature"</b>: <u>52</u> },\n    { <b>"type"</b>: <i>"Rest"</i>, <b>"temperature"</b>: <u>52</u>, <b>"minutes"</b>: <u>30</u>,\n      <b>"name"</b>: <i>"Eiweißrast"</i> },\n    <s>…</s>\n    { <b>"type"</b>: <i>"IodineTest"</i>, <b>"temperature"</b>: <u>73</u>, <b>"minutes"</b>: <u>10</u> },\n    { <b>"type"</b>: <i>"HeatUp"</i>, <b>"temperature"</b>: <u>78</u> }\n  ]\n}</pre></figure>',
   curve: '<svg class="mini-curve" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true"><path class="target" d="M0 22H300"/><path d="M0 84C50 80 80 50 110 30S150 22 170 22H300"/></svg>',
   ask: '<div class="mini-ask">Iodine test successfull?<div><span>Yes</span><span>No</span></div></div>',
   devices: '<div class="mini-devices" aria-hidden="true"><i></i><i></i><i></i></div>',
 };
 
 const FEATURES = [
-  { icon: "list", title: "Recipes as step lists", size: "wide", art: "steps",
-    text: "Write your mash schedule once: heat up, rest, mash in, iodine test, lautering, boil. BrewberryPi works through it step by step." },
+  { icon: "list", title: "Recipes as step lists", size: "wide", art: "process",
+    text: "Write your mash schedule once: heat up, rest, mash in, iodine test, lautering, boil. BrewberryPi works through it step by step, like this step mash for a wheat beer." },
+  { icon: "file", title: "Easy mash process creation", size: "wide", art: "json",
+    text: "A recipe is a small JSON file: list the steps with their temperatures and minutes. Drop it into the recipes folder on the Pi's network share, and it shows up in the app within seconds." },
+  { icon: "bell", title: "It guides you through the brew", size: "wide", art: "ask",
+    text: "BrewberryPi heats, holds the rests and runs the pump on its own, and tells you when it's your turn: pour in the water, mash in, do the iodine test. Confirm on any device, and it carries on. A buzzer reminds you until you do." },
   { icon: "thermo", title: "Temperature control", size: "wide", art: "curve",
     text: "Full power to heat up, half power close to the target, then it holds each rest while the pump keeps the mash moving." },
-  { icon: "bell", title: "It asks when it needs you", size: "wide", art: "ask",
-    text: "Water in? Malt in? Iodine test done? The question appears on screen, and a buzzer beeps until somebody answers." },
   { icon: "devices", title: "Live on every screen", art: "devices",
-    text: "Every browser in your network sees the same live state, and any of them can control the brew." },
-  { icon: "flask", title: "Simulation mode",
-    text: "No hardware yet? Run a whole recipe against a simulated kettle, sped up if you like." },
+    text: "Temperature, heater power and pump at a glance, pushed to every browser in your network the moment they change. Any of them can control the brew." },
+  { icon: "curve", title: "The whole curve",
+    text: "A chart of the kettle temperature since the start, so you see each ramp and rest as it happens." },
   { icon: "shield", title: "Safe by design", size: "wide",
     text: "The heater is off whenever it isn't actively controlling temperature. All outputs go off at start-up and on every stop, crash or hang, backed by the systemd and hardware watchdogs." },
-  { icon: "chip", title: "Your wiring, your pins",
-    text: "Pins, relay polarity and the sensor are set in the config, so it fits the relay board you already have." },
-  { icon: "spark", title: "More to come", soon: true,
+  { icon: "spark", title: "More to come", size: "full", soon: true,
     text: "The feature list grows with the project. Have an idea? Open an issue on GitHub." },
 ];
 
