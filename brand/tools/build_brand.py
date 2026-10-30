@@ -40,7 +40,7 @@ BERRY = "#8a2a4a"
 PAPER = "#fbf8f6"
 
 # Files the website in site/ uses; copied there on every build so they stay in sync.
-SITE_FILES = ("logo-stacked.svg", "logo-stacked-dark.svg", "favicon.svg", "favicon.ico",
+SITE_FILES = ("logo-stacked.svg", "logo-stacked-dark.svg", "mark-dark.svg", "favicon.svg", "favicon.ico",
               "apple-touch-icon.png", "social-preview.png")
 
 TAGLINE = ("Raspberry Pi controller for a", "home-brewing mash kettle")
@@ -256,23 +256,24 @@ def main():
 
 
 def write_site():
-    """Copy the files the website uses into site/, plus a self-hosted Latin subset of Zilla Slab Medium."""
+    """Copy the files the website uses into site/, plus self-hosted Latin subsets of Zilla Slab Medium and Bold."""
     site = BRAND.parent / "site"
     for name in SITE_FILES:
         shutil.copyfile(BRAND / name, site / name)
     fonts = site / "fonts"
     fonts.mkdir(exist_ok=True)
-    options = subset.Options()
-    options.flavor = "woff2"
-    options.layout_features = ["kern", "liga"]
-    font = subset.load_font(str(fetch_font("ZillaSlab-Medium.ttf")), options)
-    subsetter = subset.Subsetter(options)
-    subsetter.populate(unicodes=[*range(0x20, 0x7F), *range(0xA0, 0x100), 0x2013, 0x2014, 0x2018, 0x2019,
-                                 0x201C, 0x201D, 0x2026])
-    subsetter.subset(font)
-    subset.save_font(font, str(fonts / "zilla-slab-medium.woff2"), options)
+    for weight in ("Medium", "Bold"):
+        options = subset.Options()
+        options.flavor = "woff2"
+        options.layout_features = ["kern", "liga"]
+        font = subset.load_font(str(fetch_font(f"ZillaSlab-{weight}.ttf")), options)
+        subsetter = subset.Subsetter(options)
+        subsetter.populate(unicodes=[*range(0x20, 0x7F), *range(0xA0, 0x100), 0x2013, 0x2014, 0x2018, 0x2019,
+                                     0x201C, 0x201D, 0x2026, 0x2192, 0x2212])
+        subsetter.subset(font)
+        subset.save_font(font, str(fonts / f"zilla-slab-{weight.lower()}.woff2"), options)
     shutil.copyfile(fetch_font("OFL.txt"), fonts / "OFL.txt")
-    print(f"copied {len(SITE_FILES)} files and the font to {site}")
+    print(f"copied {len(SITE_FILES)} files and the fonts to {site}")
 
 
 if __name__ == "__main__":

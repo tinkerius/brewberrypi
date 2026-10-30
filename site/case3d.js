@@ -1,0 +1,176 @@
+// Interactive 3D view of the case, from the STLs of brewberrypi-case (copied by tools/sync_assets.sh).
+
+import * as THREE from "three";
+import { STLLoader } from "./vendor/three/STLLoader.js";
+import { OrbitControls } from "./vendor/three/OrbitControls.js";
+import { buildComponents } from "./components3d.js";
+
+// The STLs are in print orientation; these put each part back in its place in the case
+// (inverse of the print transforms in brewberrypi-case/03-openscad/brewberrypi-case.scad).
+const CASE_D = 160;      // case_d
+const Z_DIV_TOP = 73;    // z_div_top
+const H = 120;           // H, the lid seat
+const LID_T = 3;         // lid_t
+
+// Exploded offsets (mm). With the components shown, the divider goes higher so the relay board and the
+// adapter hanging under it clear the body, and the top lid clears the Pi.
+const PARTS = [
+  { name: "body", place: (m) => m, explode: [0, 0] },
+  { name: "divider", place: (m) => m.makeTranslation(0, CASE_D, Z_DIV_TOP).multiply(new THREE.Matrix4().makeRotationX(Math.PI)), explode: [55, 105] },
+  { name: "top_lid", place: (m) => m.makeTranslation(0, 0, H), explode: [110, 165] },
+  { name: "bottom_lid", place: (m) => m.makeTranslation(0, 0, -LID_T), explode: [-55, -45] },
+];
+
+/** Part colours from the CSS of the viewer's section (--case-body, --case-lid, --case-divider, --case-bottom). */
+function palette(host) {
+  const style = getComputedStyle(host);
+  const get = (name, fallback) => style.getPropertyValue(name).trim() || fallback;
+  return {
+    body: get("--case-body", "#e9e0dc"),
+    divider: get("--case-divider", "#e9b04f"),
+    top_lid: get("--case-lid", "#93304f"),
+    bottom_lid: get("--case-bottom", "#8a2a4a"),
+  };
+}
+
+export async function mountCase(host, { reducedMotion = false } = {}) {
+  const canvas = document.createElement("canvas");
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.8;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, 1, 5000);
+
+  // Light: soft sky, a warm key and a berry rim from behind.
+  const hemi = new THREE.HemisphereLight(0xfff4ee, 0x2a1d22, 1.6);
+  const key = new THREE.DirectionalLight(0xffffff, 2.4);
+  key.position.set(300, 500, 400);
+  const fill = new THREE.DirectionalLight(0xe9b04f, 0.8);
+  fill.position.set(-400, 150, 200);
+  const rim = new THREE.DirectionalLight(0xe0789a, 2.2);
+  rim.position.set(-200, 200, -500);
+  scene.add(hemi, key, fill, rim);
+
+  // OpenSCAD is Z-up, three.js Y-up: turn the case so its front (−Y in OpenSCAD) faces the camera.
+  const model = new THREE.Group();
+  model.rotation.x = -Math.PI / 2;
+  const pivot = new THREE.Group();
+  pivot.add(model);
+  scene.add(pivot);
+
+  const loader = new STLLoader();
+  const colours = palette(host);
+  const meshes = await Promise.all(PARTS.map(async (part) => {
+    const geometry = await loader.loadAsync(`models/case-${part.name}.stl`);
+    geometry.applyMatrix4(part.place(new THREE.Matrix4()));
+    geometry.computeVertexNormals();
+    const material = new THREE.MeshStandardMaterial({ color: colours[part.name], roughness: 0.55, metalness: 0.05 });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.userData = part;
+    model.add(mesh);
+    return mesh;
+  }));
+
+  // Centre the case on the pivot.
+  const box = new THREE.Box3().setFromObject(model);
+  const centre = box.getCenter(new THREE.Vector3());
+  model.position.sub(centre);
+  const centreY = model.position.y;
+  const size = box.getSize(new THREE.Vector3()).length();
+
+  // The bought components, shown from the start; the button hides them.
+  const components = buildComponents();
+  model.add(components.divider, components.body);
+  const setOpacity = (opacity) => {
+    for (const material of components.materials) {
+      const transparent = opacity < 1;
+      if (material.transparent !== transparent) { material.transparent = transparent; material.needsUpdate = true; }
+      material.opacity = opacity;
+    }
+    components.divider.visible = components.body.visible = opacity > 0;
+  };
+  setOpacity(1);
+
+  camera.position.set(size * 1.25, size * 0.85, size * 1.7);
+  camera.lookAt(0, 0, 0);
+
+  const controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.enableZoom = false;
+  controls.enablePan = false;
+  controls.minPolarAngle = Math.PI * 0.15;
+  controls.maxPolarAngle = Math.PI * 0.62;
+  controls.autoRotate = !reducedMotion;
+  controls.autoRotateSpeed = 1.1;
+
+  // Replace the static render.
+  host.querySelector(".case-fallback")?.remove();
+  host.prepend(canvas);
+  const button = host.querySelector("#case-explode");
+  const partsButton = host.querySelector("#case-parts");
+  const hint = host.querySelector(".case-hint");
+  button.hidden = false;
+  partsButton.hidden = false;
+  hint.hidden = false;
+
+  let exploded = 0;
+  let explodeTarget = 0;
+  button.addEventListener("click", () => {
+    explodeTarget = explodeTarget ? 0 : 1;
+    button.setAttribute("aria-pressed", String(Boolean(explodeTarget)));
+    button.textContent = explodeTarget ? "Assemble" : "Explode";
+    wake();
+  });
+  let shown = 1;
+  let shownTarget = 1;
+  partsButton.addEventListener("click", () => {
+    shownTarget = shownTarget ? 0 : 1;
+    partsButton.setAttribute("aria-pressed", String(Boolean(shownTarget)));
+    partsButton.textContent = shownTarget ? "Hide components" : "Show components";
+    wake();
+  });
+  canvas.addEventListener("pointerdown", () => { controls.autoRotate = false; hint.hidden = true; wake(); });
+
+  // Fit the case on narrow screens, and zoom out while exploded so the lids stay in view.
+  let baseZoom = 1;
+  const applyZoom = () => {
+    camera.zoom = baseZoom * (1 - (0.3 + 0.12 * shown) * exploded);
+    camera.updateProjectionMatrix();
+  };
+  const resize = () => {
+    const { clientWidth: w, clientHeight: h } = host;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    baseZoom = Math.min(1, w / h / 1.1) * 1.05;
+    applyZoom();
+    wake();
+  };
+  new ResizeObserver(resize).observe(host);
+
+  // Render only while visible and something moves.
+  let visible = true;
+  let frameId = 0;
+  new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; wake(); }).observe(host);
+  function wake() { if (!frameId && visible) frameId = requestAnimationFrame(frame); }
+  function frame() {
+    frameId = 0;
+    const step = reducedMotion ? 1 : 0.08;
+    exploded += (explodeTarget - exploded) * step;
+    shown += (shownTarget - shown) * step;
+    if (Math.abs(explodeTarget - exploded) < 0.001) exploded = explodeTarget;
+    if (Math.abs(shownTarget - shown) < 0.001) shown = shownTarget;
+    applyZoom();
+    const offset = ([plain, withComponents]) => (plain + (withComponents - plain) * shown) * exploded;
+    for (const mesh of meshes) mesh.position.z = offset(mesh.userData.explode);
+    components.divider.position.z = offset(PARTS[1].explode);
+    model.position.y = centreY - 40 * shown * exploded;   // keep the taller exploded stack centred
+    setOpacity(shown);
+    const moving = controls.update() || controls.autoRotate || exploded !== explodeTarget || shown !== shownTarget;
+    renderer.render(scene, camera);
+    if (moving) wake();
+  }
+  resize();
+}

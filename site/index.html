@@ -1,17 +1,16 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BrewberryPi</title>
-  <meta name="description" content="BrewberryPi: an open-source Raspberry Pi controller for a home-brewing mash kettle.">
-  <meta name="theme-color" content="#fbf8f6" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#1c1719" media="(prefers-color-scheme: dark)">
+  <title>BrewberryPi – The DIY Homebrewing Controller for Raspberry Pi</title>
+  <meta name="description" content="BrewberryPi: an open-source Raspberry Pi controller for a home-brewing mash kettle. Recipes, automatic temperature control and a live web UI.">
+  <meta name="theme-color" content="#161113">
   <link rel="icon" href="favicon.ico" sizes="48x48">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="BrewberryPi">
+  <meta property="og:title" content="BrewberryPi – The DIY Homebrewing Controller for Raspberry Pi">
   <meta property="og:description" content="An open-source Raspberry Pi controller for a home-brewing mash kettle.">
   <meta property="og:url" content="https://tinkerius.github.io/brewberrypi/">
   <meta property="og:image" content="https://tinkerius.github.io/brewberrypi/social-preview.png">
@@ -19,31 +18,210 @@
   <meta property="og:image:height" content="640">
   <meta property="og:image:alt" content="BrewberryPi logo: a berry-coloured brewing kettle on three flames">
   <meta name="twitter:card" content="summary_large_image">
-  <style>
-    /* Colours and typeface from brand/README.md. */
-    @font-face { font-family: "Zilla Slab"; font-weight: 500; font-display: swap; src: url("fonts/zilla-slab-medium.woff2") format("woff2"); }
-    :root { color-scheme: light dark; --bg: #fbf8f6; --fg: #2a1d22; --muted: #6b5a61; --accent: #8a2a4a; }
-    @media (prefers-color-scheme: dark) { :root { --bg: #1c1719; --fg: #f1e8eb; --muted: #a8979e; --accent: #e0789a; } }
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--fg);
-           font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
-    main { max-width: 36rem; padding: 2rem 1rem; text-align: center; }
-    h1 { margin: 0 0 1.25rem; line-height: 0; }
-    h1 img { width: min(17rem, 80vw); height: auto; }
-    p { margin: .5rem 0; line-height: 1.5; }
-    .tagline { font-family: "Zilla Slab", Rockwell, Georgia, serif; font-weight: 500; font-size: 1.35rem; text-wrap: balance; }
-    .muted { color: var(--muted); }
-  </style>
+  <link rel="preload" href="fonts/zilla-slab-bold.woff2" as="font" type="font/woff2" crossorigin>
+  <script>
+    document.documentElement.classList.remove("no-js");
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js" } }</script>
+  <script type="module" src="main.js"></script>
 </head>
 <body>
-  <main>
-    <h1>
-      <picture>
-        <source srcset="logo-stacked-dark.svg" media="(prefers-color-scheme: dark)">
-        <img src="logo-stacked.svg" alt="BrewberryPi" width="272" height="179">
-      </picture>
-    </h1>
-    <p class="tagline">A Raspberry Pi controller for a home-brewing mash kettle.</p>
-    <p class="muted">Coming soon as open source.</p>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav band-dark" id="top">
+    <div class="wrap nav__inner">
+      <a class="nav__brand" href="index.html" aria-label="BrewberryPi home">
+        <img src="mark-dark.svg" alt="" width="32" height="32">
+        <span>Brewberry<b>Pi</b></span>
+      </a>
+      <nav class="nav__links" aria-label="Pages">
+        <a href="index.html" aria-current="page">Overview</a>
+        <a href="components.html">Components</a>
+        <a href="software.html">Software</a>
+        <a href="case.html">Case</a>
+      </nav>
+      <div class="nav__actions">
+        <a class="btn btn--ghost btn--sm" href="https://github.com/tinkerius/brewberrypi">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="gh"><path d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5Z"/></svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero band-dark">
+      <div class="wrap">
+        <div class="hero__copy">
+          <p class="pill reveal"><span class="led led--on"></span>In development · follow along on GitHub</p>
+          <h1 class="hero__title reveal">Brewberry<span class="hero__pi">Pi</span><span class="hero__sub"><span class="hl">The DIY Homebrewing Controller for Raspberry Pi</span></span></h1>
+          <p class="hero__lead reveal">Your homebrewing companion: Let a Raspberry Pi follow your recipe and control your electric mash
+            kettle.</p>
+          <p class="page-head__download hero__download reveal">
+            <a class="btn btn--primary" href="https://github.com/tinkerius/brewberrypi-os/releases"><svg viewBox="0 0 24 24" aria-hidden="true" class="dl"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download the OS image</a>
+            <a class="btn btn--ghost" href="https://github.com/tinkerius/brewberrypi-case/tree/main/04-stl"><svg viewBox="0 0 24 24" aria-hidden="true" class="dl"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download the case files</a>
+            <span>Free and open source</span>
+          </p>
+        </div>
+
+        <div class="duo reveal">
+          <a class="duo__item" href="components.html">
+            <span class="duo__label"><span class="led led--on"></span>The components<span class="duo__go" aria-hidden="true">→</span></span>
+            <span class="duo__stage">
+              <svg class="duo__mini" viewBox="0 0 340 180" aria-hidden="true">
+                <!-- Pi, portrait: GPIO on the right, ports at the bottom -->
+                <rect class="pi__pcb" x="20" y="40" width="76" height="116" rx="4"/>
+                <rect class="pi__black" x="85" y="48" width="8" height="72" rx="1"/>
+                <path class="mini-pins" d="M89 51v66"/>
+                <rect class="pi__silver" x="44" y="74" width="20" height="20" rx="1.5"/>
+                <rect class="pi__chip" x="30" y="56" width="10" height="7" rx="1"/>
+                <rect class="pi__silver" x="24" y="144" width="18" height="18" rx="1"/>
+                <rect class="pi__silver" x="47" y="144" width="18" height="18" rx="1"/>
+                <rect class="pi__silver" x="70" y="144" width="20" height="18" rx="1"/>
+                <!-- Jumper wires to the relay board, centred on the Pi -->
+                <g class="sys-jumpers"><path class="j-red" d="M92 91H119"/><path class="j-black" d="M92 96H119"/><path class="j-yellow" d="M92 101H119"/><path class="j-orange" d="M92 106H119"/></g>
+                <rect class="sys-relay__pcb" x="116" y="59" width="50" height="78" rx="3"/>
+                <rect class="sys-relay__header" x="118" y="87" width="5" height="22" rx="1"/>
+                <rect class="sys-relay__cube" x="127" y="64" width="25" height="30" rx="2"/>
+                <rect class="sys-relay__cube" x="127" y="102" width="25" height="30" rx="2"/>
+                <rect class="sys-relay__term" x="154" y="70" width="10" height="18" rx="1.5"/>
+                <rect class="sys-relay__term" x="154" y="108" width="10" height="18" rx="1.5"/>
+                <!-- Switched mains: straight to the pump and to the heating element -->
+                <path class="sys-mains" d="M164 79H196"/>
+                <path class="sys-mains" d="M164 117H260"/>
+                <!-- Kettle, pump and probe -->
+                <path class="sys-kettle__mash" d="M253 75h74v72a6 6 0 0 1-6 6h-62a6 6 0 0 1-6-6Z"/>
+                <path class="sys-kettle__body" d="M250 50V148a10 10 0 0 0 10 10H320a10 10 0 0 0 10-10V50"/>
+                <path class="sys-heater" d="M260 123l6-10 6 10l6-10 6 10l6-10 6 10l6-10 6 10l6-10 6 10"/>
+                <path class="sys-tube" d="M250 106H210V36H272V92"/>
+                <path class="sys-flow" d="M244 106h-8M210 60v-8M236 36h8"/>
+                <g class="sys-pump"><rect x="196" y="66" width="28" height="26" rx="5"/><circle cx="210" cy="79" r="8"/><path d="M210 73v12M204 79h12"/></g>
+                <path class="sys-lv" d="M89 51V22Q89 16 95 16H300Q306 16 306 22V42"/>
+                <g class="sys-probe">
+                  <rect class="sys-probe__shrink" x="303.5" y="41" width="5" height="13" rx="1"/>
+                  <rect class="sys-probe__steel" x="304.6" y="54" width="2.8" height="44"/>
+                  <rect class="sys-probe__end" x="304.3" y="97.5" width="3.4" height="2.2" rx=".4"/>
+                </g>
+              </svg>
+            </span>
+            <span class="duo__foot"><span class="duo__note">Raspberry Pi, relay board and probe at your kettle</span><span class="duo__more">More info <span aria-hidden="true">→</span></span></span>
+          </a>
+          <span class="duo__plus" aria-hidden="true">+</span>
+          <a class="duo__item" href="software.html">
+            <span class="duo__label"><span class="led led--on"></span>The software<span class="duo__go" aria-hidden="true">→</span></span>
+            <span class="duo__stage">
+              <span class="stack">
+                <span class="stack__browser"><span class="stack__bar"><i></i><i></i><i></i></span><img src="img/app-desktop-light.webp" width="1920" height="1200" decoding="async" alt=""></span>
+                <span class="stack__phone"><img src="img/app-phone-light-iodine.webp" width="780" height="1688" decoding="async" alt=""></span>
+              </span>
+            </span>
+            <span class="duo__foot"><span class="duo__note">App and OS for the Raspberry Pi, used from any browser</span><span class="duo__more">More info <span aria-hidden="true">→</span></span></span>
+          </a>
+          <span class="duo__plus" aria-hidden="true">+</span>
+          <a class="duo__item" href="case.html">
+            <span class="duo__label"><span class="led led--on"></span>The case<span class="duo__go" aria-hidden="true">→</span></span>
+            <span class="duo__stage"><img class="duo__case" src="img/case-still.webp" width="900" height="675" decoding="async" alt=""></span>
+            <span class="duo__foot"><span class="duo__note">3D-printable enclosure for the Pi, relays and mains parts</span><span class="duo__more">More info <span aria-hidden="true">→</span></span></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Get started -->
+    <section class="section" id="start">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="eyebrow">Get started</p>
+          <h2>From parts to first brew<br><span class="hl">in three steps.</span></h2>
+        </header>
+        <ol class="steps">
+          <li class="step card reveal">
+            <span class="step__visual band-dark"><img class="step__case" src="img/case-exploded.webp" width="900" height="675" loading="lazy" decoding="async" alt="The case with its lids and divider pulled apart: the Raspberry Pi on the divider, the relay board and power adapter under it, switches at the front and sockets at the back"></span>
+            <span class="step__num">1</span>
+            <h3>Print, assemble and wire</h3>
+            <p>Print the case, assemble the Pi, the relay board and the power parts in it, and wire the probe and the buzzer. The wiring guide shows every pin.</p>
+            <p class="step__links">
+              <a class="link" href="case.html">The case <span aria-hidden="true">→</span></a>
+              <a class="link" href="https://github.com/tinkerius/brewberrypi-app/blob/main/docs/hardware/wiring.md">Wiring guide <span aria-hidden="true">→</span></a>
+            </p>
+          </li>
+          <li class="step card reveal">
+            <span class="step__visual band-dark">
+              <svg class="step__flash" viewBox="0 0 360 150" role="img" aria-label="An SD card with BrewberryPi OS goes into the microSD slot of a Raspberry Pi 3">
+                <g class="sd">
+                  <path class="sd__body" d="M30 28h40l14 14v80a6 6 0 0 1-6 6H30a6 6 0 0 1-6-6V34a6 6 0 0 1 6-6Z"/>
+                  <path class="sd__pins" d="M36 36v12M44 36v12M52 36v12M60 36v12"/>
+                  <image href="mark-dark.svg" x="32" y="66" width="44" height="44"/>
+                </g>
+                <path class="arrow" d="M100 78h52"/>
+                <path class="arrow-head" d="m150 70 9 8-9 8"/>
+                <!-- Raspberry Pi 3 Model B, top view, drawn in millimetres (85 × 56) -->
+                <g class="pi" transform="translate(170 18.6) scale(2.12)">
+                  <rect class="pi__sd" x="-1.6" y="22" width="2" height="12" rx=".4"/>
+                  <rect class="pi__pcb" width="85" height="56" rx="3"/>
+                  <g class="pi__holes"><circle cx="3.5" cy="3.5" r="1.5"/><circle cx="61.5" cy="3.5" r="1.5"/><circle cx="3.5" cy="52.5" r="1.5"/><circle cx="61.5" cy="52.5" r="1.5"/></g>
+                  <rect class="pi__black" x="7" y="1" width="51" height="5.1" rx=".3"/>
+                  <g class="pi__pins"><circle cx="8.27" cy="2.27" r=".55"/><circle cx="8.27" cy="4.81" r=".55"/><circle cx="10.81" cy="2.27" r=".55"/><circle cx="10.81" cy="4.81" r=".55"/><circle cx="13.35" cy="2.27" r=".55"/><circle cx="13.35" cy="4.81" r=".55"/><circle cx="15.89" cy="2.27" r=".55"/><circle cx="15.89" cy="4.81" r=".55"/><circle cx="18.43" cy="2.27" r=".55"/><circle cx="18.43" cy="4.81" r=".55"/><circle cx="20.97" cy="2.27" r=".55"/><circle cx="20.97" cy="4.81" r=".55"/><circle cx="23.51" cy="2.27" r=".55"/><circle cx="23.51" cy="4.81" r=".55"/><circle cx="26.05" cy="2.27" r=".55"/><circle cx="26.05" cy="4.81" r=".55"/><circle cx="28.59" cy="2.27" r=".55"/><circle cx="28.59" cy="4.81" r=".55"/><circle cx="31.13" cy="2.27" r=".55"/><circle cx="31.13" cy="4.81" r=".55"/><circle cx="33.67" cy="2.27" r=".55"/><circle cx="33.67" cy="4.81" r=".55"/><circle cx="36.21" cy="2.27" r=".55"/><circle cx="36.21" cy="4.81" r=".55"/><circle cx="38.75" cy="2.27" r=".55"/><circle cx="38.75" cy="4.81" r=".55"/><circle cx="41.29" cy="2.27" r=".55"/><circle cx="41.29" cy="4.81" r=".55"/><circle cx="43.83" cy="2.27" r=".55"/><circle cx="43.83" cy="4.81" r=".55"/><circle cx="46.37" cy="2.27" r=".55"/><circle cx="46.37" cy="4.81" r=".55"/><circle cx="48.91" cy="2.27" r=".55"/><circle cx="48.91" cy="4.81" r=".55"/><circle cx="51.45" cy="2.27" r=".55"/><circle cx="51.45" cy="4.81" r=".55"/><circle cx="53.99" cy="2.27" r=".55"/><circle cx="53.99" cy="4.81" r=".55"/><circle cx="56.53" cy="2.27" r=".55"/><circle cx="56.53" cy="4.81" r=".55"/></g>
+                  <rect class="pi__black" x="1.2" y="16" width="3.4" height="22" rx=".3"/>
+                  <rect class="pi__black" x="43.5" y="37" width="3.4" height="15" rx=".3"/>
+                  <rect class="pi__silver" x="22" y="24" width="14" height="14" rx=".8"/>
+                  <rect class="pi__chip" x="58" y="31" width="8" height="8" rx=".4"/>
+                  <rect class="pi__chip" x="6" y="10" width="7" height="4" rx=".4"/>
+                  <g class="pi__port"><rect x="69" y="2" width="18" height="14" rx=".6"/><path d="M71 6.5h13M71 11.5h13"/></g>
+                  <g class="pi__port"><rect x="69" y="20" width="18" height="14" rx=".6"/><path d="M71 24.5h13M71 29.5h13"/></g>
+                  <g class="pi__port"><rect x="66" y="38" width="21" height="16" rx=".6"/><rect class="pi__jack" x="70" y="41.5" width="12" height="9" rx=".4"/></g>
+                  <rect class="pi__silver" x="7" y="51" width="8" height="5.6" rx=".6"/>
+                  <rect class="pi__silver" x="24.5" y="49" width="15" height="7.6" rx=".6"/>
+                  <rect class="pi__black" x="50" y="50" width="7" height="6.4" rx=".6"/><circle class="pi__hole" cx="53.5" cy="56.4" r="1.4"/>
+                  <g class="pi__leds"><circle cx="1.6" cy="42" r=".55"/><circle class="pi__led--g" cx="1.6" cy="44.6" r=".55"/></g>
+                </g>
+              </svg>
+            </span>
+            <span class="step__num">2</span>
+            <h3>Flash the image</h3>
+            <p>Write BrewberryPi OS to an SD card with Raspberry Pi Imager; the app is included. Set a host name and your Wi-Fi, or set Wi-Fi up later through its own hotspot.</p>
+            <p class="step__links">
+              <a class="link" href="https://github.com/tinkerius/brewberrypi-os/blob/main/docs/flashing.md">Flashing guide <span aria-hidden="true">→</span></a>
+            </p>
+          </li>
+          <li class="step card reveal">
+            <span class="step__visual band-dark">
+              <span class="step__url">http://brewberrypi.local</span>
+              <span class="step__phone"><img src="img/app-phone-light.webp" width="780" height="1688" loading="lazy" decoding="async" alt="The app on a phone"></span>
+            </span>
+            <span class="step__num">3</span>
+            <h3>Open it and brew</h3>
+            <p>Open <code>http://brewberrypi.local/</code> on your phone (use the host name you chose), load a recipe and press start.</p>
+            <p class="step__links">
+              <a class="link" href="https://github.com/tinkerius/brewberrypi-os/blob/main/docs/user-manual.md">User manual <span aria-hidden="true">→</span></a>
+            </p>
+          </li>
+        </ol>
+        <p class="warning reveal">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 10v5M12 18v.01"/></svg>
+          <span>BrewberryPi switches a <b>mains-powered heater</b>. A printed case is not mains insulation on its own.
+            Have the mains wiring done or checked by a qualified electrician.</span>
+        </p>
+      </div>
+    </section>
   </main>
+
+  <footer class="footer band-dark">
+    <div class="wrap footer__inner">
+      <div class="footer__brand">
+        <img src="logo-stacked-dark.svg" alt="BrewberryPi" width="136" height="90">
+      </div>
+      <nav class="footer__links" aria-label="Repositories">
+        <a href="https://github.com/tinkerius/brewberrypi-app">App source</a>
+        <a href="https://github.com/tinkerius/brewberrypi-os">OS source</a>
+        <a href="https://github.com/tinkerius/brewberrypi-case">Case source</a>
+        <a href="https://github.com/tinkerius/brewberrypi">Website</a>
+      </nav>
+      <p class="footer__note">Raspberry Pi is a trademark of Raspberry Pi Ltd. BrewberryPi is not affiliated with Raspberry Pi Ltd.</p>
+    </div>
+  </footer>
+
 </body>
 </html>
