@@ -1,4 +1,4 @@
-// Renders stills of the 3D case for the main page: assembled (site/img/case-still.webp, hero) and exploded
+// Renders stills of the 3D case, with its components, for the main page: assembled (site/img/case-still.webp, hero) and exploded
 // (site/img/case-exploded.webp, get-started step 1).
 //
 // Serves site/ locally, opens case.html with reduced motion (no spin), waits for the 3D view and saves it

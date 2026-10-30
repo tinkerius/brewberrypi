@@ -35,7 +35,7 @@ tokens) it may be text too.
 | `site/styles.css` | Colour tokens (from `brand/README.md`, light and `.band-dark`), layout | written by hand |
 | `site/main.js` | Scroll effects, the feature cards (`FEATURES`: add an entry to add a feature) | written by hand |
 | `site/case3d.js` | Interactive 3D view of the case (three.js), loaded when the section scrolls into view; part colours from the section's CSS | written by hand |
-| `site/components3d.js` | The bought components (Pi, relay board, adapter, switches, sockets, inlet, jack) for the 3D view, modelled from the dimensions and positions in the case spec; shown with the viewer's "Show components" button | written by hand; keep in step with `brewberrypi-case/02-specification/spec.md` |
+| `site/components3d.js` | The bought components (Pi, relay board, adapter, switches, sockets, inlet, jack) for the 3D view, modelled from the dimensions and positions in the case spec; shown from the start, hidden with the viewer's "Hide components" button | written by hand; keep in step with `brewberrypi-case/02-specification/spec.md` |
 | `site/img/app-*.webp` | Screenshots of the app | `tools/capture_screens.mjs` |
 | `site/img/case-still.webp`, `site/img/case-exploded.webp` | Stills of the 3D case for the main page (assembled, exploded) | `tools/render_case.mjs` |
 | `site/models/case-*.stl`, `site/img/case-assembly.png` | Case parts and the fallback render | `tools/sync_assets.sh` from `brewberrypi-case/04-stl` |

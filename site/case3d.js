@@ -81,7 +81,7 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
   const centreY = model.position.y;
   const size = box.getSize(new THREE.Vector3()).length();
 
-  // The bought components, hidden until the button shows them.
+  // The bought components, shown from the start; the button hides them.
   const components = buildComponents();
   model.add(components.divider, components.body);
   const setOpacity = (opacity) => {
@@ -92,7 +92,7 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
     }
     components.divider.visible = components.body.visible = opacity > 0;
   };
-  setOpacity(0);
+  setOpacity(1);
 
   camera.position.set(size * 1.25, size * 0.85, size * 1.7);
   camera.lookAt(0, 0, 0);
@@ -124,8 +124,8 @@ export async function mountCase(host, { reducedMotion = false } = {}) {
     button.textContent = explodeTarget ? "Assemble" : "Explode";
     wake();
   });
-  let shown = 0;
-  let shownTarget = 0;
+  let shown = 1;
+  let shownTarget = 1;
   partsButton.addEventListener("click", () => {
     shownTarget = shownTarget ? 0 : 1;
     partsButton.setAttribute("aria-pressed", String(Boolean(shownTarget)));
