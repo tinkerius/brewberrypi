@@ -206,7 +206,7 @@ main { counter-reset: section; }
 
 /* ---------- Sections ---------- */
 
-.section { position: relative; padding: clamp(4rem, 9vw, 7.5rem) 0; overflow-x: clip; }
+.section { position: relative; padding: clamp(2.5rem, 5vw, 4rem) 0; overflow-x: clip; }
 .section + .section:not(.band-dark) { border-top: 1px solid var(--line); }
 .section__head { display: grid; gap: .9rem 2rem; margin-bottom: clamp(2.2rem, 5vw, 3.5rem); padding-top: 1rem; border-top: 1px solid var(--fg); }
 .section__head h2 { font-size: clamp(2.1rem, 5vw, 3.5rem); }
@@ -271,6 +271,13 @@ main { counter-reset: section; }
 .page-head__crumb a { color: var(--fg); text-decoration-color: var(--pink); text-underline-offset: 4px; }
 .page-head__title { margin: 1rem 0 1rem; font-size: clamp(2.6rem, 7vw, 4.8rem); line-height: 1.02; letter-spacing: -.02em; }
 .page-head__lead { max-width: 42rem; font-size: clamp(1.05rem, 1.6vw, 1.2rem); color: var(--muted); }
+.page-head__download { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1rem; margin-top: 1.6rem; }
+.page-head__download span { font: .76rem var(--font-mono); color: var(--muted); }
+.page-head__download .btn--primary { padding: .9rem 1.4rem; font-size: 1.02rem; box-shadow: 0 0 0 4px rgba(224, 120, 154, .18); }
+.btn .dl { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.hero__free { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .55rem; font-size: 1rem; color: var(--fg); }
+.hero__free .led { --c: var(--leaf); }
+.hero__free a { color: var(--fg); font-weight: 600; text-decoration: underline; text-decoration-color: var(--pink); text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .page-head__toc { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.8rem; }
 .page-head__toc a { padding: .4rem .8rem; border: 1px solid var(--line-2); border-radius: 6px; font: .8rem var(--font-mono); color: var(--fg); text-decoration: none; transition: border-color .15s; }
 .page-head__toc a:hover { border-color: var(--pink); }

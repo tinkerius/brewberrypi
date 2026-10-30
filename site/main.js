@@ -52,9 +52,9 @@ const FEATURES = [
     text: "The heater is off whenever it isn't actively controlling temperature. All outputs go off at start-up and on every stop, crash or hang, backed by the systemd and hardware watchdogs." },
   { group: "mash", icon: "spark", title: "More to come", size: "wide", soon: true,
     text: "The feature list grows with the project. Have an idea? Open an issue on GitHub." },
-  { group: "recipe", icon: "list", title: "Mashing process as step lists", doc: ["Recipe format", "https://github.com/tinkerius/brewberrypi-app/blob/main/docs/specification/07-recipes.md"], size: "wide", art: "process",
+  { group: "recipe", icon: "list", title: "Mashing process as step lists", size: "wide", art: "process",
     text: "Write your mash schedule once as a list of steps: the target temperature of each heat-up, the temperature and minutes of each rest, the extra minutes after an iodine test that isn't done yet, and the boil time. Give your rests their own names. BrewberryPi works through it step by step, like this step mash for a wheat beer." },
-  { group: "recipe", icon: "file", title: "Easy mash process creation", doc: ["Adding recipes", "https://github.com/tinkerius/brewberrypi-os/blob/main/docs/user-manual.md#in-the-file-share"], size: "wide", art: "json",
+  { group: "recipe", icon: "file", title: "Easy mash process creation", size: "wide", art: "json",
     text: "A recipe is a small JSON file: list the steps with their temperatures and minutes. Drop it into the recipes folder on the Pi's network share, and it shows up in the app within seconds." },
 ];
 
