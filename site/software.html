@@ -3,21 +3,49 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Software – BrewberryPi</title>
-  <meta name="description" content="The BrewberryPi software: the brewing app and its operating system as one image for the Raspberry Pi.">
+  <title>Mash Control Software and OS Image for Raspberry Pi – BrewberryPi</title>
+  <meta name="description" content="One Raspberry Pi image with the brewing app: step-mash recipes as JSON, automatic temperature and pump control, live web UI in any browser.">
+  <link rel="canonical" href="https://brewberrypi.org/software.html">
   <meta name="theme-color" content="#161113">
   <link rel="icon" href="favicon.ico" sizes="48x48">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="BrewberryPi">
-  <meta property="og:description" content="An open-source Raspberry Pi controller for a home-brewing mash kettle.">
-  <meta property="og:url" content="https://tinkerius.github.io/brewberrypi/">
-  <meta property="og:image" content="https://tinkerius.github.io/brewberrypi/social-preview.png">
+  <meta property="og:site_name" content="BrewberryPi">
+  <meta property="og:title" content="Mash Control Software and OS Image for Raspberry Pi – BrewberryPi">
+  <meta property="og:description" content="One Raspberry Pi image with the brewing app: step-mash recipes as JSON, automatic temperature and pump control, live web UI in any browser.">
+  <meta property="og:url" content="https://brewberrypi.org/software.html">
+  <meta property="og:image" content="https://brewberrypi.org/social-preview.png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
   <meta property="og:image:alt" content="BrewberryPi logo: a berry-coloured brewing kettle on three flames">
   <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "BrewberryPi", "item": "https://brewberrypi.org/"},
+          {"@type": "ListItem", "position": 2, "name": "Software", "item": "https://brewberrypi.org/software.html"}
+        ]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "BrewberryPi",
+        "url": "https://brewberrypi.org/software.html",
+        "description": "One Raspberry Pi image with the brewing app: step-mash recipes as JSON, automatic temperature and pump control, live web UI in any browser.",
+        "applicationCategory": "HomeApplication",
+        "operatingSystem": "Raspberry Pi 3, 4 and 5",
+        "downloadUrl": "https://github.com/tinkerius/brewberrypi-os/releases",
+        "screenshot": "https://brewberrypi.org/img/app-desktop-light.webp",
+        "isAccessibleForFree": true,
+        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}
+      }
+    ]
+  }
+  </script>
   <link rel="preload" href="fonts/zilla-slab-bold.woff2" as="font" type="font/woff2" crossorigin>
   <script>
     document.documentElement.classList.remove("no-js");
@@ -57,9 +85,9 @@
     <section class="page-head band-dark">
       <div class="wrap">
         <p class="page-head__crumb"><a href="index.html">BrewberryPi</a> / Software</p>
-        <h1 class="page-head__title reveal">The software</h1>
-        <p class="page-head__lead reveal">The brewing app and the operating system it runs on, as one image for the Raspberry Pi. You flash it,
-          start the Pi and open the app in your browser.</p>
+        <h1 class="page-head__title reveal">The software <span class="page-head__sub"><span class="hl">Mash control app and OS image for the Raspberry Pi</span></span></h1>
+        <p class="page-head__lead reveal">The brewing app and the operating system it runs on come as one image. You flash it, start the Pi and
+          open the app in your browser.</p>
         <p class="page-head__download reveal">
           <a class="btn btn--primary" href="https://github.com/tinkerius/brewberrypi-os/releases"><svg viewBox="0 0 24 24" aria-hidden="true" class="dl"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download BrewberryPi OS</a>
           <span>Free and open source · image for Raspberry Pi 3, 4 and 5 · pre-release (alpha)</span>
@@ -96,13 +124,38 @@
           <p class="eyebrow">Mash controlling</p>
           <h2>Everything a brew day needs.<br><span class="muted">Nothing it doesn't.</span></h2>
         </header>
-        <!-- Rendered by main.js from FEATURES (group "mash"); the list below is the fallback without JavaScript. -->
-        <div class="bento" id="features-mash">
-          <noscript>
-            <ul class="feature-list">
-              <li>Temperature control</li><li>It guides you through the brew</li><li>Safe by design</li>
-            </ul>
-          </noscript>
+        <!-- Feature cards: feature--wide spans two columns on large screens, feature--full the whole row; feature--soon is the muted
+             "more to come" card. --d staggers the reveal (0, .06, .12, .18s). -->
+        <div class="bento">
+          <article class="feature card reveal feature--wide" style="--d: 0s">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0Z"/><path d="M12 10v7"/></svg></span>
+            <h3>Temperature control</h3>
+            <p>Full power to heat up, half power close to the target, then it holds each rest while the pump keeps the mash moving. A chart
+              shows the kettle temperature since the start, so you see each ramp and rest as it happens.</p>
+            <div class="feature__art"><div class="mini-shot mini-shot--fit"><img src="img/app-chart-light.webp" width="1464" height="627" loading="lazy" decoding="async" alt="The app’s chart: the kettle temperature since the start, with each ramp and rest of the step mash"></div></div>
+            <a class="link feature__doc" href="https://github.com/tinkerius/brewberrypi-app/blob/main/docs/specification/05-temperature-control.md"><span>How the control works</span> <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="feature card reveal feature--wide" style="--d: .06s">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span>
+            <h3>It guides you through the brew</h3>
+            <p>BrewberryPi heats, holds the rests and runs the pump on its own, and tells you when it's your turn: pour in the water, mash in,
+              do the iodine test. Confirm on any device, and it carries on. A buzzer reminds you until you do.</p>
+            <div class="feature__art"><div class="mini-shot mini-shot--fit"><img src="img/app-question-light.webp" width="1392" height="302" loading="lazy" decoding="async" alt="The app asking: Iodine test successful? with the answers Yes and No"></div></div>
+            <a class="link feature__doc" href="https://github.com/tinkerius/brewberrypi-app/blob/main/docs/specification/04-goal-types.md"><span>The steps it knows</span> <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="feature card reveal feature--wide" style="--d: .12s">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6Z"/><path d="m8.8 12 2.2 2.2 4.2-4.4"/></svg></span>
+            <h3>Safe by design</h3>
+            <p>The heater is off whenever it isn't actively controlling temperature. All outputs go off at start-up and on every stop, crash
+              or hang, backed by the systemd and hardware watchdogs.</p>
+            <div class="feature__art"><div class="mini-shot mini-shot--fit"><img src="img/app-stopped-light.webp" width="1464" height="246" loading="lazy" decoding="async" alt="The app’s hardware status after a stop: pump off, heating 0 %, process stopped"></div></div>
+            <a class="link feature__doc" href="https://github.com/tinkerius/brewberrypi-app/blob/main/docs/specification/10-non-functional-requirements.md"><span>Safety requirements</span> <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="feature card reveal feature--wide feature--soon" style="--d: .18s">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg></span>
+            <h3>More to come</h3>
+            <p>The feature list grows with the project. Have an idea? Open an issue on GitHub.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -116,11 +169,35 @@
           <p class="section__lead">Heat up, rest, mash in, iodine test, lautering, boil. A recipe is a small JSON file, and each step
             switches the heater and pump on its own or waits for you.</p>
         </header>
-        <!-- Rendered by main.js from FEATURES (group "recipe"). -->
-        <div class="bento" id="features-recipe">
-          <noscript>
-            <ul class="feature-list"><li>Mashing process as step lists</li><li>Easy mash process creation</li></ul>
-          </noscript>
+        <div class="bento">
+          <article class="feature card reveal feature--wide" style="--d: 0s">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg></span>
+            <h3>Mashing process as step lists</h3>
+            <p>Write your mash schedule once as a list of steps: the target temperature of each heat-up, the temperature and minutes of each
+              rest, the extra minutes after an iodine test that isn't done yet, and the boil time. Give your rests their own names.
+              BrewberryPi works through it step by step, like this step mash for a wheat beer.</p>
+            <div class="feature__art"><div class="mini-shot"><img src="img/app-process-light.webp" width="1464" height="1850" loading="lazy" decoding="async" alt="The app working through the step mash BENIWEISS: the done steps, the active rest with its time left, and the steps still to come"></div></div>
+          </article>
+          <article class="feature card reveal feature--wide" style="--d: .06s">
+            <span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+            <h3>Easy mash process creation</h3>
+            <p>A recipe is a small JSON file: list the steps with their temperatures and minutes. Drop it into the recipes folder on the Pi's
+              network share, and it shows up in the app within seconds.</p>
+            <div class="feature__art"><figure class="mini-file"><figcaption>recipes/BENIWEISS.json</figcaption><pre>{
+  <b>"name"</b>: <i>"München 12.6 - SUD2:BENIWEISS"</i>,
+  <b>"goals"</b>: [
+    { <b>"type"</b>: <i>"PourInBrewingWater"</i> },
+    { <b>"type"</b>: <i>"HeatUp"</i>, <b>"temperature"</b>: <u>40</u> },
+    { <b>"type"</b>: <i>"MashIn"</i> },
+    { <b>"type"</b>: <i>"HeatUp"</i>, <b>"temperature"</b>: <u>52</u> },
+    { <b>"type"</b>: <i>"Rest"</i>, <b>"temperature"</b>: <u>52</u>, <b>"minutes"</b>: <u>30</u>,
+      <b>"name"</b>: <i>"Eiweißrast"</i> },
+    <s>…</s>
+    { <b>"type"</b>: <i>"IodineTest"</i>, <b>"temperature"</b>: <u>73</u>, <b>"minutes"</b>: <u>10</u> },
+    { <b>"type"</b>: <i>"HeatUp"</i>, <b>"temperature"</b>: <u>78</u> }
+  ]
+}</pre></figure></div>
+          </article>
         </div>
         <p class="system__more reveal">All step types and fields:
           <a class="link" href="https://github.com/tinkerius/brewberrypi-app/blob/main/docs/specification/07-recipes.md">Recipe specification <span aria-hidden="true">→</span></a>

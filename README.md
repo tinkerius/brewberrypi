@@ -1,6 +1,6 @@
 # BrewberryPi website
 
-Source of the BrewberryPi website: **https://tinkerius.github.io/brewberrypi/**
+Source of the BrewberryPi website: **https://brewberrypi.org/**
 
 BrewberryPi is a Raspberry Pi controller for a home-brewing mash kettle. The project lives in three repositories:
 
@@ -30,10 +30,12 @@ tokens) it may be text too.
 |---|---|---|
 | `site/index.html` | Main page: the overview, the three parts (components, software, case) as linked panels, get started | written by hand |
 | `site/components.html` | Components: how the Pi, relay board, probe, kettle and pump connect (diagram and legend) | written by hand |
-| `site/software.html` | Software details: screenshots, mash controlling, recipe definition, operating system | written by hand |
+| `site/software.html` | Software details: screenshots, mash controlling, recipe definition, operating system; the feature cards are plain HTML (copy an `<article class="feature">` to add one) | written by hand |
 | `site/case.html` | Case details: the 3D view, front/back/inside, the parts it holds, printing | written by hand |
+| `site/404.html` | Page for missing URLs (not indexed); GitHub Pages serves it at the missing URL, so its links start with `/` | written by hand |
+| `site/robots.txt`, `site/sitemap.xml` | Crawler rules and the list of page URLs for search engines | written by hand |
 | `site/styles.css` | Colour tokens (from `brand/README.md`, light and `.band-dark`), layout | written by hand |
-| `site/main.js` | Scroll effects, the feature cards (`FEATURES`: add an entry to add a feature) | written by hand |
+| `site/main.js` | Scroll effects, the lazy 3D case view | written by hand |
 | `site/case3d.js` | Interactive 3D view of the case (three.js), loaded when the section scrolls into view; part colours from the section's CSS | written by hand |
 | `site/components3d.js` | The bought components (Pi, relay board, adapter, switches, sockets, inlet, jack) for the 3D view, modelled from the dimensions and positions in the case spec; shown from the start, hidden with the viewer's "Hide components" button | written by hand; keep in step with `brewberrypi-case/02-specification/spec.md` |
 | `site/img/app-*.webp` | Screenshots of the app | `tools/capture_screens.mjs` |
@@ -66,7 +68,9 @@ Then open http://localhost:8000/.
 
 ## Publishing
 
-Repository settings: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+Repository settings: **Settings → Pages → Build and deployment → Source: GitHub Actions**, custom domain `brewberrypi.org`
+(**Settings → Pages → Custom domain**; with the Actions source no `CNAME` file is needed). GitHub redirects the old address
+https://tinkerius.github.io/brewberrypi/ to it.
 A push (or merge) to `main` runs *Deploy to GitHub Pages*; the workflow can also be started by hand
 from the Actions tab.
 
@@ -75,3 +79,18 @@ from the Actions tab.
 Page views are counted by [GoatCounter](https://www.goatcounter.com/) (no cookies, no consent banner needed);
 the dashboard is at https://brewberrypi.goatcounter.com. Each page loads its script at the end of `<head>`,
 so a new page needs the same two lines. Visits from `localhost` are not counted.
+
+## Search engines
+
+Every page's `<head>` names its own address and describes itself, so search results and link previews show the right page:
+
+- `<title>` and `<meta name="description">` (≤ 160 characters) with the words people search for (Raspberry Pi, brewing / mash
+  controller, …); `og:title` and `og:description` repeat them.
+- `<link rel="canonical">` and `og:url`: the page's address on https://brewberrypi.org/, as the nav links it (`case.html`).
+- JSON-LD: `WebSite` on the main page (the site name in Google results), a `BreadcrumbList` matching the crumb on each
+  subpage, `SoftwareApplication` on the software page.
+
+A new page needs these, the GoatCounter lines and an entry in `site/sitemap.xml`.
+
+To see how the site does in search: add `brewberrypi.org` to Google Search Console and Bing Webmaster Tools (as a domain
+property, verified with a DNS TXT record) and submit `https://brewberrypi.org/sitemap.xml` in both.

@@ -239,7 +239,6 @@ main { counter-reset: section; }
 .fact__doc { display: inline-flex; margin-top: .45rem; font-size: .86rem; }
 .feature--soon { background: var(--bg); }
 .feature--soon h3 { color: var(--muted); }
-.feature-list { columns: 2; color: var(--muted); }
 
 /* A cut-out of a real app screenshot, fading out at the bottom. */
 .mini-shot { position: relative; height: 260px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
@@ -270,6 +269,7 @@ main { counter-reset: section; }
 .page-head__crumb { font: .78rem var(--font-mono); color: var(--muted); }
 .page-head__crumb a { color: var(--fg); text-decoration-color: var(--pink); text-underline-offset: 4px; }
 .page-head__title { margin: 1rem 0 1rem; font-size: clamp(2.6rem, 7vw, 4.8rem); line-height: 1.02; letter-spacing: -.02em; }
+.page-head__sub { display: block; max-width: 30ch; margin-top: .4em; font-size: clamp(1.25rem, 2.6vw, 1.9rem); line-height: 1.25; letter-spacing: -.01em; }
 .page-head__lead { max-width: 42rem; font-size: clamp(1.05rem, 1.6vw, 1.2rem); color: var(--muted); }
 .page-head__download { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1rem; margin-top: 1.6rem; }
 .page-head__download span { font: .76rem var(--font-mono); color: var(--muted); }

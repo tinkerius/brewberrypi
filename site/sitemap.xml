@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The canonical URL of every page; a new page gets an entry here. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://brewberrypi.org/</loc></url>
+  <url><loc>https://brewberrypi.org/components.html</loc></url>
+  <url><loc>https://brewberrypi.org/software.html</loc></url>
+  <url><loc>https://brewberrypi.org/case.html</loc></url>
+</urlset>
