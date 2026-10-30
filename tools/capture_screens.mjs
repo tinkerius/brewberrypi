@@ -121,8 +121,10 @@ try {
   await shoot("", { top: true });
   // The recipe's goal list on its own, for the "Recipes as step lists" feature.
   const desktopLight = pages.find(({ file }) => file === "app-desktop-light").page;
-  await desktopLight.locator("section").filter({ has: desktopLight.locator("h2", { hasText: "Brewing Process" }) })
-    .screenshot({ path: join(pngDir, "app-process-light.png") });
+  const card = (title) => desktopLight.locator("section").filter({ has: desktopLight.locator("h2", { hasText: title }) });
+  await card("Brewing Process").screenshot({ path: join(pngDir, "app-process-light.png") });
+  // The chart, for the "Temperature control" feature.
+  await card("Chart").screenshot({ path: join(pngDir, "app-chart-light.png") });
 
   // The iodine test asks a yes/no question.
   await waitFor(async () => {
@@ -135,8 +137,13 @@ try {
     return request && request.options.length > 1;
   }, "the iodine test");
   await shoot("-iodine", { views: ["phone"] });
+  // The active goal with its question, for "It guides you through the brew".
+  await desktopLight.locator('li[data-status="Active"]').screenshot({ path: join(pngDir, "app-question-light.png") });
 
   await api("POST", "/api/process/stop");
+  // Everything off after the stop, for "Safe by design".
+  await sleep(2500);
+  await card("Hardware Status").screenshot({ path: join(pngDir, "app-stopped-light.png") });
 } finally {
   await browser?.close();
   app.kill("SIGTERM");

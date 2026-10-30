@@ -24,7 +24,7 @@ if (hero) sectionObserver.observe(hero); // no link: clears the highlight at the
 
 // ---------- Features ----------
 // To add a feature, add an entry. group: the section it appears in ("mash" or "recipe"). size: "wide" spans two columns on large screens. art: an optional
-// illustration (see ART). size "full" spans the whole row. soon: the muted "more to come" card.
+// illustration (see ART). size "full" spans the whole row. doc: [link text, URL] to the documentation. soon: the muted "more to come" card.
 
 const ICONS = {
   list: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
@@ -38,22 +38,23 @@ const ICONS = {
 const ART = {
   process: '<div class="mini-shot"><img src="img/app-process-light.webp" width="1464" height="1850" loading="lazy" decoding="async" alt="The app working through the step mash BENIWEISS: the done steps, the active rest with its time left, and the steps still to come"></div>',
   json: '<figure class="mini-file"><figcaption>recipes/BENIWEISS.json</figcaption><pre>{\n  <b>"name"</b>: <i>"München 12.6 - SUD2:BENIWEISS"</i>,\n  <b>"goals"</b>: [\n    { <b>"type"</b>: <i>"PourInBrewingWater"</i> },\n    { <b>"type"</b>: <i>"HeatUp"</i>, <b>"temperature"</b>: <u>40</u> },\n    { <b>"type"</b>: <i>"MashIn"</i> },\n    { <b>"type"</b>: <i>"HeatUp"</i>, <b>"temperature"</b>: <u>52</u> },\n    { <b>"type"</b>: <i>"Rest"</i>, <b>"temperature"</b>: <u>52</u>, <b>"minutes"</b>: <u>30</u>,\n      <b>"name"</b>: <i>"Eiweißrast"</i> },\n    <s>…</s>\n    { <b>"type"</b>: <i>"IodineTest"</i>, <b>"temperature"</b>: <u>73</u>, <b>"minutes"</b>: <u>10</u> },\n    { <b>"type"</b>: <i>"HeatUp"</i>, <b>"temperature"</b>: <u>78</u> }\n  ]\n}</pre></figure>',
-  curve: '<svg class="mini-curve" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true"><path class="target" d="M0 22H300"/><path d="M0 84C50 80 80 50 110 30S150 22 170 22H300"/></svg>',
-  ask: '<div class="mini-ask">Iodine test successfull?<div><span>Yes</span><span>No</span></div></div>',
+  chart: '<div class="mini-shot mini-shot--fit"><img src="img/app-chart-light.webp" width="1464" height="627" loading="lazy" decoding="async" alt="The app’s chart: the kettle temperature since the start, with each ramp and rest of the step mash"></div>',
+  question: '<div class="mini-shot mini-shot--fit"><img src="img/app-question-light.webp" width="1392" height="302" loading="lazy" decoding="async" alt="The app asking: Iodine test successfull? with the answers Yes and No"></div>',
+  stopped: '<div class="mini-shot mini-shot--fit"><img src="img/app-stopped-light.webp" width="1464" height="246" loading="lazy" decoding="async" alt="The app’s hardware status after a stop: pump off, heating 0 %, process stopped"></div>',
 };
 
 const FEATURES = [
-  { group: "mash", icon: "thermo", title: "Temperature control", size: "wide", art: "curve",
+  { group: "mash", icon: "thermo", title: "Temperature control", doc: ["How the control works", "https://github.com/tinkerius/brewberrypi-app/blob/main/docs/specification/05-temperature-control.md"], size: "wide", art: "chart",
     text: "Full power to heat up, half power close to the target, then it holds each rest while the pump keeps the mash moving. A chart shows the kettle temperature since the start, so you see each ramp and rest as it happens." },
-  { group: "mash", icon: "bell", title: "It guides you through the brew", size: "wide", art: "ask",
+  { group: "mash", icon: "bell", title: "It guides you through the brew", doc: ["The steps it knows", "https://github.com/tinkerius/brewberrypi-app/blob/main/docs/specification/04-goal-types.md"], size: "wide", art: "question",
     text: "BrewberryPi heats, holds the rests and runs the pump on its own, and tells you when it's your turn: pour in the water, mash in, do the iodine test. Confirm on any device, and it carries on. A buzzer reminds you until you do." },
-  { group: "mash", icon: "shield", title: "Safe by design", size: "wide",
+  { group: "mash", icon: "shield", title: "Safe by design", doc: ["Safety requirements", "https://github.com/tinkerius/brewberrypi-app/blob/main/docs/specification/10-non-functional-requirements.md"], size: "wide", art: "stopped",
     text: "The heater is off whenever it isn't actively controlling temperature. All outputs go off at start-up and on every stop, crash or hang, backed by the systemd and hardware watchdogs." },
   { group: "mash", icon: "spark", title: "More to come", size: "wide", soon: true,
     text: "The feature list grows with the project. Have an idea? Open an issue on GitHub." },
-  { group: "recipe", icon: "list", title: "Mashing process as step lists", size: "wide", art: "process",
+  { group: "recipe", icon: "list", title: "Mashing process as step lists", doc: ["Recipe format", "https://github.com/tinkerius/brewberrypi-app/blob/main/docs/specification/07-recipes.md"], size: "wide", art: "process",
     text: "Write your mash schedule once as a list of steps: the target temperature of each heat-up, the temperature and minutes of each rest, the extra minutes after an iodine test that isn't done yet, and the boil time. Give your rests their own names. BrewberryPi works through it step by step, like this step mash for a wheat beer." },
-  { group: "recipe", icon: "file", title: "Easy mash process creation", size: "wide", art: "json",
+  { group: "recipe", icon: "file", title: "Easy mash process creation", doc: ["Adding recipes", "https://github.com/tinkerius/brewberrypi-os/blob/main/docs/user-manual.md#in-the-file-share"], size: "wide", art: "json",
     text: "A recipe is a small JSON file: list the steps with their temperatures and minutes. Drop it into the recipes folder on the Pi's network share, and it shows up in the app within seconds." },
 ];
 
@@ -67,9 +68,15 @@ function renderFeatures() {
       card.className = `feature card reveal${f.size ? ` feature--${f.size}` : ""}${f.soon ? " feature--soon" : ""}`;
       card.style.setProperty("--d", `${(i % 4) * 0.06}s`);
       card.innerHTML = `<span class="feature__icon"><svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[f.icon]}</svg></span>
-        <h3></h3><p></p>${f.art ? `<div class="feature__art">${ART[f.art]}</div>` : ""}`;
+        <h3></h3><p></p>${f.art ? `<div class="feature__art">${ART[f.art]}</div>` : ""}${f.doc ? '<a class="link feature__doc"></a>' : ""}`;
       card.querySelector("h3").textContent = f.title;
       card.querySelector("p").textContent = f.text;
+      if (f.doc) {
+        const link = card.querySelector(".feature__doc");
+        link.href = f.doc[1];
+        link.innerHTML = '<span></span> <span aria-hidden="true">→</span>';
+        link.firstChild.textContent = f.doc[0];
+      }
       grid.append(card);
     });
   }

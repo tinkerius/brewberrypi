@@ -233,6 +233,10 @@ main { counter-reset: section; }
 .feature h3 { margin-top: .3rem; font-size: 1.3rem; }
 .feature p { color: var(--muted); font-size: .94rem; }
 .feature__art { margin-top: auto; padding-top: .8rem; }
+.feature__doc { align-self: flex-start; margin-top: .9rem; font-size: .88rem; }
+.feature__art + .feature__doc { margin-top: 1rem; }
+.feature:not(:has(.feature__art)) .feature__doc { margin-top: auto; padding-top: .6rem; }
+.fact__doc { display: inline-flex; margin-top: .45rem; font-size: .86rem; }
 .feature--soon { background: var(--bg); }
 .feature--soon h3 { color: var(--muted); }
 .feature-list { columns: 2; color: var(--muted); }
@@ -241,6 +245,9 @@ main { counter-reset: section; }
 .mini-shot { position: relative; height: 260px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
 .mini-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; }
 .mini-shot::after { content: ""; position: absolute; inset: auto 0 0; height: 48px; background: linear-gradient(transparent, #fff); }
+.mini-shot--fit { height: auto; }
+.mini-shot--fit img { height: auto; }
+.mini-shot--fit::after { display: none; }
 /* A recipe file, shown like a code editor. */
 .mini-file { margin: 0; overflow: hidden; border-radius: 8px; background: #1c1719; color: #f1e8eb; }
 .mini-file figcaption { padding: .45rem .8rem; border-bottom: 1px solid rgba(241, 232, 235, .12); font: .72rem var(--font-mono); color: #a8979e; }
@@ -254,13 +261,6 @@ main { counter-reset: section; }
 .mini-steps .h { --c: var(--brass); }
 .mini-steps .r { --c: var(--pink); }
 .mini-steps .y { --c: var(--leaf); }
-.mini-curve { width: 100%; height: 86px; }
-.mini-curve path { fill: none; stroke: var(--fg); stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linecap: round; }
-.mini-curve .target { stroke: var(--pink); stroke-dasharray: 4 5; stroke-width: 1.5; }
-.mini-ask { display: grid; gap: .55rem; padding: .85rem; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); font-weight: 600; font-size: .9rem; }
-.mini-ask div { display: flex; gap: .45rem; }
-.mini-ask span { padding: .3rem .9rem; border-radius: 4px; background: var(--pink); color: var(--on-pink); font-size: .84rem; }
-.mini-ask span + span { background: var(--surface); border: 1px solid var(--line-2); }
 
 /* ---------- Sub page header ---------- */
 
