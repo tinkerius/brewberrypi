@@ -69,3 +69,9 @@ Then open http://localhost:8000/.
 Repository settings: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 A push (or merge) to `main` runs *Deploy to GitHub Pages*; the workflow can also be started by hand
 from the Actions tab.
+
+## Visitor statistics
+
+Page views are counted by [GoatCounter](https://www.goatcounter.com/) (no cookies, no consent banner needed);
+the dashboard is at https://brewberrypi.goatcounter.com. Each page loads its script at the end of `<head>`,
+so a new page needs the same two lines. Visits from `localhost` are not counted.
