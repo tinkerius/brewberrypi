@@ -275,6 +275,13 @@ main { counter-reset: section; }
 .page-head__download span { font: .76rem var(--font-mono); color: var(--muted); }
 .page-head__download .btn--primary { padding: .9rem 1.4rem; font-size: 1.02rem; box-shadow: 0 0 0 4px rgba(224, 120, 154, .18); }
 .hero__download .btn--ghost { padding: .9rem 1.4rem; font-size: 1.02rem; }
+@media (min-width: 1000px) { /* downloads on the right of the hero, level with the title and lead */
+  .hero__copy { grid-template-columns: 1fr auto; }
+  .hero__copy > :not(.hero__download) { grid-column: 1; }
+  .hero__download { grid-column: 2; grid-row: 2 / span 2; align-self: end; display: grid; justify-items: stretch; gap: .8rem; margin: 0; }
+  .hero__download .btn { justify-content: center; }
+  .hero__download span { justify-self: center; }
+}
 .btn .dl { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .page-head__toc { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.8rem; }
 .page-head__toc a { padding: .4rem .8rem; border: 1px solid var(--line-2); border-radius: 6px; font: .8rem var(--font-mono); color: var(--fg); text-decoration: none; transition: border-color .15s; }
