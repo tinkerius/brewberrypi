@@ -275,10 +275,11 @@ main { counter-reset: section; }
 .page-head__download span { font: .76rem var(--font-mono); color: var(--muted); }
 .page-head__download .btn--primary { padding: .9rem 1.4rem; font-size: 1.02rem; box-shadow: 0 0 0 4px rgba(224, 120, 154, .18); }
 .hero__download .btn--ghost { padding: .9rem 1.4rem; font-size: 1.02rem; }
-@media (min-width: 1000px) { /* downloads on the right of the hero, level with the title and lead */
+@media (min-width: 1000px) { /* downloads on the right of the hero, level with the title */
   .hero__copy { grid-template-columns: 1fr auto; }
   .hero__copy > :not(.hero__download) { grid-column: 1; }
-  .hero__download { grid-column: 2; grid-row: 2 / span 2; align-self: end; display: grid; justify-items: stretch; gap: .8rem; margin: 0; }
+  .hero__download { grid-column: 2; grid-row: 2 / span 2; align-self: start; display: grid; justify-items: stretch; gap: .8rem;
+    margin: calc(clamp(3rem, 9vw, 6.2rem) * .19) 0 0; } /* level with the cap top of the title */
   .hero__download .btn { justify-content: center; }
   .hero__download span { justify-self: center; }
 }
