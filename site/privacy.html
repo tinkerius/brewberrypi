@@ -97,9 +97,10 @@
           <li>it lists, reads, writes, renames and moves to the trash the recipe files in that folder;</li>
           <li>it reads your name and e-mail address to show which account is signed in.</li>
         </ul>
-        <p>The access token Google issues is kept in the page's memory only and expires after about an hour. To make the
-          next sign-in quicker, the editor remembers your e-mail address in your browser's local storage until you sign
-          out. Nothing else is stored. No data from Google is shared with anyone, sold, used for advertising, or used
+        <p>The access token Google issues expires after about an hour. Until then, or until you sign out, it is kept in
+          your browser's local storage on this device, so other tabs of the editor and reloads stay signed in; signing
+          out in one tab signs out all of them and removes it. To make the next sign-in quicker, the editor also
+          remembers your e-mail address there until you sign out. Nothing else is stored. No data from Google is shared with anyone, sold, used for advertising, or used
           to train AI models.</p>
         <p>The recipe editor's use and transfer of information received from Google APIs adheres to the
           <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>,
