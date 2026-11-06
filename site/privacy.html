@@ -115,7 +115,13 @@
         <h2>The BrewberryPi software on your Raspberry Pi</h2>
         <p>The BrewberryPi app and BrewberryPi OS run on your own Raspberry Pi in your own network. They send no data to
           BrewberryPi. The device contacts the internet only for what you start yourself, such as downloading updates
-          from GitHub.</p>
+          from GitHub, or Cloud Sync.</p>
+        <p>If you turn on <b>Cloud Sync in the BrewberryPi app</b>, your device signs in to your Google account itself (you
+          confirm it with a code on another device), with the same permission: only the files of the recipe editor. It
+          only reads the folder <b>BrewberryPi/recipes</b> and copies those recipes to the device; it never writes to
+          your Google Drive. The device keeps its Google sign-in (and your e-mail address, to show the account) in the
+          app's configuration folder on the device, which the device's file share also shows; disconnecting Cloud Sync
+          in the app deletes it. Nothing of this goes to BrewberryPi.</p>
 
         <h2>Your rights and contact</h2>
         <p>BrewberryPi keeps no personal data about you, so there is nothing to look up, correct or delete on our side.
