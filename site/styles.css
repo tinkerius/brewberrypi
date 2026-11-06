@@ -495,6 +495,20 @@ main { counter-reset: section; }
 .footer__links a { color: var(--muted); text-decoration: none; font-weight: 500; }
 .footer__links a:hover { color: var(--fg); }
 .footer__note { max-width: 36rem; font-size: .8rem; color: var(--muted); }
+.footer__legal { display: flex; gap: 1.2rem; font-size: .85rem; }
+.footer__legal a { color: var(--muted); text-decoration: none; }
+.footer__legal a:hover { color: var(--fg); }
+
+/* ---------- Legal pages (privacy, terms) ---------- */
+
+.legal { max-width: 46rem; }
+.legal h2 { margin: 2.4rem 0 .8rem; font-size: clamp(1.4rem, 2.6vw, 1.8rem); }
+.legal h3 { margin: 1.6rem 0 .6rem; font-size: 1.15rem; }
+.legal p, .legal ul { margin: 0 0 1rem; line-height: 1.65; }
+.legal ul { padding-left: 1.3rem; }
+.legal li + li { margin-top: .35rem; }
+.legal a { text-decoration-color: var(--pink); text-underline-offset: 3px; }
+.legal__date { font: .78rem var(--font-mono); color: var(--muted); }
 
 /* ---------- Motion ---------- */
 

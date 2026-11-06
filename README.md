@@ -32,6 +32,7 @@ tokens) it may be text too.
 | `site/components.html` | Components: how the Pi, relay board, probe, kettle and pump connect (diagram and legend) | written by hand |
 | `site/software.html` | Software details: screenshots, mash controlling, recipe definition, operating system | written by hand |
 | `site/case.html` | Case details: the 3D view, front/back/inside, the parts it holds, printing | written by hand |
+| `site/privacy.html`, `site/terms.html` | Privacy policy and terms of use for the website, the recipe editor (https://recipes.brewberrypi.org, repository `brewberrypi-recipeeditor`) and the software. Linked from every page's footer and from the Google sign-in consent screen of the recipe editor; keep them in step when the editor or the visitor statistics change what they store or send | written by hand |
 | `site/styles.css` | Colour tokens (from `brand/README.md`, light and `.band-dark`), layout | written by hand |
 | `site/main.js` | Scroll effects, the feature cards (`FEATURES`: add an entry to add a feature) | written by hand |
 | `site/case3d.js` | Interactive 3D view of the case (three.js), loaded when the section scrolls into view; part colours from the section's CSS | written by hand |
